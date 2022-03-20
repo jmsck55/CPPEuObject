@@ -6,28 +6,21 @@
 #include "eu.hpp"
 #include "test.hpp"
 
-using namespace eu;
+// using namespace eu;
 using namespace std;
 
 int main()
 {
     char ch;
     char *str;
-    Object a, b, c, d;
-    Sequence s, t;
+    eu::Object a, b, c, d;
+    eu::Sequence s, t;
     s.NewStr("Hi");
-    b = *(Object*)&s; // convert a "Sequence" to an "Object".
-    t = S_repeat(s.obj, (object)2);
+    b = *(eu::Object*)&s; // convert a "Sequence" to an "Object".
+    t = a.S_repeat(b, (object)2);
     
-    if (b.obj == NOVALUE)
-    {
-        cout << "'b' is an uninitialized Sequence" << endl;
-    }
-    else
-    {
-        cout << "'b' is an Sequence" << endl;
-    }
     
+
     str = s.GetCharStr();
     cout << str << endl;
     free(str);

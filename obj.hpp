@@ -11,12 +11,16 @@ extern "C" {
 extern "C" object *rhs_slice_target;
 extern "C" s1_ptr *assign_slice_seq;
 
-typedef int integer;
-typedef struct d atom;
-typedef struct s1 sequence;
+// typedef int integer;
+// typedef struct d atom;
+// typedef struct s1 sequence;
 
 #define MIN_SAFE_CHAR 32
 #define MAX_SAFE_CHAR 126
+
+// void RefObj(object ob);
+// void DeRefObj(object ob);
+// int IS_SEQ_STRING(object ob);
 
 void RefObj(object ob)
 {
@@ -69,25 +73,26 @@ int IS_SEQ_STRING(object ob)
 #define CHECK_INTEGER(val) (IS_ATOM_INT(val) && (val < TOO_BIG_INT))
 
 // Assumes ob is not encoded pointer to s1.
-object RefRet(object ret) { RefDS(ret); return ret; }
+object RefRet(object ret)
+{
+        RefDS(ret);
+        return ret;
+}
+
 #define GET_DOUBLE(ob) (double)(IS_ATOM_INT(ob) ? (double)ob : DBL_PTR(ob)->dbl)
 #define NEW_DOUBLE(ob) (object)(IS_ATOM_INT(ob) ? NewDouble((double)ob) : RefRet(ob))
 
-// #define MININT_VAL MININT
-// #define MININT_DBL ((double)MININT_VAL)
-// #define MAXINT_VAL MAXINT
-// #define MAXINT_DBL ((double)MAXINT_VAL)
-
 namespace eu
 {
+        // TODO: Go through Euphoria's documentation and impliment every routine (function and procedure)
         int Version(void) { return 0; } // Version still in Alpha.
         void Abort(int error_level) { UserCleanup(error_level); }
         
-        class base_class
+        class base_class // used to be inherited by other classes.
         {
+        protected:
+                object obj; // protected in order to be inherited by other classes.
         public:
-                object obj;
-                
                 void Print(int stringflag) {
                         if (IS_ATOM_INT(obj))
                         {
@@ -109,7 +114,7 @@ namespace eu
                                 }
                                 else
                                 {
-					object_ptr ob = SEQ_PTR(obj)->base;
+                                        object_ptr ob = SEQ_PTR(obj)->base;
                                         printf("{");
                                         if (len > 0) {
                                                 printf("[1]");
@@ -129,10 +134,14 @@ namespace eu
                 }
         };
         
+        
         class Integer : public base_class
         {
-        public:
+        friend class Atom;
+        friend class Object;
+        private:
                 long type() { return E_INTEGER; }
+        public:
                 // union {
                 //         object obj;
                 //         //s1_ptr seq;
@@ -154,10 +163,14 @@ namespace eu
         };
         
         
+        
         class Dbl : public base_class
         {
-        public:
+        friend class Atom;
+        friend class Object;
+        private:
                 long type() { return E_DBL; }
+        public:
                 // union {
                 //         object obj;
                 //         //s1_ptr s;
@@ -186,8 +199,10 @@ namespace eu
         
         class Atom : public base_class // public Integer, public Dbl
         {
-        public:
+        friend class Object;
+        private:
                 long type() { return E_ATOM; }
+        public:
                 // union {
                 //         object obj;
                 //         //s1_ptr s;
@@ -210,40 +225,42 @@ namespace eu
                 Atom operator * (const Atom& param) { Atom ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(param.obj)) { ret.obj = multiply(obj, param.obj); return ret; } ret.obj = (object)NewDouble(GET_DOUBLE(obj) * GET_DOUBLE(param.obj)); return ret; }
                 Atom operator / (const Atom& param) { Atom ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(param.obj)) { ret.obj = divide(obj, param.obj); return ret; } else { Atom a(NEW_DOUBLE(obj)), b(NEW_DOUBLE(param.obj)); ret.obj = Ddivide(DBL_PTR(a.obj), DBL_PTR(b.obj)); return ret; } }
                 
+                // Boolean atom functions:
+                Integer A_unot(Atom a) { Integer ret; if(IS_ATOM_INT(a.obj)) { ret.obj = unot(a.obj); return ret; } else { ret.obj = Dnot(DBL_PTR(a.obj)); return ret; } }
+                Integer A_equals(Atom a, Atom b) { Integer ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = equals(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dequals(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
+                Integer A_lessThan(Atom a, Atom b) { Integer ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = less(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dless(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
+                Integer A_greaterThan(Atom a, Atom b) { Integer ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = greater(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dgreater(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
+                Integer A_notEqual(Atom a, Atom b) { Integer ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = noteq(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dnoteq(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
+                Integer A_lessThanOrEqual(Atom a, Atom b) { Integer ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = lesseq(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dlesseq(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
+                Integer A_greaterThanOrEqual(Atom a, Atom b) { Integer ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = greatereq(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dgreatereq(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
+                Integer A_logicaland(Atom a, Atom b) { Integer ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = Band(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dand(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
+                Integer A_logicalor(Atom a, Atom b) { Integer ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = Bor(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dor(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
+                Integer A_logicalxor(Atom a, Atom b) { Integer ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = Bxor(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dxor(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
+                // Regular atom functions:
+                Atom A_remainder(Atom a, Atom b) { Atom ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = eremainder(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dremainder(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
+                Atom A_power(Atom a, Atom b) { Atom ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = power(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dpower(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
+                // 32-bit atom functions:
+                Atom A_and_bits(Atom a, Atom b) { Atom ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = and_bits(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dand_bits(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
+                Atom A_or_bits(Atom a, Atom b) { Atom ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = or_bits(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dor_bits(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
+                Atom A_xor_bits(Atom a, Atom b) { Atom ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = xor_bits(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dxor_bits(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
+                // Unary Ops
+                Atom A_not_bits(Atom a) { Atom ret; if(IS_ATOM_INT(a.obj)) { ret.obj = not_bits(a.obj); return ret; } else { ret.obj = Dnot_bits(DBL_PTR(a.obj)); return ret; } }
+                Atom A_uminus(Atom a) { Atom ret; if(IS_ATOM_INT(a.obj)) { ret.obj = uminus(a.obj); return ret; } else { ret.obj = Duminus(DBL_PTR(a.obj)); return ret; } }
+                Atom A_sqrt(Atom a) { Atom ret; if(IS_ATOM_INT(a.obj)) { ret.obj = e_sqrt(a.obj); return ret; } else { ret.obj = De_sqrt(DBL_PTR(a.obj)); return ret; } }
+                Atom A_sin(Atom a) { Atom ret; if(IS_ATOM_INT(a.obj)) { ret.obj = e_sin(a.obj); return ret; } else { ret.obj = De_sin(DBL_PTR(a.obj)); return ret; } }
+                Atom A_cos(Atom a) { Atom ret; if(IS_ATOM_INT(a.obj)) { ret.obj = e_cos(a.obj); return ret; } else { ret.obj = De_cos(DBL_PTR(a.obj)); return ret; } }
+                Atom A_tan(Atom a) { Atom ret; if(IS_ATOM_INT(a.obj)) { ret.obj = e_tan(a.obj); return ret; } else { ret.obj = De_tan(DBL_PTR(a.obj)); return ret; } }
+                Atom A_arctan(Atom a) { Atom ret; if(IS_ATOM_INT(a.obj)) { ret.obj = e_arctan(a.obj); return ret; } else { ret.obj = De_arctan(DBL_PTR(a.obj)); return ret; } }
+                Atom A_log(Atom a) { Atom ret; if(IS_ATOM_INT(a.obj)) { ret.obj = e_log(a.obj); return ret; } else { ret.obj = De_log(DBL_PTR(a.obj)); return ret; } }
+                Atom A_floor(Atom a) { Atom ret; if(IS_ATOM_INT(a.obj)) { ret.obj = e_floor(a.obj); return ret; } else { ret.obj = De_floor(DBL_PTR(a.obj)); return ret; } }
         };
-        // Boolean atom functions:
-        Integer A_unot(Atom a) { Integer ret; if(IS_ATOM_INT(a.obj)) { ret.obj = unot(a.obj); return ret; } else { ret.obj = Dnot(DBL_PTR(a.obj)); return ret; } }
-        Integer A_equals(Atom a, Atom b) { Integer ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = equals(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dequals(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
-        Integer A_lessThan(Atom a, Atom b) { Integer ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = less(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dless(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
-        Integer A_greaterThan(Atom a, Atom b) { Integer ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = greater(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dgreater(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
-        Integer A_notEqual(Atom a, Atom b) { Integer ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = noteq(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dnoteq(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
-        Integer A_lessThanOrEqual(Atom a, Atom b) { Integer ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = lesseq(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dlesseq(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
-        Integer A_greaterThanOrEqual(Atom a, Atom b) { Integer ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = greatereq(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dgreatereq(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
-        Integer A_logicaland(Atom a, Atom b) { Integer ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = Band(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dand(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
-        Integer A_logicalor(Atom a, Atom b) { Integer ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = Bor(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dor(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
-        Integer A_logicalxor(Atom a, Atom b) { Integer ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = Bxor(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dxor(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
-        // Regular atom functions:
-        Atom A_remainder(Atom a, Atom b) { Atom ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = eremainder(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dremainder(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
-        Atom A_power(Atom a, Atom b) { Atom ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = power(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dpower(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
-        // 32-bit atom functions:
-        Atom A_and_bits(Atom a, Atom b) { Atom ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = and_bits(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dand_bits(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
-        Atom A_or_bits(Atom a, Atom b) { Atom ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = or_bits(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dor_bits(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
-        Atom A_xor_bits(Atom a, Atom b) { Atom ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = xor_bits(a.obj, b.obj); return ret; } else { Atom s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dxor_bits(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } }
-        // Unary Ops
-        Atom A_not_bits(Atom a) { Atom ret; if(IS_ATOM_INT(a.obj)) { ret.obj = not_bits(a.obj); return ret; } else { ret.obj = Dnot_bits(DBL_PTR(a.obj)); return ret; } }
-        Atom A_uminus(Atom a) { Atom ret; if(IS_ATOM_INT(a.obj)) { ret.obj = uminus(a.obj); return ret; } else { ret.obj = Duminus(DBL_PTR(a.obj)); return ret; } }
-        Atom A_sqrt(Atom a) { Atom ret; if(IS_ATOM_INT(a.obj)) { ret.obj = e_sqrt(a.obj); return ret; } else { ret.obj = De_sqrt(DBL_PTR(a.obj)); return ret; } }
-        Atom A_sin(Atom a) { Atom ret; if(IS_ATOM_INT(a.obj)) { ret.obj = e_sin(a.obj); return ret; } else { ret.obj = De_sin(DBL_PTR(a.obj)); return ret; } }
-        Atom A_cos(Atom a) { Atom ret; if(IS_ATOM_INT(a.obj)) { ret.obj = e_cos(a.obj); return ret; } else { ret.obj = De_cos(DBL_PTR(a.obj)); return ret; } }
-        Atom A_tan(Atom a) { Atom ret; if(IS_ATOM_INT(a.obj)) { ret.obj = e_tan(a.obj); return ret; } else { ret.obj = De_tan(DBL_PTR(a.obj)); return ret; } }
-        Atom A_arctan(Atom a) { Atom ret; if(IS_ATOM_INT(a.obj)) { ret.obj = e_arctan(a.obj); return ret; } else { ret.obj = De_arctan(DBL_PTR(a.obj)); return ret; } }
-        Atom A_log(Atom a) { Atom ret; if(IS_ATOM_INT(a.obj)) { ret.obj = e_log(a.obj); return ret; } else { ret.obj = De_log(DBL_PTR(a.obj)); return ret; } }
-        Atom A_floor(Atom a) { Atom ret; if(IS_ATOM_INT(a.obj)) { ret.obj = e_floor(a.obj); return ret; } else { ret.obj = De_floor(DBL_PTR(a.obj)); return ret; } }
         
         class Sequence : public base_class
         {
-        public:
+        friend class Object;
+        private:
                 long type() { return E_SEQUENCE; }
+        public:
                 // union {
                 //         object obj;
                 //         //s1_ptr s;
@@ -311,54 +328,51 @@ namespace eu
                 void prepend(object a) { Ref(a) Prepend(&obj, obj, a); }
                 void append(object a) { Ref(a) Append(&obj, obj, a); }
                 
-                
-        };
-        void S_prepend(Sequence target, Sequence src, object a)
-        {
-                Ref(a)
-                Prepend(&(target.obj), src.obj, a);
-        }
-        void S_append(Sequence target, Sequence src, object a)
-        {
-                Ref(a)
-                Append(&(target.obj), src.obj, a);
-        }
-        void S_concat(Sequence target, object a, object b)
-        {
-                bool is_seq_a = IS_DBL_OR_SEQUENCE(a) && IS_SEQUENCE(a);
-                bool is_seq_b = IS_DBL_OR_SEQUENCE(b) && IS_SEQUENCE(b);
-                if (is_seq_a && (!is_seq_b))
-                {
-                        Ref(b)
-                        Append(&(target.obj), a, b);
-                }
-                else if ((!is_seq_a) && is_seq_b)
+                void S_prepend(Sequence target, Sequence src, object a)
                 {
                         Ref(a)
-                        Prepend(&(target.obj), b, a);
+                        Prepend(&(target.obj), src.obj, a);
                 }
-                else
+                void S_append(Sequence target, Sequence src, object a)
                 {
-                        Concat(&(target.obj), a, (s1_ptr)b);
+                        Ref(a)
+                        Append(&(target.obj), src.obj, a);
                 }
-        }
-        void S_concatN(Sequence target, Sequence source)
-        {
-                s1_ptr p = SEQ_PTR(source.obj);
-                Concat_N(&(target.obj), p->base, p->length);
-        }
-        Sequence S_repeat(object item, object repcount)
-        {
-                Sequence ret;
-                ret.obj = Repeat(item, repcount);
-                return ret;
-        }
-        
+                void S_concat(Sequence target, object a, object b)
+                {
+                        bool is_seq_a = IS_DBL_OR_SEQUENCE(a) && IS_SEQUENCE(a);
+                        bool is_seq_b = IS_DBL_OR_SEQUENCE(b) && IS_SEQUENCE(b);
+                        if (is_seq_a && (!is_seq_b))
+                        {
+                                Ref(b)
+                                Append(&(target.obj), a, b);
+                        }
+                        else if ((!is_seq_a) && is_seq_b)
+                        {
+                                Ref(a)
+                                Prepend(&(target.obj), b, a);
+                        }
+                        else
+                        {
+                                Concat(&(target.obj), a, (s1_ptr)b);
+                        }
+                }
+                void S_concatN(Sequence target, Sequence source)
+                {
+                        s1_ptr p = SEQ_PTR(source.obj);
+                        Concat_N(&(target.obj), p->base, p->length);
+                }
+                        
+        };
         
         class Object : public base_class
         {
-        public:
+        friend class Sequence;
+        friend class Integer;
+	friend class Atom;
+        private:
                 long type() { return E_OBJECT; }
+        public:
                 // union {
                 //         object obj;
                 //         //s1_ptr seq_ptr;
@@ -375,16 +389,22 @@ namespace eu
                 void TryDoubleToInt(void) { if (IS_DBL_OR_SEQUENCE(obj) && IS_ATOM_DBL(obj)) { obj = DoubleToInt(obj); } }
                 char GetChar() { return doChar(obj); } // aborts if type is sequence.
                 
+                //here
                 
+                Integer E_compare(Object a, Object b) { Integer ret; ret.obj = compare(a.obj, b.obj); return ret; }
+                Integer E_find(Object a, Sequence b) { Integer ret; ret.obj = find(a.obj, (s1_ptr)b.obj); return ret; }
+                Integer E_match(Sequence a, Sequence b) { Integer ret; if (SEQ_PTR(a.obj)->length > 0) { ret.obj = e_match((s1_ptr)a.obj, (s1_ptr)b.obj); } else { ret.obj = -1; } return ret; }
+                
+                Integer E_find_from(Object a, Sequence b, object c) { Integer ret; ret.obj = find_from(a.obj, (s1_ptr)b.obj, c); return ret; }
+                Integer E_match_from(Sequence a, Sequence b, object c) { Integer ret; if (SEQ_PTR(a.obj)->length > 0) { ret.obj = e_match_from((s1_ptr)a.obj, (s1_ptr)b.obj, c); } else { ret.obj = -1; } return ret; }
+                
+                Sequence S_repeat(Object item, object repcount)
+                {
+                        Sequence ret;
+                        ret.obj = Repeat(item.obj, repcount);
+                        return ret;
+                }
                 
         };
-        
-        Integer E_compare(Object a, Object b) { Integer ret; ret.obj = compare(a.obj, b.obj); return ret; }
-        Integer E_find(Object a, Sequence b) { Integer ret; ret.obj = find(a.obj, (s1_ptr)b.obj); return ret; }
-        Integer E_match(Sequence a, Sequence b) { Integer ret; if (SEQ_PTR(a.obj)->length > 0) { ret.obj = e_match((s1_ptr)a.obj, (s1_ptr)b.obj); } else { ret.obj = -1; } return ret; }
-        
-        Integer E_find_from(Object a, Sequence b, object c) { Integer ret; ret.obj = find_from(a.obj, (s1_ptr)b.obj, c); return ret; }
-        Integer E_match_from(Sequence a, Sequence b, object c) { Integer ret; if (SEQ_PTR(a.obj)->length > 0) { ret.obj = e_match_from((s1_ptr)a.obj, (s1_ptr)b.obj, c); } else { ret.obj = -1; } return ret; }
-        
-        
+	
 }
