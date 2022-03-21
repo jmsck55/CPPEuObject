@@ -139,14 +139,14 @@ s1_ptr NewS1(long size)
     return(s1);
 }
 
-object NewString(unsigned char *s)
+object NewString(const char *s)
 /* create a new string sequence */
 {
     int len;
     object_ptr obj_ptr;
     s1_ptr c1;
 
-    len = strlen((char*)s);
+    len = strlen(s);
     c1 = NewS1((long)len);
     obj_ptr = (object_ptr)c1->base;
     if (len > 0) {

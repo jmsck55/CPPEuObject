@@ -20,7 +20,7 @@ void SpaceMessage();
 char *EMalloc(unsigned long nbytes);
 char *ERealloc(char *orig, unsigned long newsize);
 s1_ptr NewS1(long size);
-object NewString(unsigned char *s);
+object NewString(const char *s);
 s1_ptr SequenceCopy(register s1_ptr a);
 object NewDouble(double d);
 object Dadd(d_ptr a, d_ptr b);
