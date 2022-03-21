@@ -193,6 +193,7 @@ namespace eu
         friend class Sequence;
         private:
                 long const type() { return E_INTEGER; }
+                //Integer(object ob) { obj = ob; }
         public:
                 Integer() { obj = NOVALUE; } // default constructor
                 ~Integer() { DeRefObj(obj); obj = NOVALUE; } // default destructor
@@ -201,7 +202,6 @@ namespace eu
                 //Integer (Integer&& x) { obj = x.obj; x.obj = NOVALUE; } // move constructor
                 //Integer& operator= (Integer&& x) { DeRefObj(obj); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
                 
-                //Integer(object ob) { obj = ob; }
                 Integer(int val) { obj = CHECK_INTEGER(val) ? val : NOVALUE; }
                 void NewInteger(int val) { DeRefObj(obj); obj = CHECK_INTEGER(val) ? val : NOVALUE; }
                 int GetInteger(void) { return CHECK_INTEGER(obj) ? obj : NOVALUE; }
@@ -219,6 +219,7 @@ namespace eu
         friend class Object;
         private:
                 long const type() { return E_DBL; }
+                //Dbl(object ob) { obj = ob; }
         public:
                 Dbl() { obj = NOVALUE; } // default constructor
                 ~Dbl() { DeRefObj(obj); obj = NOVALUE; } // default destructor
@@ -227,7 +228,6 @@ namespace eu
                 //Dbl (Dbl&& x) { obj = x.obj; x.obj = NOVALUE; } // move constructor
                 //Dbl& operator= (Dbl&& x) { DeRefObj(obj); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
                 
-                //Dbl(object ob) { obj = ob; }
                 Dbl(d_ptr ptr) { ++(ptr->ref); obj = MAKE_DBL(ptr); }
                 Dbl(double d) { obj = NewDouble(d); }
                 void NewDbl(double d) { DeRefObj(obj); obj = NewDouble(d); }
@@ -246,6 +246,7 @@ namespace eu
         friend class Object;
         private:
                 long const type() { return E_ATOM; }
+                Atom(object ob) { obj = ob; }
         public:
                 Atom() { obj = NOVALUE; } // default constructor
                 ~Atom() { DeRefObj(obj); obj = NOVALUE; } // default destructor
@@ -254,7 +255,6 @@ namespace eu
                 //Atom (Atom&& x) { obj = x.obj; x.obj = NOVALUE; } // move constructor
                 //Atom& operator= (Atom&& x) { DeRefObj(obj); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
                 
-                Atom(object ob) { obj = ob; }
                 //Atom(d_ptr ptr) { ++(ptr->ref); obj = MAKE_DBL(ptr); }
                 Atom(double d) { obj = IS_DOUBLE_TO_INT(d) ? (object)d : NewDouble(d); }
                 Atom(int val) { obj = CHECK_INTEGER(val) ? val : NewDouble((double)val); }
@@ -324,6 +324,7 @@ namespace eu
         friend class Object;
         private:
                 long const type() { return E_SEQUENCE; }
+                Sequence(object ob) { obj = ob; }
         public:
                 Sequence() { obj = NOVALUE; } // default constructor
                 ~Sequence() { DeRefObj(obj); obj = NOVALUE; } // default destructor
@@ -332,7 +333,6 @@ namespace eu
                 //Sequence (Sequence&& x) { obj = x.obj; x.obj = NOVALUE; } // move constructor
                 //Sequence& operator= (Sequence&& x) { DeRefObj(obj); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
                 
-                Sequence(object ob) { obj = ob; }
                 //Sequence(s1_ptr ptr) { ++(ptr->ref); obj = MAKE_SEQ(ptr); }
                 Sequence(const char * str) { obj = NewString(str); }
                 void NewStr(const char * str) { DeRefObj(obj); obj = NewString(str); }
@@ -399,6 +399,7 @@ namespace eu
         friend class Atom;
         private:
                 long const type() { return E_OBJECT; }
+                Object(object ob) { obj = ob; }
         public:
                 Object() { obj = NOVALUE; } // default constructor
                 ~Object() { DeRefObj(obj); obj = NOVALUE; } // default destructor
@@ -407,7 +408,6 @@ namespace eu
                 //Object(Object&& x) { obj = x.obj; x.obj = NOVALUE; } // move constructor
                 //Object& operator= (Object&& x) { DeRefObj(obj); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
                 
-                Object(object ob) { obj = ob; }
                 char GetChar() { return doChar(obj); } // aborts if type is sequence.
                 
                 

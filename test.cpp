@@ -58,7 +58,7 @@ int main()
     puts("\n-- More examples:");
     
     s1.NewStr("Hi");
-    b = *(eu::Object*)&s1; // convert a "Sequence" to an "Object".
+    b = s1.GetObject(); // convert a "Sequence" to an "Object".
     s2 = eu::S_repeat(b, (object)2);
     
     str = s1.GetCharStr();
