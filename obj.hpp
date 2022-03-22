@@ -87,20 +87,20 @@ object RefRet(object ret)
 
 object sq(unsigned int n, ... ) {
         // Make a sequence with 'n' elements, each element must be an object.
-        object val;
+        object ob;
         object_ptr obj_ptr;
         s1_ptr ptr = NewS1(n);
         obj_ptr = ptr->base;
         va_list v1;
         va_start(v1, n);
         while (n-- > 0) {
-                val = va_arg(v1, object);
-                RefObj(val);
-                *(++obj_ptr) = val;
+                ob = va_arg(v1, object);
+                RefObj(ob);
+                *(++obj_ptr) = ob;
         }
         va_end(v1);
-        val = MAKE_SEQ(ptr);
-        return val;
+        ob = MAKE_SEQ(ptr);
+        return ob;
 }
 
 namespace eu

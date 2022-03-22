@@ -11,6 +11,14 @@
 
 #pragma align(4)
 
+//#define DONE_DEBUGGING
+
+#ifdef DONE_DEBUGGING
+#define ERUNTIME
+#define DONT_USE_RTFATAL
+#define RTFatal(remove_error_message) SimpleRTFatal("")
+#endif
+
 #define FALSE 0
 #define TRUE 1
 

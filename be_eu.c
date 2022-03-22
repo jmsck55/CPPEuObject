@@ -67,6 +67,7 @@ void SimpleRTFatal(char *msg)
     Cleanup(1); 
 }
 
+#ifndef DONT_USE_RTFATAL
 void RTFatal(char *msg)
 /* handle run time fatal errors */
 {
@@ -77,6 +78,7 @@ void RTFatal(char *msg)
 //#endif  
 	SimpleRTFatal(msg);
 }
+#endif
 
 //From: be_alloc.c
 
@@ -1953,9 +1955,11 @@ void AssignSlice(object start, object end, s1_ptr val)
 	val = SEQ_PTR(val);
 	v_elem = val->base+1;
 	if (val->length != length) {
+#ifndef DONT_USE_RTFATAL
 	    sprintf(TempBuff, 
 	    "lengths do not match on assignment to slice (%ld != %ld)",
 	    length, val->length);
+#endif
 	    RTFatal(TempBuff);
 	}
 	while (TRUE) {
@@ -2058,7 +2062,9 @@ long find_from(object a, s1_ptr b, object c)
     // we allow c to be $+1, just as we allow the lower limit
     // of a slice to be $+1, i.e. the empty sequence
     if (c < 1 || c > length+1) {
+#ifndef DONT_USE_RTFATAL
 	sprintf(TempBuff, "third argument of find_from() is out of bounds (%ld)", c);
+#endif
 	RTFatal(TempBuff);
     }
 		
@@ -2149,7 +2155,9 @@ long e_match_from(s1_ptr a, s1_ptr b, object c)
     // we allow c to be $+1, just as we allow the lower limit
     // of a slice to be $+1, i.e. the empty sequence
     if (c < 1 || c > lengthb+1) {
+#ifndef DONT_USE_RTFATAL
 	sprintf(TempBuff, "third argument of match_from() is out of bounds (%ld)", c);
+#endif
 	RTFatal(TempBuff);
     }
 

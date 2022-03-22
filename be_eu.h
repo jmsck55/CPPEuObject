@@ -15,7 +15,9 @@ void screen_output(FILE *f, char *out_string);
 void Cleanup(int status);
 void UserCleanup(int status);
 void SimpleRTFatal(char *msg);
+#ifndef DONT_USE_RTFATAL
 void RTFatal(char *msg);
+#endif
 void SpaceMessage();
 char *EMalloc(unsigned long nbytes);
 char *ERealloc(char *orig, unsigned long newsize);
