@@ -8,9 +8,6 @@
 
 // be_runtime.c
 
-//void de_reference(s1_ptr);
-//void de_reference_i(s1_ptr);
-
 void screen_output(FILE *f, char *out_string);
 void Cleanup(int status);
 void UserCleanup(int status);

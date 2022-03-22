@@ -1,5 +1,5 @@
 //
-// Obj.hpp
+// obj.hpp
 // Classfile for EuObject
 
 #pragma once
@@ -10,6 +10,18 @@ extern "C" {
         #include "be_eu.h"
 }
 
+#define MIN_SAFE_CHAR 32
+#define MAX_SAFE_CHAR 127
+
+#define CHECK_INTEGER(val) (((val) > NOVALUE) && ((val) < TOO_BIG_INT))
+#define IS_DOUBLE_TO_INT(temp_dbl) (floor(temp_dbl) == temp_dbl && temp_dbl <= MAXINT_DBL && temp_dbl >= MININT_DBL)
+#define GET_DOUBLE(ob) (double)(IS_ATOM_INT(ob) ? (double)ob : DBL_PTR(ob)->dbl)
+#define NEW_DOUBLE(ob) (object)(IS_ATOM_INT(ob) ? NewDouble((double)ob) : RefRet(ob))
+#define GET_RO_ATOM_VAL(ob) (object)(IS_ATOM_INT(ob) ? ob : DoubleToInt(ob))
+
+namespace eu
+{
+
 extern "C" object *rhs_slice_target;
 extern "C" s1_ptr *assign_slice_seq;
 
@@ -17,105 +29,144 @@ extern "C" s1_ptr *assign_slice_seq;
 // typedef struct d atom;
 // typedef struct s1 sequence;
 
-#define MIN_SAFE_CHAR 32
-#define MAX_SAFE_CHAR 126
-
 // void RefObj(object ob);
 // void DeRefObj(object ob);
 // int IS_SEQ_STRING(object ob);
-
-void RefObj(object ob)
-{
-        Ref(ob)
-        if (IS_SEQUENCE(ob))
+        
+        void RefObj(object ob)
         {
-                object_ptr obj_ptr = SEQ_PTR(ob)->base;
-                while (*(++obj_ptr) != NOVALUE)
+                Ref(ob)
+                if (IS_SEQUENCE(ob))
                 {
-                        RefObj(*obj_ptr);
+                        object_ptr obj_ptr = SEQ_PTR(ob)->base;
+                        while (*(++obj_ptr) != NOVALUE)
+                        {
+                                RefObj(*obj_ptr);
+                        }
                 }
         }
-}
-
-void DeRefObj(object ob)
-{
-        if (IS_SEQUENCE(ob))
+        
+        void DeRefObj(object ob)
         {
-                object_ptr obj_ptr = SEQ_PTR(ob)->base;
-                while (*(++obj_ptr) != NOVALUE)
+                if (IS_SEQUENCE(ob))
                 {
-                        DeRefObj(*obj_ptr);
+                        object_ptr obj_ptr = SEQ_PTR(ob)->base;
+                        while (*(++obj_ptr) != NOVALUE)
+                        {
+                                DeRefObj(*obj_ptr);
+                        }
                 }
+                DeRef(ob)
         }
-        DeRef(ob)
-}
-
-int IS_SEQ_STRING(object ob, int minChar = MIN_SAFE_CHAR, int maxChar = MAX_SAFE_CHAR)
-{
-        object_ptr elem;
-        long len;
-        ob = (object)SEQ_PTR(ob);
-        elem = ((s1_ptr)ob)->base;
-        len = ((s1_ptr)ob)->length;
-        while (len-- > 0)
+        
+        int IS_SEQ_STRING(object ob, int minChar = MIN_SAFE_CHAR, int maxChar = MAX_SAFE_CHAR)
         {
-                ob = *(++elem);
-                if (IS_DBL_OR_SEQUENCE(ob) && IS_ATOM_DBL(ob))
+                object_ptr elem;
+                long len;
+                ob = (object)SEQ_PTR(ob);
+                elem = ((s1_ptr)ob)->base;
+                len = ((s1_ptr)ob)->length;
+                while (len-- > 0)
                 {
-                        ob = DoubleToInt(ob);
+                        ob = *(++elem);
+                        if (IS_DBL_OR_SEQUENCE(ob) && IS_ATOM_DBL(ob))
+                        {
+                                ob = DoubleToInt(ob);
+                        }
+                        if (!IS_ATOM_INT(ob) || (ob > maxChar) || (ob < minChar))
+                        {
+                                return FALSE;
+                        }
                 }
-                if (!IS_ATOM_INT(ob) || (ob > maxChar) || (ob < minChar))
-                {
-                        return FALSE;
+                return TRUE;
+        }
+        
+        // Assumes ob is an atom, and not an encoded pointer to s1.
+        object RefRet(object ret)
+        {
+                RefDS(ret);
+                return ret;
+        }
+        
+        object seq(unsigned int n, ... ) {
+                // Make a sequence with 'n' elements, each element must be an object.
+                object ob;
+                object_ptr obj_ptr;
+                s1_ptr ptr = NewS1(n);
+                obj_ptr = ptr->base;
+                va_list v1;
+                va_start(v1, n);
+                while (n-- > 0) {
+                        ob = va_arg(v1, object);
+                        RefObj(ob);
+                        *(++obj_ptr) = ob;
                 }
+                va_end(v1);
+                ob = MAKE_SEQ(ptr);
+                return ob;
         }
-        return TRUE;
-}
-
-#define CHECK_INTEGER(val) (((val) > NOVALUE) && ((val) < TOO_BIG_INT))
-#define IS_DOUBLE_TO_INT(temp_dbl) (floor(temp_dbl) == temp_dbl && temp_dbl <= MAXINT_DBL && temp_dbl >= MININT_DBL)
-
-// Assumes ob is an atom, and not an encoded pointer to s1.
-object RefRet(object ret)
-{
-        RefDS(ret);
-        return ret;
-}
-#define GET_DOUBLE(ob) (double)(IS_ATOM_INT(ob) ? (double)ob : DBL_PTR(ob)->dbl)
-#define NEW_DOUBLE(ob) (object)(IS_ATOM_INT(ob) ? NewDouble((double)ob) : RefRet(ob))
-#define GET_RO_ATOM_VAL(ob) (object)(IS_ATOM_INT(ob) ? ob : DoubleToInt(ob))
-
-object sq(unsigned int n, ... ) {
-        // Make a sequence with 'n' elements, each element must be an object.
-        object ob;
-        object_ptr obj_ptr;
-        s1_ptr ptr = NewS1(n);
-        obj_ptr = ptr->base;
-        va_list v1;
-        va_start(v1, n);
-        while (n-- > 0) {
-                ob = va_arg(v1, object);
-                RefObj(ob);
-                *(++obj_ptr) = ob;
-        }
-        va_end(v1);
-        ob = MAKE_SEQ(ptr);
-        return ob;
-}
-
-namespace eu
-{
+        
         // TODO: Go through Euphoria's documentation and impliment every routine (function and procedure)
         int Version(void) { return 0; } // Version still in Alpha.
         void Abort(int error_level) { UserCleanup(error_level); }
         
+        //here.
+        
         class base_class // used to be inherited by other classes.
         {
-        protected:
-                object obj; // protected in order to be inherited by other classes.
+        friend class Object;
+        friend class Integer;
+        friend class Atom;
+        friend class Sequence;
+        friend class Dbl;
+        private: // used by friend functions/classes, not inherited.
+                long const type() { return NULL; }
+        protected: // protected in order to be inherited by other classes.
+                object obj;
+                object GetObject() { return obj; }
+#ifndef DONE_DEBUGGING
+		//long etype;
+		//union {
+		//	s1_ptr sptr;
+		//	d_ptr dptr;
+		//};
+		//s1_ptr GetSeqPtr() { return SEQ_PTR(obj); }
+		//d_ptr GetDblPtr() { return DBL_PTR(obj); }
+	public:
+		void ShowDebug() {
+			int etype = IS_DBL_OR_SEQUENCE(obj) + IS_SEQUENCE(obj);
+			int count = 0;
+			int len = 0;
+			s1_ptr ptr = NULL;
+			if (etype > 0)
+			{
+				ptr = SEQ_PTR(obj);
+				count = ptr->ref;
+				if (etype > 1)
+				{
+					etype += IS_SEQ_STRING(obj, MININT_VAL, MAXINT_VAL) + IS_SEQ_STRING(obj, 1, 127);
+					len = ptr->length;
+				}
+			}
+			printf("DEBUG: 0x%x:0x%x etype=%d, count=%d, length=%d, value=", (unsigned long)this, (unsigned long)ptr, etype, count, len);
+			println(1, 2);
+		}
+#endif
         public:
                 base_class() { obj = NOVALUE; } // default constructor
                 ~base_class() { DeRefObj(obj); obj = NOVALUE; } // default destructor
+                base_class(const base_class& x) { obj = x.obj; RefObj(obj); } // copy constructor
+                //base_class(const object& x) { obj = x; RefObj(obj); }
+                //base_class(object& x) { obj = x; RefObj(obj); }
+                //base_class(const object x) { obj = x; RefObj(obj); }
+                base_class(object x) { obj = x; RefObj(obj); }
+                base_class& operator= (const base_class& x)
+                {
+                        DeRefObj(obj);
+                        obj = x.obj;
+                        RefObj(obj);
+                        return *this;
+                }
                 base_class& operator= (const object& x)
                 {
                         DeRefObj(obj);
@@ -123,63 +174,70 @@ namespace eu
                         RefObj(obj);
                         return *this;
                 }
-                object GetObject() { return obj; }
-                void print(int stringflag = 0, int debugflag = 0, const char atomformat[] = "%g", int forceint = 0)
-		{
-			if (IS_ATOM_INT(obj) or IS_ATOM_DBL(obj))
-			{
+                void print(int stringflag = 0, int debugflag = 0, const char atomformat[] = "%.17g", int forceint = 0)
+                {
+                        if (IS_ATOM_INT(obj) or IS_ATOM_DBL(obj))
+                        {
+				//object d = DoubleToInt(obj);
 				double a = GET_DOUBLE(obj);
-				if (forceint) {
-					printf(atomformat, (int)a);
-				}
-				else {
-					printf(atomformat, a);
-				}
-				if (stringflag == 1)
+                                if (forceint) {
+                                        printf(atomformat, (int)a);
+                                }
+                                else {
+                                        printf(atomformat, a);
+                                }
+				if (floor(a) == a)
 				{
-					char ch = doChar(obj);
-					if ((ch <= MAX_SAFE_CHAR) && (ch >= MIN_SAFE_CHAR))
+					if (debugflag >= 2 && a <= MAX_BITWISE_DBL && a >= MIN_BITWISE_DBL)
 					{
-						printf("'%c'", ch);
+						printf("(0x%x)", (unsigned long)a);
 					}
-				}
-			}
-			else if (IS_SEQUENCE(obj))
-			{
-				long len = SEQ_PTR(obj)->length;
-				if ((stringflag == 2) && IS_SEQ_STRING(obj, MIN_SAFE_CHAR, MAX_SAFE_CHAR))
-				{
-					char * str = (char *)malloc(len + 1);
-					MakeCString(str, obj);
-					printf("\"%s\"", str);
-					free(str);
-				}
-				else
-				{
-					object_ptr ob = SEQ_PTR(obj)->base;
-					printf("{");
-					if (len > 0) {
-						if (debugflag == 1) {
-							printf("[1]");
-						}
-						((base_class*)(++ob))->print(stringflag, debugflag, atomformat, forceint);
-						for (long i = 2; i <= len; i++) {
-							printf(", ");
-							if (debugflag == 1) {
-								printf("[%i]", (int)i);
-							}
-							((base_class*)(++ob))->print(stringflag, debugflag, atomformat, forceint);
+					if (stringflag >= 1)
+					{
+						char ch = doChar(obj);
+						if ((ch <= MAX_SAFE_CHAR) && (ch >= MIN_SAFE_CHAR))
+						{
+							printf("'%c'", ch);
 						}
 					}
-					printf("}");
 				}
-			}
-			else
-			{
-				printf("[NOVALUE]");
-			}
-		}
-                void println(int stringflag = 0, int debugflag = 0, const char atomformat[] = "%g", int forceint = 0) {
+                        }
+                        else if (IS_SEQUENCE(obj))
+                        {
+                                long len = SEQ_PTR(obj)->length;
+                                if ((stringflag >= 2) && IS_SEQ_STRING(obj, MIN_SAFE_CHAR, MAX_SAFE_CHAR))
+                                {
+                                        char * str = (char *)malloc(len + 1);
+                                        MakeCString(str, obj);
+                                        printf("\"%s\"", str);
+                                        free(str);
+                                }
+                                else
+                                {
+                                        object_ptr ob = SEQ_PTR(obj)->base;
+                                        printf("{");
+                                        if (len > 0) {
+                                                if (debugflag >= 1) {
+                                                        printf("[1]");
+                                                }
+                                                ((base_class*)(++ob))->print(stringflag, debugflag, atomformat, forceint);
+                                                for (long i = 2; i <= len; i++) {
+                                                        printf(", ");
+                                                        if (debugflag >= 1) {
+                                                                printf("[%i]", (int)i);
+                                                        }
+                                                        ((base_class*)(++ob))->print(stringflag, debugflag, atomformat, forceint);
+                                                }
+                                        }
+                                        printf("}");
+                                }
+                        }
+                        else
+                        {
+                                printf("[NOVALUE]");
+                        }
+                }
+                void println(int stringflag = 0, int debugflag = 0, const char atomformat[] = "%.17g", int forceint = 0) {
                         print(stringflag, debugflag, atomformat, forceint);
                         printf("\n");
                 }
@@ -193,12 +251,12 @@ namespace eu
         friend class Sequence;
         private:
                 long const type() { return E_INTEGER; }
-                //Integer(object ob) { obj = ob; }
+                Integer(object ob) { obj = ob; }
         public:
                 Integer() { obj = NOVALUE; } // default constructor
                 ~Integer() { DeRefObj(obj); obj = NOVALUE; } // default destructor
                 Integer(const Integer& x) { obj = x.obj; RefObj(obj); } // copy constructor
-                Integer& operator= (const Integer& x) { DeRefObj(obj); obj = x.obj; RefObj(obj); return *this; } // copy assignment
+                //Integer& operator= (const Integer& x) { DeRefObj(obj); obj = x.obj; RefObj(obj); return *this; } // copy assignment
                 //Integer (Integer&& x) { obj = x.obj; x.obj = NOVALUE; } // move constructor
                 //Integer& operator= (Integer&& x) { DeRefObj(obj); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
                 
@@ -219,12 +277,12 @@ namespace eu
         friend class Object;
         private:
                 long const type() { return E_DBL; }
-                //Dbl(object ob) { obj = ob; }
+                Dbl(object ob) { obj = ob; }
         public:
                 Dbl() { obj = NOVALUE; } // default constructor
                 ~Dbl() { DeRefObj(obj); obj = NOVALUE; } // default destructor
                 Dbl(const Dbl& x) { obj = x.obj; RefObj(obj); } // copy constructor
-                Dbl& operator= (const Dbl& x) { DeRefObj(obj); obj = x.obj; RefObj(obj); return *this; } // copy assignment
+                //Dbl& operator= (const Dbl& x) { DeRefObj(obj); obj = x.obj; RefObj(obj); return *this; } // copy assignment
                 //Dbl (Dbl&& x) { obj = x.obj; x.obj = NOVALUE; } // move constructor
                 //Dbl& operator= (Dbl&& x) { DeRefObj(obj); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
                 
@@ -251,11 +309,11 @@ namespace eu
                 Atom() { obj = NOVALUE; } // default constructor
                 ~Atom() { DeRefObj(obj); obj = NOVALUE; } // default destructor
                 Atom(const Atom& x) { obj = x.obj; RefObj(obj); } // copy constructor
-                Atom& operator= (const Atom& x) { DeRefObj(obj); obj = x.obj; RefObj(obj); return *this; } // copy assignment
+                //Atom& operator= (const Atom& x) { DeRefObj(obj); obj = x.obj; RefObj(obj); return *this; } // copy assignment
                 //Atom (Atom&& x) { obj = x.obj; x.obj = NOVALUE; } // move constructor
                 //Atom& operator= (Atom&& x) { DeRefObj(obj); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
                 
-                //Atom(d_ptr ptr) { ++(ptr->ref); obj = MAKE_DBL(ptr); }
+                Atom(d_ptr ptr) { ++(ptr->ref); obj = MAKE_DBL(ptr); }
                 Atom(double d) { obj = IS_DOUBLE_TO_INT(d) ? (object)d : NewDouble(d); }
                 Atom(int val) { obj = CHECK_INTEGER(val) ? val : NewDouble((double)val); }
                 
@@ -275,16 +333,16 @@ namespace eu
                 Atom operator / (const Atom& param) { Atom ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(param.obj)) { ret.obj = divide(obj, param.obj); return ret; } else { Atom a(NEW_DOUBLE(obj)), b(NEW_DOUBLE(param.obj)); ret.obj = Ddivide(DBL_PTR(a.obj), DBL_PTR(b.obj)); return ret; } }
                 
                 // Boolean atom functions: (To be made into operator's)
-                Integer A_equals(Atom b) { Integer ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(b.obj)) { ret.obj = equals(obj, b.obj); return ret; } else if (not (IS_SEQUENCE(obj) or IS_SEQUENCE(b.obj))) { Atom s(NEW_DOUBLE(obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dequals(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } RTFatal("Expected Atoms, but found a Sequence, in 'A_equals()'"); return ret; }
-                Integer A_lessThan(Atom b) { Integer ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(b.obj)) { ret.obj = less(obj, b.obj); return ret; } else if (not (IS_SEQUENCE(obj) or IS_SEQUENCE(b.obj))) { Atom s(NEW_DOUBLE(obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dless(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } RTFatal("Expected Atoms, but found a Sequence, in 'A_lessThan()'"); return ret; }
-                Integer A_greaterThan(Atom b) { Integer ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(b.obj)) { ret.obj = greater(obj, b.obj); return ret; } else if (not (IS_SEQUENCE(obj) or IS_SEQUENCE(b.obj))) { Atom s(NEW_DOUBLE(obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dgreater(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } RTFatal("Expected Atoms, but found a Sequence, in 'A_greaterThan()'"); return ret; }
-                Integer A_notEqual(Atom b) { Integer ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(b.obj)) { ret.obj = noteq(obj, b.obj); return ret; } else if (not (IS_SEQUENCE(obj) or IS_SEQUENCE(b.obj))) { Atom s(NEW_DOUBLE(obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dnoteq(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } RTFatal("Expected Atoms, but found a Sequence, in 'A_notEqual()'"); return ret; }
-                Integer A_lessThanOrEqual(Atom b) { Integer ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(b.obj)) { ret.obj = lesseq(obj, b.obj); return ret; } else if (not (IS_SEQUENCE(obj) or IS_SEQUENCE(b.obj))) { Atom s(NEW_DOUBLE(obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dlesseq(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } RTFatal("Expected Atoms, but found a Sequence, in 'A_lessThanOrEqual()'"); return ret; }
-                Integer A_greaterThanOrEqual(Atom b) { Integer ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(b.obj)) { ret.obj = greatereq(obj, b.obj); return ret; } else if (not (IS_SEQUENCE(obj) or IS_SEQUENCE(b.obj))) { Atom s(NEW_DOUBLE(obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dgreatereq(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } RTFatal("Expected Atoms, but found a Sequence, in 'A_greaterThanOrEqual()'"); return ret; }
-                Integer A_logicaland(Atom b) { Integer ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(b.obj)) { ret.obj = Band(obj, b.obj); return ret; } else if (not (IS_SEQUENCE(obj) or IS_SEQUENCE(b.obj))) { Atom s(NEW_DOUBLE(obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dand(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } RTFatal("Expected Atoms, but found a Sequence, in 'A_logicaland()'"); return ret; }
-                Integer A_logicalor(Atom b) { Integer ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(b.obj)) { ret.obj = Bor(obj, b.obj); return ret; } else if (not (IS_SEQUENCE(obj) or IS_SEQUENCE(b.obj))) { Atom s(NEW_DOUBLE(obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dor(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } RTFatal("Expected Atoms, but found a Sequence, in 'A_logicalor()'"); return ret; }
-                Integer A_logicalxor(Atom b) { Integer ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(b.obj)) { ret.obj = Bxor(obj, b.obj); return ret; } else if (not (IS_SEQUENCE(obj) or IS_SEQUENCE(b.obj))) { Atom s(NEW_DOUBLE(obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dxor(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } RTFatal("Expected Atoms, but found a Sequence, in 'A_logicalxor()'"); return ret; }
-                Integer A_logicalnot() { Integer ret; if(IS_ATOM_INT(obj)) { ret.obj = unot(obj); return ret; } else if (IS_ATOM_DBL(obj)) { ret.obj = Dnot(DBL_PTR(obj)); return ret; } RTFatal("Expected an Atom, but found a Sequence, in 'A_logicalnot()'"); return ret; }
+                object A_equals(Atom b) { if(IS_ATOM_INT(obj) && IS_ATOM_INT(b.obj)) { return equals(obj, b.obj); } else if (not (IS_SEQUENCE(obj) or IS_SEQUENCE(b.obj))) { Atom s(NEW_DOUBLE(obj)), t(NEW_DOUBLE(b.obj)); return Dequals(DBL_PTR(s.obj), DBL_PTR(t.obj)); } RTFatal("Expected Atoms, but found a Sequence, in 'A_equals()'"); return NOVALUE; }
+                object A_lessThan(Atom b) { if(IS_ATOM_INT(obj) && IS_ATOM_INT(b.obj)) { return less(obj, b.obj); } else if (not (IS_SEQUENCE(obj) or IS_SEQUENCE(b.obj))) { Atom s(NEW_DOUBLE(obj)), t(NEW_DOUBLE(b.obj)); return Dless(DBL_PTR(s.obj), DBL_PTR(t.obj)); } RTFatal("Expected Atoms, but found a Sequence, in 'A_lessThan()'"); return NOVALUE; }
+                object A_greaterThan(Atom b) { if(IS_ATOM_INT(obj) && IS_ATOM_INT(b.obj)) { return greater(obj, b.obj); } else if (not (IS_SEQUENCE(obj) or IS_SEQUENCE(b.obj))) { Atom s(NEW_DOUBLE(obj)), t(NEW_DOUBLE(b.obj)); return Dgreater(DBL_PTR(s.obj), DBL_PTR(t.obj)); } RTFatal("Expected Atoms, but found a Sequence, in 'A_greaterThan()'"); return NOVALUE; }
+                object A_notEqual(Atom b) { if(IS_ATOM_INT(obj) && IS_ATOM_INT(b.obj)) { return noteq(obj, b.obj); } else if (not (IS_SEQUENCE(obj) or IS_SEQUENCE(b.obj))) { Atom s(NEW_DOUBLE(obj)), t(NEW_DOUBLE(b.obj)); return Dnoteq(DBL_PTR(s.obj), DBL_PTR(t.obj)); } RTFatal("Expected Atoms, but found a Sequence, in 'A_notEqual()'"); return NOVALUE; }
+                object A_lessThanOrEqual(Atom b) { if(IS_ATOM_INT(obj) && IS_ATOM_INT(b.obj)) { return lesseq(obj, b.obj); } else if (not (IS_SEQUENCE(obj) or IS_SEQUENCE(b.obj))) { Atom s(NEW_DOUBLE(obj)), t(NEW_DOUBLE(b.obj)); return Dlesseq(DBL_PTR(s.obj), DBL_PTR(t.obj)); } RTFatal("Expected Atoms, but found a Sequence, in 'A_lessThanOrEqual()'"); return NOVALUE; }
+                object A_greaterThanOrEqual(Atom b) { if(IS_ATOM_INT(obj) && IS_ATOM_INT(b.obj)) { return greatereq(obj, b.obj); } else if (not (IS_SEQUENCE(obj) or IS_SEQUENCE(b.obj))) { Atom s(NEW_DOUBLE(obj)), t(NEW_DOUBLE(b.obj)); return Dgreatereq(DBL_PTR(s.obj), DBL_PTR(t.obj)); } RTFatal("Expected Atoms, but found a Sequence, in 'A_greaterThanOrEqual()'"); return NOVALUE; }
+                object A_logicaland(Atom b) { if(IS_ATOM_INT(obj) && IS_ATOM_INT(b.obj)) { return Band(obj, b.obj); } else if (not (IS_SEQUENCE(obj) or IS_SEQUENCE(b.obj))) { Atom s(NEW_DOUBLE(obj)), t(NEW_DOUBLE(b.obj)); return Dand(DBL_PTR(s.obj), DBL_PTR(t.obj)); } RTFatal("Expected Atoms, but found a Sequence, in 'A_logicaland()'"); return NOVALUE; }
+                object A_logicalor(Atom b) { if(IS_ATOM_INT(obj) && IS_ATOM_INT(b.obj)) { return Bor(obj, b.obj); } else if (not (IS_SEQUENCE(obj) or IS_SEQUENCE(b.obj))) { Atom s(NEW_DOUBLE(obj)), t(NEW_DOUBLE(b.obj)); return Dor(DBL_PTR(s.obj), DBL_PTR(t.obj)); } RTFatal("Expected Atoms, but found a Sequence, in 'A_logicalor()'"); return NOVALUE; }
+                object A_logicalxor(Atom b) { if(IS_ATOM_INT(obj) && IS_ATOM_INT(b.obj)) { return Bxor(obj, b.obj); } else if (not (IS_SEQUENCE(obj) or IS_SEQUENCE(b.obj))) { Atom s(NEW_DOUBLE(obj)), t(NEW_DOUBLE(b.obj)); return Dxor(DBL_PTR(s.obj), DBL_PTR(t.obj)); } RTFatal("Expected Atoms, but found a Sequence, in 'A_logicalxor()'"); return NOVALUE; }
+                object A_logicalnot() { if(IS_ATOM_INT(obj)) { return unot(obj); } else if (IS_ATOM_DBL(obj)) { return Dnot(DBL_PTR(obj)); } RTFatal("Expected an Atom, but found a Sequence, in 'A_logicalnot()'"); return NOVALUE; }
                 Atom A_uminus(Atom a) { Atom ret; if(IS_ATOM_INT(a.obj)) { ret.obj = uminus(a.obj); return ret; } else if (IS_ATOM_DBL(a.obj)) { ret.obj = Duminus(DBL_PTR(a.obj)); return ret; } RTFatal("Expected an Atom, but found a Sequence, in 'A_uminus()'"); return ret; }
                 
                 friend Atom A_remainder(Atom a, Atom b);
@@ -329,10 +387,9 @@ namespace eu
                 Sequence() { obj = NOVALUE; } // default constructor
                 ~Sequence() { DeRefObj(obj); obj = NOVALUE; } // default destructor
                 Sequence(const Sequence& x) { obj = x.obj; RefObj(obj); } // copy constructor
-                Sequence& operator= (const Sequence& x) { DeRefObj(obj); obj = x.obj; RefObj(obj); return *this; } // copy assignment
+                //Sequence& operator= (const Sequence& x) { DeRefObj(obj); obj = x.obj; RefObj(obj); return *this; } // copy assignment
                 //Sequence (Sequence&& x) { obj = x.obj; x.obj = NOVALUE; } // move constructor
                 //Sequence& operator= (Sequence&& x) { DeRefObj(obj); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
-                
                 //Sequence(s1_ptr ptr) { ++(ptr->ref); obj = MAKE_SEQ(ptr); }
                 Sequence(const char * str) { obj = NewString(str); }
                 void NewStr(const char * str) { DeRefObj(obj); obj = NewString(str); }
@@ -368,7 +425,7 @@ namespace eu
                         RTFatal("Expected target and argument Sequences in 'E_assign_to_slice()'");
                 }
                 
-                Object Sequence::E_at(int i); // use (1 to length) or (-1 to -length) // make "obj = seq[index]"
+                object Sequence::E_at(int i); // use (1 to length) or (-1 to -length) // make "obj = seq[index]"
 
                 friend Sequence S_repeat(Object item, object repcount);
                 
@@ -404,14 +461,11 @@ namespace eu
                 Object() { obj = NOVALUE; } // default constructor
                 ~Object() { DeRefObj(obj); obj = NOVALUE; } // default destructor
                 Object(const Object& x) { obj = x.obj; RefObj(obj); } // copy constructor
-                Object& operator= (const Object& x) { DeRefObj(obj); obj = x.obj; RefObj(obj); return *this; } // copy assignment
+                //Object& operator= (const Object& x) { DeRefObj(obj); obj = x.obj; RefObj(obj); return *this; } // copy assignment
                 //Object(Object&& x) { obj = x.obj; x.obj = NOVALUE; } // move constructor
                 //Object& operator= (Object&& x) { DeRefObj(obj); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
                 
                 char GetChar() { return doChar(obj); } // aborts if type is sequence.
-                
-                
-                //here
                 
                 friend Integer E_compare(Object a, Object b);
                 friend Integer E_find(Object a, Sequence b);
@@ -430,8 +484,8 @@ namespace eu
         Integer E_find_from(Object a, Sequence b, object c) { Integer ret; ret.obj = find_from(a.obj, (s1_ptr)b.obj, c); return ret; }
         Integer E_match_from(Sequence a, Sequence b, object c) { Integer ret; if (SEQ_PTR(a.obj)->length > 0) { ret.obj = e_match_from((s1_ptr)a.obj, (s1_ptr)b.obj, c); } else { ret.obj = -1; } return ret; }
         
-        Object Sequence::E_at(int i) { // use (1 to length) or (-1 to -length)
-                Object ret;
+        object Sequence::E_at(int i) { // use (1 to length) or (-1 to -length)
+                object ret_ob = NOVALUE;
                 if (IS_DBL_OR_SEQUENCE(obj) && IS_SEQUENCE(obj) && CHECK_INTEGER(i)) {
                         s1_ptr ptr = SEQ_PTR(obj);
                         long len = ptr->length;
@@ -440,11 +494,11 @@ namespace eu
                                 i++;
                         }
                         if ((i >= 1) && (i <= len)) {
-                                ret.obj = ptr->base[i];
-                                RefObj(ret.obj);
+                                ret_ob = ptr->base[i];
+                                RefObj(ret_ob);
                         }
                 }
-                return ret;
+                return ret_ob;
         }
         Sequence S_repeat(Object item, object repcount)
         {

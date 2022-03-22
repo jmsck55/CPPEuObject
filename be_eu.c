@@ -43,6 +43,9 @@ void SimpleRTFatal(char *msg)
 {
 //    if (crash_msg == NULL || crash_count > 0) {
 	screen_output(stderr, "\nFatal run-time error:\n");
+#ifdef DONT_USE_RTFATAL
+	screen_output(stderr, "Please contact your software vendor.");
+#endif
 	screen_output(stderr, msg);
 	screen_output(stderr, "\n\n");
 //    }

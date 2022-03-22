@@ -11,12 +11,14 @@
 
 #pragma align(4)
 
+// Define this macro (DONE_DEBUGGING) before distributing software:
+
 //#define DONE_DEBUGGING
 
 #ifdef DONE_DEBUGGING
 #define ERUNTIME
 #define DONT_USE_RTFATAL
-#define RTFatal(remove_error_message) SimpleRTFatal("")
+#define RTFatal(remove_error_messages) SimpleRTFatal("")
 #endif
 
 #define FALSE 0
@@ -343,9 +345,9 @@ struct char_cell {
 #define DOING_SPRINTF -9999999 // indicates sprintf rather than printf
 
 // alloc.h
-#define FreeD(p) free(p);
+#define FreeD(p) free(p)
 
 // be_alloc.c
-#define EFree(p) free(p);
+#define EFree(p) free(p)
 
 #endif // _COMMON_H

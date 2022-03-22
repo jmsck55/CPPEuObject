@@ -1,4 +1,4 @@
 //
-// Obj.cpp
+// obj.cpp
 
 #include "obj.hpp"
