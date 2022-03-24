@@ -107,7 +107,7 @@ namespace eu
                 }
                 void DeRefObj()
                 {
-                        if (IS_SEQUENCE(obj))
+                        if (IS_SEQUENCE(obj)) // NOTE: may not need this if statement, DeRef(obj) does it already.
                         {
                                 object_ptr ptr = SEQ_PTR(obj)->base;
                                 while (*(++ptr) != NOVALUE)
@@ -234,25 +234,52 @@ namespace eu
                         print(stringflag, debugflag, atomformat, forceint);
                         printf("\n");
                 }
-                friend object seq(unsigned int n, ... );
+                friend object seq(int n, ... );
         };
 #ifdef USE_STDARG_H
-        object seq(unsigned int n, ... ) {
+        object seq(int n, ... ) {
                 // Make a sequence with 'n' elements, each element must be an object.
-                object ob;
-                object_ptr obj_ptr;
-                s1_ptr ptr = NewS1(n);
-                obj_ptr = ptr->base;
-                va_list v1;
-                va_start(v1, n);
-                while (n-- > 0) {
-                        ob = va_arg(v1, object);
-                        (*(base_class*)&ob).RefObj();
-                        *(++obj_ptr) = ob;
+                va_list vl; // vl is "vee" (v) followed by an "el" (l)
+                va_start(vl, n);
+        // If C++11 then:
+                if (n == NOVALUE)
+                {
+			int count = -1;
+			object val;
+			va_list vl_count;
+                        /* count number of arguments: */
+                        va_copy(vl_count, vl);
+			do {
+                                count++;
+                                val = va_arg(vl_count, object);
+			} while (val != NOVALUE);
+                        va_end(vl_count);
+                        n = count;
                 }
-                va_end(v1);
-                ob = MAKE_SEQ(ptr);
-                return ob;
+        // EndIf C++11.
+                if (IS_ATOM_INT(n))
+                {
+                        object ob;
+                        object_ptr obj_ptr;
+                        s1_ptr ptr;
+                        ptr = NewS1(n);
+                        obj_ptr = ptr->base;
+                        while (n-- > 0) {
+                                ob = va_arg(vl, object);
+                                if (!(IS_ATOM_INT(ob) || IS_DBL_OR_SEQUENCE(ob)))
+                                {
+                                        RTFatal("Expected a number, then that number of objects, as parameters to 'seq()'");
+                                        return NOVALUE;
+                                }
+                                (*(base_class*)&ob).RefObj();
+                                *(++obj_ptr) = ob;
+                        }
+                        va_end(vl);
+                        ob = MAKE_SEQ(ptr);
+                        return ob; // return value.
+                }
+                RTFatal("Expected a number or NOVALUE as the first parameter of 'seq()'");
+                return NOVALUE;
         }
 #endif
         class Integer : public base_class

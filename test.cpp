@@ -52,6 +52,9 @@ int main()
     s1 = eu::seq(COUNT(8), 2, 3, 5, 7, 11, 13, 17, 19);
     s1.println();
     SHOW_DEBUG(s1);
+    s1 = eu::seq(NOVALUE, 2, 3, 5, 7, 11, 13, 17, 19, NOVALUE); // use NOVALUE, "NOVALUE == ((long)0xbfffffffL)", to begin and end a variable agrument array.
+    s1.println();
+    SHOW_DEBUG(s1);
     s2 = eu::seq(COUNT(5), 1, 2, eu::seq(COUNT(3), 3, 3, 3), 4, eu::seq(COUNT(2), 5, eu::seq(COUNT(1), 6)));
     s2.println();
     SHOW_DEBUG(s2);
