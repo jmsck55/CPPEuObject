@@ -1,21 +1,49 @@
 //
 // common.h
+//
 
 #ifndef _COMMON_H
 #define _COMMON_H
 
+// Begin Platform
+// These macros are set in specify_platform.h
+
+// If under Windows, else comment out.
+//#define EWINDOWS
+
+// Define this macro (DONE_DEBUGGING) before distributing software:
+//#define DONE_DEBUGGING
+
+// If you want to specify these macros on the command line, comment out the next line:
+#include "specify_platform.h"
+
+// End Platform
+
+#ifdef EWINDOWS
+#include <windows.h>
+#endif
+
+#ifdef USE_STDARG_H
+#include <stdarg.h> /* va_list, va_start, va_arg, va_end */
+#endif
+
 #include <string.h>
+
+#ifdef USE_STANDARD_LIBRARY
+#include <time.h>
+#endif
+
+#include <stdlib.h>
+
 #ifdef USE_MATH_H
 #include <math.h>
 #endif
-#include <stdlib.h>
+
 #include <stdio.h>
 
+// For faster code, alignment should be (2 on 16-bit machines), (4 on 32-bit machines), (8 on 64-bit machines)
 #pragma align(4)
 
-// Define this macro (DONE_DEBUGGING) before distributing software:
-
-//#define DONE_DEBUGGING
 
 #ifdef DONE_DEBUGGING
 #define ERUNTIME
@@ -54,11 +82,12 @@
 #ifdef EWINDOWS
 // Use Heap functions for everything.
 // Avoid using strdup() or other functions that return malloc'd blocks
-#define malloc(n) HeapAlloc((void *)default_heap, 0, n)
-#define free(p) HeapFree((void *)default_heap, 0, p)
-#define realloc(p, n) HeapReAlloc((void *)default_heap, 0, p, n)
+// #define free(p) HeapFree((void *)default_heap, 0, p)
+// #define malloc(n) HeapAlloc((void *)default_heap, 0, n)
+// #define realloc(p, n) HeapReAlloc((void *)default_heap, 0, p, n)
 #endif
 
+// execute.h (from Euphoria v4.0.5)
 
           /* Euphoria object format v1.2 and later */
 
@@ -94,6 +123,10 @@
 #define IS_ATOM_INT(ob)       (((long)(ob)) > NOVALUE)
 #define IS_ATOM_INT_NV(ob)    ((long)(ob) >= NOVALUE)
 
+#define MAKE_UINT(x) ((object)(( ((unsigned long)x) <= ((unsigned long)0x3FFFFFFFL)) \
+                          ? (unsigned long)x : \
+                            (unsigned long)NewDouble((double)(unsigned long)x)))
+
 /* these are obsolete */
 #define INT_VAL(x)        ((int)(x))
 #define MAKE_INT(x)       ((object)(x))
@@ -104,6 +137,8 @@
 
 #define IS_ATOM(ob)             (((long)(ob)) >= (long)0xA0000000)
 #define IS_SEQUENCE(ob)         (((long)(ob))  < (long)0xA0000000)
+
+#define ASEQ(s) (((unsigned long)s & (unsigned long)0xE0000000) == (unsigned long)0x80000000)
 
 #define IS_DBL_OR_SEQUENCE(ob)  (((long)(ob)) < NOVALUE)
 

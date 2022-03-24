@@ -10,24 +10,20 @@ char TempBuff[TEMP_SIZE]; /* buffer for error messages */
 object *rhs_slice_target;
 s1_ptr *assign_slice_seq;
 
-//From: be_w.c
-
-void screen_output(FILE *f, char *out_string)
-{
-    fputs(out_string, f);
-}
+/* Note: side effects could happen from double eval of x */
+#define Get_Int(x) (IS_ATOM_INT(x) ? INT_VAL(x) : get_int(x))
 
 //From: be_runtime.c
 
 void Cleanup(int status)
 /* clean things up before leaving 0 - ok, non 0 - error */
 {
-#ifdef EWINDOWS
-    // Note: ExitProcess() - frees all the dlls but won't flush the regular files
-    for (i = 0; i < open_dll_count; i++) {
-        FreeLibrary(open_dll_list[i]);
-    }
-#endif      
+// #ifdef EWINDOWS
+//     // Note: ExitProcess() - frees all the dlls but won't flush the regular files
+//     for (i = 0; i < open_dll_count; i++) {
+//         FreeLibrary(open_dll_list[i]);
+//     }
+// #endif
     exit(status);
 }
 
@@ -1299,20 +1295,20 @@ object Dnot(d_ptr a)
 //         return (object)NewDouble(temp);
 // }
 
-#define V(a,b) ((((a) << 1) & 0xFFFF0000) | (((b) >> 14) & 0x0000FFFF))
-
-#define prim1 ((long)2147483563L)
-#define prim2 ((long)2147483399L)
-
-#define root1 ((long)40014L)
-#define root2 ((long)40692L)
-
-#define quo1 ((long)53668L)  /* prim1 / root1 */
-#define quo2 ((long)52774L)  /* prim2 / root2 */
-
-#define rem1 ((long)12211L)  /* prim1 % root1 */
-#define rem2 ((long)3791L)   /* prim2 % root2 */
-
+// #define V(a,b) ((((a) << 1) & 0xFFFF0000) | (((b) >> 14) & 0x0000FFFF))
+// 
+// #define prim1 ((long)2147483563L)
+// #define prim2 ((long)2147483399L)
+// 
+// #define root1 ((long)40014L)
+// #define root2 ((long)40692L)
+// 
+// #define quo1 ((long)53668L)  /* prim1 / root1 */
+// #define quo2 ((long)52774L)  /* prim2 / root2 */
+// 
+// #define rem1 ((long)12211L)  /* prim1 % root1 */
+// #define rem2 ((long)3791L)   /* prim2 % root2 */
+// 
 // void setran()
 // /* set random seed1 and seed2 - neither can be 0 */
 // {
@@ -2193,6 +2189,35 @@ long e_match_from(s1_ptr a, s1_ptr b, object c)
         } while (TRUE);
     }
     return 0; /* couldn't match */
+}
+
+
+//From: be_w.c
+
+void screen_output(FILE *f, char *out_string)
+{
+    fputs(out_string, f);
+}
+
+// From: be_machine.c
+
+long get_int(object x)
+/* return an integer value if possible, truncated to 32 bits. */
+{
+        if (IS_ATOM_INT(x)){
+                return x;
+        }
+
+        if (IS_ATOM(x)){
+                if (DBL_PTR(x)->dbl <= 0.0){
+                        return (long)(DBL_PTR(x)->dbl);
+                }
+                else{
+                        return (unsigned long)(DBL_PTR(x)->dbl);
+                }
+        }
+        RTFatal("an integer was expected, not a sequence");
+        return 0;
 }
 
 //here

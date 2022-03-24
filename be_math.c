@@ -1,5 +1,5 @@
 //
-// be_eu.c
+// be_math.c
 
 #include "be_math.h"
 

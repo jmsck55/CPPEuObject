@@ -6,9 +6,8 @@
 
 #include "common.h"
 
-// be_runtime.c
+// from: be_runtime.c
 
-void screen_output(FILE *f, char *out_string);
 void Cleanup(int status);
 void UserCleanup(int status);
 void SimpleRTFatal(char *msg);
@@ -121,6 +120,14 @@ object make_atom32(unsigned c32);
 long find_from(object a, s1_ptr b, object c);
 long e_match_from(s1_ptr a, s1_ptr b, object c);
 //here
+
+// from: be_w.c
+
+void screen_output(FILE *f, char *out_string);
+
+// from: be_machine.c
+
+long get_int(object x);
 
 
 
