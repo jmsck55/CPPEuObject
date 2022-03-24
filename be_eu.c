@@ -749,15 +749,13 @@ object DoubleToInt(object d)
 /* try to convert a double to an integer, if possible */
 {
     double temp_dbl;
-    long num; // modified by James Cook (jmsck55), not to use math.h's floor()
 
     temp_dbl = DBL_PTR(d)->dbl;
-    num = (long)temp_dbl; // compare type-casting (long), with floor(double)
-    if ((double)num == temp_dbl && // type-cast back to double.
+    if (((double)((long)temp_dbl)) == temp_dbl && // modified by James Cook (jmsck55), not to use math.h's floor()
         temp_dbl <= MAXINT_DBL &&
         temp_dbl >= MININT_DBL) {
             /* return it in integer repn */
-            return MAKE_INT(num);
+            return MAKE_INT((long)temp_dbl);
     }
     else
         return d; /* couldn't convert */

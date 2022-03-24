@@ -18,8 +18,8 @@
 
 // Cast an Object to another very similar type.
 // Types need to be the same size.
-#define CAST_PTR(T, ob) (*((T*)ob))
-#define CAST_OBJECT(T, ob) (*((T*)&ob))
+#define CASTING_PTR(T, ptr_ob) (*((T*)ptr_ob))
+#define CASTING_OBJECT(T, ob) (*((T*)&ob))
 
 namespace eu
 {
@@ -290,7 +290,7 @@ namespace eu
                 void NewAtom(double d) { DeRefObj(); obj = IS_DOUBLE_TO_INT(d) ? (object)d : NewDouble(d); }
                 void NewAtom(int i32) { DeRefObj(); obj = CHECK_INTEGER(i32) ? i32 : NewDouble((double)i32); }
                 void NewAtom(unsigned int u32) { DeRefObj(); obj = CHECK_INTEGER(u32) ? u32 : NewDouble((double)u32); }
-                double GetAtomDbl(void) { return GET_DOUBLE(obj); }
+                double GetAtomDbl(void) { if(IS_ATOM_INT(obj)) { return (double)obj; } else if(IS_ATOM_DBL(obj)) { return DBL_PTR(obj)->dbl; } else { RTFatal("Expected an Atom, but found a Sequence, in 'GetAtomDbl()'"); return 0.0; } }
                 int GetAtomInt(void) { if (IS_ATOM_INT(obj)) { return obj; } else if (IS_ATOM_DBL(obj)) { return (int)(DBL_PTR(obj)->dbl); } RTFatal("Expected an Atom, but found a Sequence, in 'GetAtomInt()'"); return 0; }
                 unsigned int GetAtomUnsignedInt(void) { if (IS_ATOM_INT(obj)) { return (unsigned int)obj; } else if (IS_ATOM_DBL(obj)) { return (unsigned int)(DBL_PTR(obj)->dbl); } RTFatal("Expected an Atom, but found a Sequence, in 'GetAtomUnsignedInt()'"); return 0; }
                 

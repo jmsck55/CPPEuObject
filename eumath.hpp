@@ -31,7 +31,7 @@ namespace eu
                 Dbl(d_ptr ptr) { ++(ptr->ref); obj = MAKE_DBL(ptr); }
                 Dbl(double d) { obj = NewDouble(d); }
                 void NewDbl(double d) { DeRefObj(); obj = NewDouble(d); }
-                double GetDbl(void) { if(IS_DBL_OR_SEQUENCE(obj) && IS_ATOM_DBL(obj)) { return DBL_PTR(obj)->dbl; } else { RTFatal("Expected a double, in 'GetDbl()'"); return 0.0; } }
+                double GetDbl(void) { if(IS_ATOM_INT(obj)) { return (double)obj; } else if(IS_ATOM_DBL(obj)) { return DBL_PTR(obj)->dbl; } else { RTFatal("Expected a double or integer, in 'GetDbl()'"); return 0.0; } }
                 
                 Dbl operator + (const Dbl& param) { Dbl ret; ret.obj = Dadd(DBL_PTR(obj), DBL_PTR(param.obj)); return ret; }
                 Dbl operator - (const Dbl& param) { Dbl ret; ret.obj = Dminus(DBL_PTR(obj), DBL_PTR(param.obj)); return ret; }
