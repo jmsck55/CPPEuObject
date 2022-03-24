@@ -55,7 +55,7 @@ int main()
     s2 = eu::seq(COUNT(5), 1, 2, eu::seq(COUNT(3), 3, 3, 3), 4, eu::seq(COUNT(2), 5, eu::seq(COUNT(1), 6)));
     s2.println();
     SHOW_DEBUG(s2);
-    s3 = eu::seq(COUNT(3), eu::seq(COUNT(2), NewString("jon"), NewString("smith")), 52389, NewDouble(97.25));
+    s3 = eu::seq(COUNT(3), eu::seq(COUNT(2), eu::NewString("jon"), eu::NewString("smith")), 52389, eu::NewDouble(97.25));
     s3.println(2, 1);
     SHOW_DEBUG(s3);
     s4 = eu::seq(COUNT(0));
@@ -75,7 +75,11 @@ int main()
     a4 = -0x10; // -16
     a4.println();
     SHOW_DEBUG(a4);
-
+    
+    puts("\n2.2 Expressions");
+    puts("\nTo be continued...\n");
+    
+    
     puts("\n-- More examples:");
     dbl = ((double)1/(double)7);
     a1 = dbl;

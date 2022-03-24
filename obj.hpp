@@ -5,10 +5,7 @@
 #pragma once
 
 #include <stdarg.h>     /* va_list, va_start, va_arg, va_end */
-
-extern "C" {
-        #include "be_eu.h"
-}
+#include "common.h"
 
 #define MIN_SAFE_CHAR 32
 #define MAX_SAFE_CHAR 127
@@ -22,6 +19,10 @@ extern "C" {
 namespace eu
 {
 
+extern "C" {
+        #include "be_eu.h"
+}
+
 extern "C" object *rhs_slice_target;
 extern "C" s1_ptr *assign_slice_seq;
 
@@ -32,32 +33,6 @@ extern "C" s1_ptr *assign_slice_seq;
 // void RefObj(object ob);
 // void DeRefObj(object ob);
 // int IS_SEQ_STRING(object ob);
-        
-        void RefObj(object ob)
-        {
-                Ref(ob)
-                if (IS_SEQUENCE(ob))
-                {
-                        object_ptr obj_ptr = SEQ_PTR(ob)->base;
-                        while (*(++obj_ptr) != NOVALUE)
-                        {
-                                RefObj(*obj_ptr);
-                        }
-                }
-        }
-        
-        void DeRefObj(object ob)
-        {
-                if (IS_SEQUENCE(ob))
-                {
-                        object_ptr obj_ptr = SEQ_PTR(ob)->base;
-                        while (*(++obj_ptr) != NOVALUE)
-                        {
-                                DeRefObj(*obj_ptr);
-                        }
-                }
-                DeRef(ob)
-        }
         
         int IS_SEQ_STRING(object ob, int minChar = MIN_SAFE_CHAR, int maxChar = MAX_SAFE_CHAR)
         {
@@ -88,24 +63,6 @@ extern "C" s1_ptr *assign_slice_seq;
                 return ret;
         }
         
-        object seq(unsigned int n, ... ) {
-                // Make a sequence with 'n' elements, each element must be an object.
-                object ob;
-                object_ptr obj_ptr;
-                s1_ptr ptr = NewS1(n);
-                obj_ptr = ptr->base;
-                va_list v1;
-                va_start(v1, n);
-                while (n-- > 0) {
-                        ob = va_arg(v1, object);
-                        RefObj(ob);
-                        *(++obj_ptr) = ob;
-                }
-                va_end(v1);
-                ob = MAKE_SEQ(ptr);
-                return ob;
-        }
-        
         // TODO: Go through Euphoria's documentation and impliment every routine (function and procedure)
         int Version(void) { return 0; } // Version still in Alpha.
         void Abort(int error_level) { UserCleanup(error_level); }
@@ -124,83 +81,107 @@ extern "C" s1_ptr *assign_slice_seq;
         protected: // protected in order to be inherited by other classes.
                 object obj;
                 object GetObject() { return obj; }
+                void RefObj()
+                {
+                        Ref(obj)
+                        if (IS_SEQUENCE(obj))
+                        {
+                                object_ptr ptr = SEQ_PTR(obj)->base;
+                                while (*(++ptr) != NOVALUE)
+                                {
+                                        (*(base_class*)ptr).RefObj();
+                                }
+                        }
+                }
+                void DeRefObj()
+                {
+                        if (IS_SEQUENCE(obj))
+                        {
+                                object_ptr ptr = SEQ_PTR(obj)->base;
+                                while (*(++ptr) != NOVALUE)
+                                {
+                                        (*(base_class*)ptr).DeRefObj();
+                                }
+                        }
+                        DeRef(obj)
+                }
 #ifndef DONE_DEBUGGING
-		//long etype;
-		//union {
-		//	s1_ptr sptr;
-		//	d_ptr dptr;
-		//};
-		//s1_ptr GetSeqPtr() { return SEQ_PTR(obj); }
-		//d_ptr GetDblPtr() { return DBL_PTR(obj); }
-	public:
-		void ShowDebug() {
-			int etype = IS_DBL_OR_SEQUENCE(obj) + IS_SEQUENCE(obj);
-			int count = 0;
-			int len = 0;
-			s1_ptr ptr = NULL;
-			if (etype > 0)
-			{
-				ptr = SEQ_PTR(obj);
-				count = ptr->ref;
-				if (etype > 1)
-				{
-					etype += IS_SEQ_STRING(obj, MININT_VAL, MAXINT_VAL) + IS_SEQ_STRING(obj, 1, 127);
-					len = ptr->length;
-				}
-			}
-			printf("DEBUG: 0x%x:0x%x etype=%d, count=%d, length=%d, value=", (unsigned long)this, (unsigned long)ptr, etype, count, len);
-			println(1, 2);
-		}
+                //long etype;
+                //union {
+                //      s1_ptr sptr;
+                //      d_ptr dptr;
+                //};
+                //s1_ptr GetSeqPtr() { return SEQ_PTR(obj); }
+                //d_ptr GetDblPtr() { return DBL_PTR(obj); }
+        public:
+                void ShowDebug() {
+                        int etype = IS_DBL_OR_SEQUENCE(obj) + IS_SEQUENCE(obj);
+                        int count = 0;
+                        int len = 0;
+                        s1_ptr ptr = NULL;
+                        if (etype > 0)
+                        {
+                                ptr = SEQ_PTR(obj);
+                                count = ptr->ref;
+                                if (etype > 1)
+                                {
+                                        etype += IS_SEQ_STRING(obj, MININT_VAL, MAXINT_VAL) + IS_SEQ_STRING(obj, 1, 127);
+                                        len = ptr->length;
+                                }
+                        }
+                        printf("DEBUG: 0x%x:0x%x etype=%d, count=%d, length=%d, value=", (unsigned long)this, (unsigned long)ptr, etype, count, len);
+                        println(1, 2);
+                }
 #endif
         public:
                 base_class() { obj = NOVALUE; } // default constructor
-                ~base_class() { DeRefObj(obj); obj = NOVALUE; } // default destructor
-                base_class(const base_class& x) { obj = x.obj; RefObj(obj); } // copy constructor
-                //base_class(const object& x) { obj = x; RefObj(obj); }
-                //base_class(object& x) { obj = x; RefObj(obj); }
-                //base_class(const object x) { obj = x; RefObj(obj); }
-                base_class(object x) { obj = x; RefObj(obj); }
+                ~base_class() { DeRefObj(); obj = NOVALUE; } // default destructor
+                base_class(const base_class& x) { obj = x.obj; RefObj(); } // copy constructor
+                //base_class(const object& x) { obj = x; RefObj(); }
+                //base_class(object& x) { obj = x; RefObj(); }
+                //base_class(const object x) { obj = x; RefObj(); }
+                base_class(object x) { obj = x; RefObj(); }
                 base_class& operator= (const base_class& x)
                 {
-                        DeRefObj(obj);
+                        DeRefObj();
                         obj = x.obj;
-                        RefObj(obj);
+                        RefObj();
                         return *this;
                 }
                 base_class& operator= (const object& x)
                 {
-                        DeRefObj(obj);
+                        DeRefObj();
                         obj = x;
-                        RefObj(obj);
+                        RefObj();
                         return *this;
                 }
                 void print(int stringflag = 0, int debugflag = 0, const char atomformat[] = "%.17g", int forceint = 0)
                 {
                         if (IS_ATOM_INT(obj) or IS_ATOM_DBL(obj))
                         {
-				//object d = DoubleToInt(obj);
-				double a = GET_DOUBLE(obj);
+                                //object d = DoubleToInt(obj);
+                                double a = GET_DOUBLE(obj);
                                 if (forceint) {
                                         printf(atomformat, (int)a);
                                 }
                                 else {
                                         printf(atomformat, a);
                                 }
-				if (floor(a) == a)
-				{
-					if (debugflag >= 2 && a <= MAX_BITWISE_DBL && a >= MIN_BITWISE_DBL)
-					{
-						printf("(0x%x)", (unsigned long)a);
-					}
-					if (stringflag >= 1)
-					{
-						char ch = doChar(obj);
-						if ((ch <= MAX_SAFE_CHAR) && (ch >= MIN_SAFE_CHAR))
-						{
-							printf("'%c'", ch);
-						}
-					}
-				}
+                                if (floor(a) == a)
+                                {
+                                        if (debugflag >= 2 && a <= MAX_BITWISE_DBL && a >= MIN_BITWISE_DBL)
+                                        {
+                                                printf("(0x%x)", (unsigned long)a);
+                                        }
+                                        if (stringflag >= 1)
+                                        {
+                                                char ch = doChar(obj);
+                                                if ((ch <= MAX_SAFE_CHAR) && (ch >= MIN_SAFE_CHAR))
+                                                {
+                                                        printf("'%c'", ch);
+                                                }
+                                        }
+                                }
                         }
                         else if (IS_SEQUENCE(obj))
                         {
@@ -241,8 +222,25 @@ extern "C" s1_ptr *assign_slice_seq;
                         print(stringflag, debugflag, atomformat, forceint);
                         printf("\n");
                 }
+                friend object seq(unsigned int n, ... );
         };
-        
+        object seq(unsigned int n, ... ) {
+                // Make a sequence with 'n' elements, each element must be an object.
+                object ob;
+                object_ptr obj_ptr;
+                s1_ptr ptr = NewS1(n);
+                obj_ptr = ptr->base;
+                va_list v1;
+                va_start(v1, n);
+                while (n-- > 0) {
+                        ob = va_arg(v1, object);
+                        (*(base_class*)&ob).RefObj();
+                        *(++obj_ptr) = ob;
+                }
+                va_end(v1);
+                ob = MAKE_SEQ(ptr);
+                return ob;
+        }
         
         class Integer : public base_class
         {
@@ -254,14 +252,14 @@ extern "C" s1_ptr *assign_slice_seq;
                 Integer(object ob) { obj = ob; }
         public:
                 Integer() { obj = NOVALUE; } // default constructor
-                ~Integer() { DeRefObj(obj); obj = NOVALUE; } // default destructor
-                Integer(const Integer& x) { obj = x.obj; RefObj(obj); } // copy constructor
-                //Integer& operator= (const Integer& x) { DeRefObj(obj); obj = x.obj; RefObj(obj); return *this; } // copy assignment
+                ~Integer() { DeRefObj(); obj = NOVALUE; } // default destructor
+                Integer(const Integer& x) { obj = x.obj; RefObj(); } // copy constructor
+                //Integer& operator= (const Integer& x) { DeRefObj(); obj = x.obj; RefObj(); return *this; } // copy assignment
                 //Integer (Integer&& x) { obj = x.obj; x.obj = NOVALUE; } // move constructor
-                //Integer& operator= (Integer&& x) { DeRefObj(obj); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
+                //Integer& operator= (Integer&& x) { DeRefObj(); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
                 
                 Integer(int val) { obj = CHECK_INTEGER(val) ? val : NOVALUE; }
-                void NewInteger(int val) { DeRefObj(obj); obj = CHECK_INTEGER(val) ? val : NOVALUE; }
+                void NewInteger(int val) { DeRefObj(); obj = CHECK_INTEGER(val) ? val : NOVALUE; }
                 int GetInteger(void) { return CHECK_INTEGER(obj) ? obj : NOVALUE; }
                 
                 friend Integer E_compare(Object a, Object b);
@@ -280,15 +278,15 @@ extern "C" s1_ptr *assign_slice_seq;
                 Dbl(object ob) { obj = ob; }
         public:
                 Dbl() { obj = NOVALUE; } // default constructor
-                ~Dbl() { DeRefObj(obj); obj = NOVALUE; } // default destructor
-                Dbl(const Dbl& x) { obj = x.obj; RefObj(obj); } // copy constructor
-                //Dbl& operator= (const Dbl& x) { DeRefObj(obj); obj = x.obj; RefObj(obj); return *this; } // copy assignment
+                ~Dbl() { DeRefObj(); obj = NOVALUE; } // default destructor
+                Dbl(const Dbl& x) { obj = x.obj; RefObj(); } // copy constructor
+                //Dbl& operator= (const Dbl& x) { DeRefObj(); obj = x.obj; RefObj(); return *this; } // copy assignment
                 //Dbl (Dbl&& x) { obj = x.obj; x.obj = NOVALUE; } // move constructor
-                //Dbl& operator= (Dbl&& x) { DeRefObj(obj); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
+                //Dbl& operator= (Dbl&& x) { DeRefObj(); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
                 
                 Dbl(d_ptr ptr) { ++(ptr->ref); obj = MAKE_DBL(ptr); }
                 Dbl(double d) { obj = NewDouble(d); }
-                void NewDbl(double d) { DeRefObj(obj); obj = NewDouble(d); }
+                void NewDbl(double d) { DeRefObj(); obj = NewDouble(d); }
                 double GetDbl(void) { if(IS_DBL_OR_SEQUENCE(obj) && IS_ATOM_DBL(obj)) { return DBL_PTR(obj)->dbl; } else { RTFatal("Expected a double, in 'GetDbl()'"); return 0.0; } }
                 
                 Dbl operator + (const Dbl& param) { Dbl ret; ret.obj = Dadd(DBL_PTR(obj), DBL_PTR(param.obj)); return ret; }
@@ -307,19 +305,19 @@ extern "C" s1_ptr *assign_slice_seq;
                 Atom(object ob) { obj = ob; }
         public:
                 Atom() { obj = NOVALUE; } // default constructor
-                ~Atom() { DeRefObj(obj); obj = NOVALUE; } // default destructor
-                Atom(const Atom& x) { obj = x.obj; RefObj(obj); } // copy constructor
-                //Atom& operator= (const Atom& x) { DeRefObj(obj); obj = x.obj; RefObj(obj); return *this; } // copy assignment
+                ~Atom() { DeRefObj(); obj = NOVALUE; } // default destructor
+                Atom(const Atom& x) { obj = x.obj; RefObj(); } // copy constructor
+                //Atom& operator= (const Atom& x) { DeRefObj(); obj = x.obj; RefObj(); return *this; } // copy assignment
                 //Atom (Atom&& x) { obj = x.obj; x.obj = NOVALUE; } // move constructor
-                //Atom& operator= (Atom&& x) { DeRefObj(obj); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
+                //Atom& operator= (Atom&& x) { DeRefObj(); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
                 
                 Atom(d_ptr ptr) { ++(ptr->ref); obj = MAKE_DBL(ptr); }
                 Atom(double d) { obj = IS_DOUBLE_TO_INT(d) ? (object)d : NewDouble(d); }
                 Atom(int val) { obj = CHECK_INTEGER(val) ? val : NewDouble((double)val); }
                 
-                void NewAtom(double d) { DeRefObj(obj); obj = IS_DOUBLE_TO_INT(d) ? (object)d : NewDouble(d); }
-                void NewAtom(int i32) { DeRefObj(obj); obj = CHECK_INTEGER(i32) ? i32 : NewDouble((double)i32); }
-                void NewAtom(unsigned int u32) { DeRefObj(obj); obj = CHECK_INTEGER(u32) ? u32 : NewDouble((double)u32); }
+                void NewAtom(double d) { DeRefObj(); obj = IS_DOUBLE_TO_INT(d) ? (object)d : NewDouble(d); }
+                void NewAtom(int i32) { DeRefObj(); obj = CHECK_INTEGER(i32) ? i32 : NewDouble((double)i32); }
+                void NewAtom(unsigned int u32) { DeRefObj(); obj = CHECK_INTEGER(u32) ? u32 : NewDouble((double)u32); }
                 double GetAtomDbl(void) { return GET_DOUBLE(obj); }
                 int GetAtomInt(void) { if (IS_ATOM_INT(obj)) { return obj; } else if (IS_ATOM_DBL(obj)) { return (int)(DBL_PTR(obj)->dbl); } RTFatal("Expected an Atom, but found a Sequence, in 'GetAtomInt()'"); return 0; }
                 unsigned int GetAtomUnsignedInt(void) { if (IS_ATOM_INT(obj)) { return (unsigned int)obj; } else if (IS_ATOM_DBL(obj)) { return (unsigned int)(DBL_PTR(obj)->dbl); } RTFatal("Expected an Atom, but found a Sequence, in 'GetAtomUnsignedInt()'"); return 0; }
@@ -385,14 +383,14 @@ extern "C" s1_ptr *assign_slice_seq;
                 Sequence(object ob) { obj = ob; }
         public:
                 Sequence() { obj = NOVALUE; } // default constructor
-                ~Sequence() { DeRefObj(obj); obj = NOVALUE; } // default destructor
-                Sequence(const Sequence& x) { obj = x.obj; RefObj(obj); } // copy constructor
-                //Sequence& operator= (const Sequence& x) { DeRefObj(obj); obj = x.obj; RefObj(obj); return *this; } // copy assignment
+                ~Sequence() { DeRefObj(); obj = NOVALUE; } // default destructor
+                Sequence(const Sequence& x) { obj = x.obj; RefObj(); } // copy constructor
+                //Sequence& operator= (const Sequence& x) { DeRefObj(); obj = x.obj; RefObj(); return *this; } // copy assignment
                 //Sequence (Sequence&& x) { obj = x.obj; x.obj = NOVALUE; } // move constructor
-                //Sequence& operator= (Sequence&& x) { DeRefObj(obj); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
+                //Sequence& operator= (Sequence&& x) { DeRefObj(); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
                 //Sequence(s1_ptr ptr) { ++(ptr->ref); obj = MAKE_SEQ(ptr); }
                 Sequence(const char * str) { obj = NewString(str); }
-                void NewStr(const char * str) { DeRefObj(obj); obj = NewString(str); }
+                void NewStr(const char * str) { DeRefObj(); obj = NewString(str); }
                 char * GetCharStr() {
                         if (IS_DBL_OR_SEQUENCE(obj) && IS_SEQUENCE(obj) && IS_SEQ_STRING(obj, 1, 255)) {
                                 long len = SEQ_PTR(obj)->length;
@@ -425,7 +423,7 @@ extern "C" s1_ptr *assign_slice_seq;
                         RTFatal("Expected target and argument Sequences in 'E_assign_to_slice()'");
                 }
                 
-                object Sequence::E_at(int i); // use (1 to length) or (-1 to -length) // make "obj = seq[index]"
+                Object Sequence::E_at(int i); // use (1 to length) or (-1 to -length) // make "obj = seq[index]"
 
                 friend Sequence S_repeat(Object item, object repcount);
                 
@@ -459,11 +457,11 @@ extern "C" s1_ptr *assign_slice_seq;
                 Object(object ob) { obj = ob; }
         public:
                 Object() { obj = NOVALUE; } // default constructor
-                ~Object() { DeRefObj(obj); obj = NOVALUE; } // default destructor
-                Object(const Object& x) { obj = x.obj; RefObj(obj); } // copy constructor
-                //Object& operator= (const Object& x) { DeRefObj(obj); obj = x.obj; RefObj(obj); return *this; } // copy assignment
+                ~Object() { DeRefObj(); obj = NOVALUE; } // default destructor
+                Object(const Object& x) { obj = x.obj; RefObj(); } // copy constructor
+                //Object& operator= (const Object& x) { DeRefObj(); obj = x.obj; RefObj(); return *this; } // copy assignment
                 //Object(Object&& x) { obj = x.obj; x.obj = NOVALUE; } // move constructor
-                //Object& operator= (Object&& x) { DeRefObj(obj); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
+                //Object& operator= (Object&& x) { DeRefObj(); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
                 
                 char GetChar() { return doChar(obj); } // aborts if type is sequence.
                 
@@ -484,8 +482,8 @@ extern "C" s1_ptr *assign_slice_seq;
         Integer E_find_from(Object a, Sequence b, object c) { Integer ret; ret.obj = find_from(a.obj, (s1_ptr)b.obj, c); return ret; }
         Integer E_match_from(Sequence a, Sequence b, object c) { Integer ret; if (SEQ_PTR(a.obj)->length > 0) { ret.obj = e_match_from((s1_ptr)a.obj, (s1_ptr)b.obj, c); } else { ret.obj = -1; } return ret; }
         
-        object Sequence::E_at(int i) { // use (1 to length) or (-1 to -length)
-                object ret_ob = NOVALUE;
+        Object Sequence::E_at(int i) { // use (1 to length) or (-1 to -length)
+                Object ret;
                 if (IS_DBL_OR_SEQUENCE(obj) && IS_SEQUENCE(obj) && CHECK_INTEGER(i)) {
                         s1_ptr ptr = SEQ_PTR(obj);
                         long len = ptr->length;
@@ -494,11 +492,19 @@ extern "C" s1_ptr *assign_slice_seq;
                                 i++;
                         }
                         if ((i >= 1) && (i <= len)) {
-                                ret_ob = ptr->base[i];
-                                RefObj(ret_ob);
+                                ret.obj = ptr->base[i];
+                                ret.RefObj();
+                        }
+                        else
+                        {
+                                RTFatal("Expected a valid index number in 'E_at()'");
                         }
                 }
-                return ret_ob;
+                else
+                {
+                        RTFatal("Expected a Sequence and a valid index number in 'E_at()'");
+                }
+                return ret;
         }
         Sequence S_repeat(Object item, object repcount)
         {
