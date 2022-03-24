@@ -6,8 +6,9 @@
 #ifndef _BE_MATH_H
 #define _BE_MATH_H
 
-#include <math.h>
+//#include <math.h>
 
+#define USE_MATH_H
 #include "be_eu.h"
 
 // be_runtime.c
