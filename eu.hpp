@@ -1,7 +1,9 @@
 //
 // eu.hpp
-// Include file for C++ version of EuObject
+// Main include file for C++ version of CPPEuObject.
 
 #pragma once
 
 #include "obj.hpp"
+#include "eumath.hpp"
+

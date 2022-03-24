@@ -48,7 +48,7 @@ object multiply(long a, long b);
 object divide(long a, long b);
 object Ddivide(d_ptr a, d_ptr b);
 object eremainder(long a, long b);  // avoid conflict with "remainder" math fn
-object Dremainder(d_ptr a, d_ptr b);
+//object Dremainder(d_ptr a, d_ptr b);
 void check32(d_ptr a, d_ptr b);
 object and_bits(long a, long b);
 object Dand_bits(d_ptr a, d_ptr b);
@@ -58,8 +58,8 @@ object xor_bits(long a, long b);
 object Dxor_bits(d_ptr a, d_ptr b);
 object not_bits(long a);
 object Dnot_bits(d_ptr a);
-object power(long a, long b);
-object Dpower(d_ptr a, d_ptr b);
+//object power(long a, long b);
+//object Dpower(d_ptr a, d_ptr b);
 object equals(long a, long b);
 object Dequals(d_ptr a, d_ptr b);
 object less(long a, long b);
@@ -83,20 +83,20 @@ object uminus(long a);
 object Duminus(d_ptr a);
 object unot(long a);
 object Dnot(d_ptr a);
-object e_sqrt(long a);
-object De_sqrt(d_ptr a);
-object e_sin(long a);
-object De_sin(d_ptr a);
-object e_cos(long a);
-object De_cos(d_ptr a);
-object e_tan(long a);
-object De_tan(d_ptr a);
-object e_arctan(long a);
-object De_arctan(d_ptr a);
-object e_log(long a);
-object De_log(d_ptr a);
-object e_floor(long a); // not used anymore
-object De_floor(d_ptr a);
+//object e_sqrt(long a);
+//object De_sqrt(d_ptr a);
+//object e_sin(long a);
+//object De_sin(d_ptr a);
+//object e_cos(long a);
+//object De_cos(d_ptr a);
+//object e_tan(long a);
+//object De_tan(d_ptr a);
+//object e_arctan(long a);
+//object De_arctan(d_ptr a);
+//object e_log(long a);
+//object De_log(d_ptr a);
+//object e_floor(long a); // not used anymore
+//object De_floor(d_ptr a);
 // void setran()
 // ldiv_t my_ldiv (long int numer, long int denom)
 // unsigned long good_rand()

@@ -25,7 +25,7 @@ void Cleanup(int status)
 #ifdef EWINDOWS
     // Note: ExitProcess() - frees all the dlls but won't flush the regular files
     for (i = 0; i < open_dll_count; i++) {
-	FreeLibrary(open_dll_list[i]);
+        FreeLibrary(open_dll_list[i]);
     }
 #endif      
     exit(status);
@@ -42,27 +42,27 @@ void SimpleRTFatal(char *msg)
 /* Fatal errors for translated code */
 {
 //    if (crash_msg == NULL || crash_count > 0) {
-	screen_output(stderr, "\nFatal run-time error:\n");
+        screen_output(stderr, "\nFatal run-time error:\n");
 #ifdef DONT_USE_RTFATAL
-	screen_output(stderr, "Please contact your software vendor.");
+        screen_output(stderr, "Please contact your software vendor.");
 #endif
-	screen_output(stderr, msg);
-	screen_output(stderr, "\n\n");
+        screen_output(stderr, msg);
+        screen_output(stderr, "\n\n");
 //    }
 //    else {
-//	screen_output(stderr, crash_msg);
+//      screen_output(stderr, crash_msg);
 //    }
 //    TempErrFile = fopen(TempErrName, "w");
 //    if (TempErrFile != NULL) {
-//	fprintf(TempErrFile, "Fatal run-time error:\n");
-//	fprintf(TempErrFile, "%s\n", msg);
-//	
-//	if (last_traced_line != NULL) {
-//	    if (crash_msg == NULL || crash_count > 0)
-//		fprintf(stderr, "%s\n", last_traced_line);
-//	    fprintf(TempErrFile, "%s\n", last_traced_line);
-//	}
-//	fclose(TempErrFile);
+//      fprintf(TempErrFile, "Fatal run-time error:\n");
+//      fprintf(TempErrFile, "%s\n", msg);
+//      
+//      if (last_traced_line != NULL) {
+//          if (crash_msg == NULL || crash_count > 0)
+//              fprintf(stderr, "%s\n", last_traced_line);
+//          fprintf(TempErrFile, "%s\n", last_traced_line);
+//      }
+//      fclose(TempErrFile);
 //    }
 
 //    call_crash_routines();
@@ -76,10 +76,10 @@ void RTFatal(char *msg)
 {
 //#ifndef ERUNTIME
 //    if (Executing) 
-//	CleanUpError(msg, NULL);
+//      CleanUpError(msg, NULL);
 //    else
 //#endif  
-	SimpleRTFatal(msg);
+        SimpleRTFatal(msg);
 }
 #endif
 
@@ -100,7 +100,7 @@ char *EMalloc(unsigned long nbytes)
     char * ret = (char*)malloc(nbytes);
     if (((long)ret) % 8)
     {
-    	RTFatal("Error: EMalloc does not have 8-byte alignment.");
+        RTFatal("Error: EMalloc does not have 8-byte alignment.");
     }
     return ret;
 }
@@ -117,7 +117,7 @@ char *ERealloc(char *orig, unsigned long newsize)
     char * ret = (char*)realloc(orig, newsize);
     if (((long)ret) % 8)
     {
-    	RTFatal("Error: ERealloc does not have 8-byte alignment.");
+        RTFatal("Error: ERealloc does not have 8-byte alignment.");
     }
     return ret;
 }
@@ -129,16 +129,16 @@ s1_ptr NewS1(long size)
     register s1_ptr s1;
 
     if (size > 1073741800) {
-	// multiply by 4 could overflow 32 bits
-	SpaceMessage();
-	return NULL;
+        // multiply by 4 could overflow 32 bits
+        SpaceMessage();
+        return NULL;
     }
     s1 = (s1_ptr)EMalloc(sizeof(struct s1) + (size+1) * sizeof(object));
     s1->ref = 1;
     s1->base = (object_ptr)(s1 + 1);
     s1->length = size;
     s1->postfill = 0; /* there may be some available but don't waste time */
-		      /* prepend assumes this is set to 0 */
+                      /* prepend assumes this is set to 0 */
     s1->base[size] = NOVALUE;
     s1->base--;  // point to "0th" element
     return(s1);
@@ -155,9 +155,9 @@ object NewString(const char *s)
     c1 = NewS1((long)len);
     obj_ptr = (object_ptr)c1->base;
     if (len > 0) {
-	do {
-	    *(++obj_ptr) = (unsigned char)*s++;
-	} while (--len > 0);
+        do {
+            *(++obj_ptr) = (unsigned char)*s++;
+        } while (--len > 0);
     }
     return MAKE_SEQ(c1);
 }
@@ -176,13 +176,13 @@ s1_ptr SequenceCopy(register s1_ptr a)
     cp = c->base;
     ap = a->base;
     while (TRUE) {  // NOVALUE will be copied
-	temp_ap = *(++ap);
-	*(++cp) = temp_ap;
-	if (!IS_ATOM_INT(temp_ap)) {
-	    if (temp_ap == NOVALUE)
-		break;
-	    RefDS(temp_ap);
-	}
+        temp_ap = *(++ap);
+        *(++cp) = temp_ap;
+        if (!IS_ATOM_INT(temp_ap)) {
+            if (temp_ap == NOVALUE)
+                break;
+            RefDS(temp_ap);
+        }
     } 
     DeRefSP(a);
     return c;
@@ -226,12 +226,12 @@ char doChar(object elem)
 /* convert to char (int done in-line) */
 {
     if (IS_ATOM_INT(elem)) 
-	return (char)elem;
+        return (char)elem;
     if (IS_ATOM(elem)) 
-	return (char)(DBL_PTR(elem)->dbl);
+        return (char)(DBL_PTR(elem)->dbl);
     else {
-	RTFatal("sequence found inside character string");
-	return '\0';
+        RTFatal("sequence found inside character string");
+        return '\0';
     }
 }
 
@@ -250,17 +250,17 @@ void Prepend(object_ptr target, object s1, object a)
     s1p = SEQ_PTR(s1);
     len = s1p->length;
     if ((s1_ptr)s1 == t && s1p->ref == 1) {
-	/* we're free to prepend in-place */
-	/* Check for room at beginning */
-	if (s1p->base >= (object_ptr)(s1p+1)) {
-	    s1p->length++;
-	    *(s1p->base) = a;
-	    s1p->base--;
-	    return;
-	}
-	/* OPTIMIZE: check for postfill & copy down */
-	/* OPTIMIZE: check for extra room in malloc'd area? */
-	/* OPTIMIZE: Do an _expand() if possible */
+        /* we're free to prepend in-place */
+        /* Check for room at beginning */
+        if (s1p->base >= (object_ptr)(s1p+1)) {
+            s1p->length++;
+            *(s1p->base) = a;
+            s1p->base--;
+            return;
+        }
+        /* OPTIMIZE: check for postfill & copy down */
+        /* OPTIMIZE: check for extra room in malloc'd area? */
+        /* OPTIMIZE: Do an _expand() if possible */
     }
     /* make a new sequence */
     new_len = EXTRA_EXPAND(len);
@@ -271,13 +271,13 @@ void Prepend(object_ptr target, object s1, object a)
     *p = a;
     q = s1p->base;
     while (TRUE) {  // NOVALUE will be copied
-	temp = *(++q);
-	*(++p) = temp;
-	if (!IS_ATOM_INT(temp)) {
-	    if (temp == NOVALUE)
-		break;
-	    RefDS(temp);
-	}
+        temp = *(++q);
+        *(++p) = temp;
+        if (!IS_ATOM_INT(temp)) {
+            if (temp == NOVALUE)
+                break;
+            RefDS(temp);
+        }
     }
     DeRef(*target);
     *target = MAKE_SEQ(new_seq);
@@ -299,32 +299,32 @@ void Append(object_ptr target, object s1, object a)
     len = s1p->length;
 
     if ((s1_ptr)s1 == t && s1p->ref == 1) {
-	/* we're free to append in-place */
-	if (s1p->postfill == 0) {
-	    /* make some more postfill space */
-	    new_len = EXTRA_EXPAND(len);
-	    base = s1p->base;
-	    /* allow 1*4 for end marker */
-	    /* base + new_len + 2 could overflow 32-bits??? */
-	    new_s1p = (s1_ptr)ERealloc((char *)s1p, 
-			       (char *)(base + new_len + 2) - (char *)s1p);
-	    new_s1p->base = (object_ptr)new_s1p + 
-			     ((object_ptr)base - (object_ptr)s1p);
-	    s1p = new_s1p;
-	    s1p->postfill = new_len - len;
-	    *target = MAKE_SEQ(s1p);
-	/* OPTIMIZE: we may have more space in the malloc'd block
-	   than we think, due to power of 2 round up etc. Can
-	   we find out what we have and increment postfill 
-	   accordingly? Then we can usually avoid memcopying too much
-	   in Realloc. */
-	}
-	s1p->postfill--;
-	s1p->length++;
-	last = s1p->base + len + 1;
-	*last = a; 
-	*(last+1) = NOVALUE;  // make a new end marker
-	return;
+        /* we're free to append in-place */
+        if (s1p->postfill == 0) {
+            /* make some more postfill space */
+            new_len = EXTRA_EXPAND(len);
+            base = s1p->base;
+            /* allow 1*4 for end marker */
+            /* base + new_len + 2 could overflow 32-bits??? */
+            new_s1p = (s1_ptr)ERealloc((char *)s1p, 
+                               (char *)(base + new_len + 2) - (char *)s1p);
+            new_s1p->base = (object_ptr)new_s1p + 
+                             ((object_ptr)base - (object_ptr)s1p);
+            s1p = new_s1p;
+            s1p->postfill = new_len - len;
+            *target = MAKE_SEQ(s1p);
+        /* OPTIMIZE: we may have more space in the malloc'd block
+           than we think, due to power of 2 round up etc. Can
+           we find out what we have and increment postfill 
+           accordingly? Then we can usually avoid memcopying too much
+           in Realloc. */
+        }
+        s1p->postfill--;
+        s1p->length++;
+        last = s1p->base + len + 1;
+        *last = a; 
+        *(last+1) = NOVALUE;  // make a new end marker
+        return;
     }
     /* make a new sequence */
     new_len = EXTRA_EXPAND(len);
@@ -334,13 +334,13 @@ void Append(object_ptr target, object s1, object a)
     p = new_seq->base;
     q = s1p->base;
     while (TRUE) {  // NOVALUE will be copied
-	temp = *(++q);
-	*(++p) = temp;
-	if (!IS_ATOM_INT(temp)) {
-	    if (temp == NOVALUE)
-		break;
-	    RefDS(temp);
-	}
+        temp = *(++q);
+        *(++p) = temp;
+        if (!IS_ATOM_INT(temp)) {
+            if (temp == NOVALUE)
+                break;
+            RefDS(temp);
+        }
     }
     *p++ = a;
     *p = NOVALUE; // end marker
@@ -361,75 +361,75 @@ void Concat(object_ptr target, object a_obj, s1_ptr b)
     object temp;
 
     if (IS_ATOM(a_obj)) {
-	c = NewS1(2);
-	/* both are atoms */
-	*(c->base+1) = a_obj;
-	Ref(a_obj); 
-	*(c->base+2) = (object)b;
-	Ref((object)b);
+        c = NewS1(2);
+        /* both are atoms */
+        *(c->base+1) = a_obj;
+        Ref(a_obj); 
+        *(c->base+2) = (object)b;
+        Ref((object)b);
     }
     else {
-	/* both are sequences */
-	a = SEQ_PTR(a_obj);
-	b = SEQ_PTR(b);
-	na = a->length;
-	nb = b->length;
-	
-	if (a_obj == *target && 
-	    a->ref == 1 && 
-	    na > ((nb - a->postfill) << 3)) {
-	    /* try to update in-place */
-	    int insert;
-	    object temp;
-	    
-	    q = b->base+1;
-	    while (nb > 0) {
-		insert = (nb <= a->postfill) ? nb : a->postfill;            
-		p = a->base + 1 + a->length;
-		a->postfill -= insert;
-		a->length += insert;
-		nb -= insert;
-		while (--insert >= 0) {
-		    temp = *q++;
-		    *p++ = temp;
-		    Ref(temp);
-		}
-		*p = NOVALUE; // end marker
-		if (nb > 0) {
-		    Ref(*q);
-		    Append(target, a_obj, *q);
-		    a_obj = *target;
-		    a = SEQ_PTR(a_obj);
-		    nb--;
-		    q++;
-		}
-	    }
-	    return;
-	}
-	
-	c = NewS1(na + nb);
+        /* both are sequences */
+        a = SEQ_PTR(a_obj);
+        b = SEQ_PTR(b);
+        na = a->length;
+        nb = b->length;
+        
+        if (a_obj == *target && 
+            a->ref == 1 && 
+            na > ((nb - a->postfill) << 3)) {
+            /* try to update in-place */
+            int insert;
+            object temp;
+            
+            q = b->base+1;
+            while (nb > 0) {
+                insert = (nb <= a->postfill) ? nb : a->postfill;            
+                p = a->base + 1 + a->length;
+                a->postfill -= insert;
+                a->length += insert;
+                nb -= insert;
+                while (--insert >= 0) {
+                    temp = *q++;
+                    *p++ = temp;
+                    Ref(temp);
+                }
+                *p = NOVALUE; // end marker
+                if (nb > 0) {
+                    Ref(*q);
+                    Append(target, a_obj, *q);
+                    a_obj = *target;
+                    a = SEQ_PTR(a_obj);
+                    nb--;
+                    q++;
+                }
+            }
+            return;
+        }
+        
+        c = NewS1(na + nb);
 
-	p = c->base;
-	q = a->base;
-	while (TRUE) {  // NOVALUE will be copied
-	    temp = *(++q);
-	    *(++p) = temp;
-	    if (!IS_ATOM_INT(temp)) {
-		if (temp == NOVALUE)
-		    break;
-		RefDS(temp);
-	    }
-	}
-	q = b->base;
-	while (TRUE) {  // NOVALUE will be copied
-	    temp = *(++q);
-	    *p++ = temp;
-	    if (!IS_ATOM_INT(temp)) {
-		if (temp == NOVALUE)
-		    break;
-		RefDS(temp);
-	    }
-	}
+        p = c->base;
+        q = a->base;
+        while (TRUE) {  // NOVALUE will be copied
+            temp = *(++q);
+            *(++p) = temp;
+            if (!IS_ATOM_INT(temp)) {
+                if (temp == NOVALUE)
+                    break;
+                RefDS(temp);
+            }
+        }
+        q = b->base;
+        while (TRUE) {  // NOVALUE will be copied
+            temp = *(++q);
+            *p++ = temp;
+            if (!IS_ATOM_INT(temp)) {
+                if (temp == NOVALUE)
+                    break;
+                RefDS(temp);
+            }
+        }
     }
     
     DeRef(*target);
@@ -452,11 +452,11 @@ void Concat_N(object_ptr target, object_ptr  source, int n)
     /* Compute the total size of all the operands */
     size = 0;
     for (i = 1; i <= n; i++) {
-	s_obj = *source++;
-	if (IS_ATOM(s_obj))
-	    size += 1;
-	else
-	    size += SEQ_PTR(s_obj)->length;
+        s_obj = *source++;
+        if (IS_ATOM(s_obj))
+            size += 1;
+        else
+            size += SEQ_PTR(s_obj)->length;
     }
     
     /* Allocate the result sequence */
@@ -466,25 +466,25 @@ void Concat_N(object_ptr target, object_ptr  source, int n)
     /* The operands are in reverse order. */
     p = result->base+1;
     for (i = 1; i <= n; i++) {
-	s_obj = *(--source);
-	if (IS_ATOM(s_obj)) {
-	    *p++ = s_obj;
-	    Ref(s_obj);
-	}
-	else {
-	    /* sequence */
-	    q = SEQ_PTR(s_obj)->base;
-	    while (TRUE) {  // NOVALUE will be copied
-		temp = *(++q);
-		*p++ = temp;
-		if (!IS_ATOM_INT(temp)) {
-		    if (temp == NOVALUE)
-			break;
-		    RefDS(temp);
-		}
-	    }
-	    p--;
-	}
+        s_obj = *(--source);
+        if (IS_ATOM(s_obj)) {
+            *p++ = s_obj;
+            Ref(s_obj);
+        }
+        else {
+            /* sequence */
+            q = SEQ_PTR(s_obj)->base;
+            while (TRUE) {  // NOVALUE will be copied
+                temp = *(++q);
+                *p++ = temp;
+                if (!IS_ATOM_INT(temp)) {
+                    if (temp == NOVALUE)
+                        break;
+                    RefDS(temp);
+                }
+            }
+            p--;
+        }
     }
     
     DeRef(*target);
@@ -507,11 +507,11 @@ void Concat_Ni(object_ptr target, object_ptr *source, int n)
     /* Compute the total size of all the operands */
     size = 0;
     for (i = 1; i <= n; i++) {
-	s_obj = **source++;
-	if (IS_ATOM(s_obj))
-	    size += 1;
-	else
-	    size += SEQ_PTR(s_obj)->length;
+        s_obj = **source++;
+        if (IS_ATOM(s_obj))
+            size += 1;
+        else
+            size += SEQ_PTR(s_obj)->length;
     }
     
     /* Allocate the result sequence */
@@ -521,25 +521,25 @@ void Concat_Ni(object_ptr target, object_ptr *source, int n)
     /* The operands are in reverse order. */
     p = result->base+1;
     for (i = 1; i <= n; i++) {
-	s_obj = **(--source);
-	if (IS_ATOM(s_obj)) {
-	    *p++ = s_obj;
-	    Ref(s_obj);
-	}
-	else {
-	    /* sequence */
-	    q = SEQ_PTR(s_obj)->base;
-	    while (TRUE) {  // NOVALUE will be copied
-		temp = *(++q);
-		*p++ = temp;
-		if (!IS_ATOM_INT(temp)) {
-		    if (temp == NOVALUE)
-			break;
-		    RefDS(temp);
-		}
-	    }
-	    p--;
-	}
+        s_obj = **(--source);
+        if (IS_ATOM(s_obj)) {
+            *p++ = s_obj;
+            Ref(s_obj);
+        }
+        else {
+            /* sequence */
+            q = SEQ_PTR(s_obj)->base;
+            while (TRUE) {  // NOVALUE will be copied
+                temp = *(++q);
+                *p++ = temp;
+                if (!IS_ATOM_INT(temp)) {
+                    if (temp == NOVALUE)
+                        break;
+                    RefDS(temp);
+                }
+            }
+            p--;
+        }
     }
     
     DeRef(*target);
@@ -552,10 +552,10 @@ void RepeatElem(int *addr, object item, int repcount)
 /* repcount will be at least 10 */
 {
     if (IS_DBL_OR_SEQUENCE(item)) {
-	(DBL_PTR(item)->ref) += repcount;
+        (DBL_PTR(item)->ref) += repcount;
     }
     while (repcount-- > 0) {
-	*addr++ = item;
+        *addr++ = item;
     }
 }
 
@@ -568,52 +568,52 @@ object Repeat(object item, object repcount)
     s1_ptr s1;
     
     if (IS_ATOM_INT(repcount)) {
-	count = repcount;
-	if (count < 0) 
-	    RTFatal("repetition count must not be negative");
+        count = repcount;
+        if (count < 0) 
+            RTFatal("repetition count must not be negative");
     }
     
     else if (IS_ATOM_DBL(repcount)) {
-	d = DBL_PTR(repcount)->dbl;
-	if (d > MAXINT_DBL)
-	    RTFatal("repetition count is too large");
-	if (d < 0.0)
-	    RTFatal("repetition count must not be negative");
-	count = (long)d;
+        d = DBL_PTR(repcount)->dbl;
+        if (d > MAXINT_DBL)
+            RTFatal("repetition count is too large");
+        if (d < 0.0)
+            RTFatal("repetition count must not be negative");
+        count = (long)d;
     }
     
     else
-	RTFatal("repetition count must be an atom");
+        RTFatal("repetition count must be an atom");
     
     
     s1 = NewS1(count);
     obj_ptr = s1->base+1;
 
     if (IS_ATOM_INT(item)) {
-	while (count >= 10) {
-	    obj_ptr[0] = item;
-	    obj_ptr[1] = item;
-	    obj_ptr[2] = item;
-	    obj_ptr[3] = item;
-	    obj_ptr[4] = item;
-	    obj_ptr[5] = item;
-	    obj_ptr[6] = item;
-	    obj_ptr[7] = item;
-	    obj_ptr[8] = item;
-	    obj_ptr[9] = item;
-	    obj_ptr += 10;
-	    count -= 10;
-	};
-	while (count > 0) {
-	    *obj_ptr++ = item;  
-	    count--;
-	};
+        while (count >= 10) {
+            obj_ptr[0] = item;
+            obj_ptr[1] = item;
+            obj_ptr[2] = item;
+            obj_ptr[3] = item;
+            obj_ptr[4] = item;
+            obj_ptr[5] = item;
+            obj_ptr[6] = item;
+            obj_ptr[7] = item;
+            obj_ptr[8] = item;
+            obj_ptr[9] = item;
+            obj_ptr += 10;
+            count -= 10;
+        };
+        while (count > 0) {
+            *obj_ptr++ = item;  
+            count--;
+        };
     }
     else {
-	(DBL_PTR(item)->ref) += count;
-	while (--count >= 0) {
-	    *obj_ptr++ = item;  
-	};
+        (DBL_PTR(item)->ref) += count;
+        while (--count >= 0) {
+            *obj_ptr++ = item;  
+        };
     }
     return MAKE_SEQ(s1);
 }
@@ -630,63 +630,63 @@ void de_reference(s1_ptr a)
     s1_ptr a1;
     
     if ((long)a == NOVALUE || IS_ATOM_INT(a)) 
-	RTInternal("bad object passed to de_reference");
+        RTInternal("bad object passed to de_reference");
     if (DBL_PTR(a)->ref > 1000)
-	RTInternal("more than 1000 refs"); 
+        RTInternal("more than 1000 refs"); 
 #endif    
     if (IS_ATOM_DBL(a)) {
 #ifdef EXTRA_CHECK
-	a1 = (s1_ptr)DBL_PTR(a);
-	if (a1->ref < 0)
-	    RTInternal("f.p. reference count less than 0");
+        a1 = (s1_ptr)DBL_PTR(a);
+        if (a1->ref < 0)
+            RTInternal("f.p. reference count less than 0");
 #endif
-	a = (s1_ptr)DBL_PTR(a);
-	FreeD((unsigned char *)a);
+        a = (s1_ptr)DBL_PTR(a);
+        FreeD((unsigned char *)a);
     }
 
     else { /* SEQUENCE */
-	/* sequence reference count has reached 0 */
-	a = SEQ_PTR(a);
-	p = a->base;
+        /* sequence reference count has reached 0 */
+        a = SEQ_PTR(a);
+        p = a->base;
 #ifdef EXTRA_CHECK
-	if (a->ref < 0)
-	    RTInternal("sequence reference count less than 0");
-	if (*(p+(a->length+1)) != NOVALUE)
-	    RTInternal("Sentinel missing!\n");
+        if (a->ref < 0)
+            RTInternal("sequence reference count less than 0");
+        if (*(p+(a->length+1)) != NOVALUE)
+            RTInternal("Sentinel missing!\n");
 #endif
-	while (TRUE) {
-	    p++;
-	    t = *p;
+        while (TRUE) {
+            p++;
+            t = *p;
 #ifdef EXTRA_CHECK
-	    if (t > MAXINT)
-		RTInternal("de_reference: invalid object found!");
+            if (t > MAXINT)
+                RTInternal("de_reference: invalid object found!");
 #endif
-	    if (!IS_ATOM_INT(t)) {
-		if (t == NOVALUE) {
-		    // end of sequence: back up a level
-		    p = (object_ptr)a->length;
-		    t = (object)a->ref;
-		    EFree((char *)a); 
-		    a = (s1_ptr)t;
-		    if (a == NULL)
-			break;  // it's the top-level sequence - quit
-		}
-		else if (--(DBL_PTR(t)->ref) == 0) {
-		    if (IS_ATOM_DBL(t)) {
-			FreeD((unsigned char *)DBL_PTR(t));
-		    }
-		    else {
-			// switch to subsequence
-			// was: de_reference((s1_ptr)t);
-			t = (object)SEQ_PTR(t);
-			((s1_ptr)t)->ref = (long)a;
-			((s1_ptr)t)->length = (long)p;
-			a = (s1_ptr)t;
-			p = a->base;
-		    }
-		}
-	    }
-	}
+            if (!IS_ATOM_INT(t)) {
+                if (t == NOVALUE) {
+                    // end of sequence: back up a level
+                    p = (object_ptr)a->length;
+                    t = (object)a->ref;
+                    EFree((char *)a); 
+                    a = (s1_ptr)t;
+                    if (a == NULL)
+                        break;  // it's the top-level sequence - quit
+                }
+                else if (--(DBL_PTR(t)->ref) == 0) {
+                    if (IS_ATOM_DBL(t)) {
+                        FreeD((unsigned char *)DBL_PTR(t));
+                    }
+                    else {
+                        // switch to subsequence
+                        // was: de_reference((s1_ptr)t);
+                        t = (object)SEQ_PTR(t);
+                        ((s1_ptr)t)->ref = (long)a;
+                        ((s1_ptr)t)->length = (long)p;
+                        a = (s1_ptr)t;
+                        p = a->base;
+                    }
+                }
+            }
+        }
     } 
 }
 
@@ -720,28 +720,28 @@ void de_reference_i(s1_ptr a)
     s1_ptr a1;
     
     if ((long)a == NOVALUE || IS_ATOM_INT(a)) 
-	RTInternal("bad object passed to de_reference");
+        RTInternal("bad object passed to de_reference");
     if (DBL_PTR(a)->ref > 1000)
-	RTInternal("more than 1000 refs"); 
+        RTInternal("more than 1000 refs"); 
 #endif    
     if (IS_ATOM_DBL(a)) {  
 #ifdef EXTRA_CHECK
-	a1 = (s1_ptr)DBL_PTR(a);
-	if (a1->ref < 0)
-	    RTInternal("f.p. reference count less than 0");
+        a1 = (s1_ptr)DBL_PTR(a);
+        if (a1->ref < 0)
+            RTInternal("f.p. reference count less than 0");
 #endif
-	a = (s1_ptr)DBL_PTR(a);
-	FreeD((unsigned char *)a);
+        a = (s1_ptr)DBL_PTR(a);
+        FreeD((unsigned char *)a);
     }
 
     else { /* SEQUENCE */
-	/* sequence reference count has reached 0 */
-	a = SEQ_PTR(a);
+        /* sequence reference count has reached 0 */
+        a = SEQ_PTR(a);
 #ifdef EXTRA_CHECK
-	if (a->ref < 0)
-	    RTInternal("sequence reference count less than 0");
+        if (a->ref < 0)
+            RTInternal("sequence reference count less than 0");
 #endif
-	EFree((char *)a); 
+        EFree((char *)a); 
     } 
 }
 
@@ -749,16 +749,18 @@ object DoubleToInt(object d)
 /* try to convert a double to an integer, if possible */
 {
     double temp_dbl;
+    long num; // modified by James Cook (jmsck55), not to use math.h's floor()
 
     temp_dbl = DBL_PTR(d)->dbl;
-    if (floor(temp_dbl) == temp_dbl && 
-	temp_dbl <= MAXINT_DBL &&
-	temp_dbl >= MININT_DBL) {
-	    /* return it in integer repn */
-	    return MAKE_INT((long)temp_dbl);
+    num = (long)temp_dbl; // compare type-casting (long), with floor(double)
+    if ((double)num == temp_dbl && // type-cast back to double.
+        temp_dbl <= MAXINT_DBL &&
+        temp_dbl >= MININT_DBL) {
+            /* return it in integer repn */
+            return MAKE_INT(num);
     }
     else
-	return d; /* couldn't convert */
+        return d; /* couldn't convert */
 }
 
 
@@ -781,9 +783,9 @@ object add(long a, long b)
 
     c = a + b;
     if (c + HIGH_BITS < 0)    
-	return MAKE_INT(c);
+        return MAKE_INT(c);
     else
-	return (object)NewDouble((double)c);
+        return (object)NewDouble((double)c);
 }
 
 object minus(long a, long b)
@@ -793,9 +795,9 @@ object minus(long a, long b)
 
     c = a - b;
     if (c + HIGH_BITS < 0)
-	return MAKE_INT(c);
+        return MAKE_INT(c);
     else
-	return (object)NewDouble((double)c);
+        return (object)NewDouble((double)c);
 }
 
 object multiply(long a, long b)
@@ -803,13 +805,13 @@ object multiply(long a, long b)
 /* n.b. char type is signed */
 {
     if (a == (short)a) {
-	if ((b <= INT15 && b >= -INT15) || 
-	   (a == (char)a && b <= INT23 && b >= -INT23) ||
-	   (b == (short)b && a <= INT15 && a >= -INT15))
-	    return MAKE_INT(a * b);
+        if ((b <= INT15 && b >= -INT15) || 
+           (a == (char)a && b <= INT23 && b >= -INT23) ||
+           (b == (short)b && a <= INT15 && a >= -INT15))
+            return MAKE_INT(a * b);
     }
     else if (b == (char)b && a <= INT23 && a >= -INT23)
-	return MAKE_INT(a * b);
+        return MAKE_INT(a * b);
 
     return (object)NewDouble(a * (double)b);
 }
@@ -818,18 +820,18 @@ object divide(long a, long b)
 /* compute a / b */
 {
     if (b == 0)
-	RTFatal("attempt to divide by 0");
+        RTFatal("attempt to divide by 0");
     if (a % b != 0) 
-	return (object)NewDouble((double)a / b);
+        return (object)NewDouble((double)a / b);
     else
-	return MAKE_INT(a / b);
+        return MAKE_INT(a / b);
 }
 
 object Ddivide(d_ptr a, d_ptr b)
 /* double divide */
 {
     if (b->dbl == 0.0)
-	RTFatal("attempt to divide by 0");
+        RTFatal("attempt to divide by 0");
     return (object)NewDouble(a->dbl / b->dbl);
 }
 
@@ -837,17 +839,17 @@ object eremainder(long a, long b)  // avoid conflict with "remainder" math fn
 /* integer remainder of a divided by b */
 {
     if (b == 0)
-	RTFatal("can't get remainder of a number divided by 0");
+        RTFatal("can't get remainder of a number divided by 0");
     return MAKE_INT(a % b);
 }
 
-object Dremainder(d_ptr a, d_ptr b)
-/* double remainder of a divided by b */
-{
-    if (b->dbl == 0.0)
-	RTFatal("can't get remainder of a number divided by 0");
-    return (object)NewDouble(fmod(a->dbl, b->dbl)); /* for now */
-}
+// object Dremainder(d_ptr a, d_ptr b)
+// /* double remainder of a divided by b */
+// {
+//     if (b->dbl == 0.0)
+//         RTFatal("can't get remainder of a number divided by 0");
+//     return (object)NewDouble(fmod(a->dbl, b->dbl)); /* for now */
+// }
 
 /* bitwise ops: as long as both are Euphoria integers then
    the result will always be a Euphoria integer. True for
@@ -859,10 +861,10 @@ void check32(d_ptr a, d_ptr b)
 /* check for doubles that are greater than 32-bits */
 {
     if (a->dbl < MIN_BITWISE_DBL ||
-	a->dbl > MAX_BITWISE_DBL ||
-	b->dbl < MIN_BITWISE_DBL ||
-	b->dbl > MAX_BITWISE_DBL)
-	RTFatal("bitwise operations are limited to 32-bit numbers");
+        a->dbl > MAX_BITWISE_DBL ||
+        b->dbl < MIN_BITWISE_DBL ||
+        b->dbl > MAX_BITWISE_DBL)
+        RTFatal("bitwise operations are limited to 32-bit numbers");
 }
 
 object and_bits(long a, long b)
@@ -882,9 +884,9 @@ object Dand_bits(d_ptr a, d_ptr b)
     longb = b->dbl;
     c = longa & longb;
     if (c > NOVALUE && c < TOO_BIG_INT) 
-	return c; // an integer
+        return c; // an integer
     else
-	return (object)NewDouble((double)c); 
+        return (object)NewDouble((double)c); 
 }
 
 object or_bits(long a, long b)
@@ -904,9 +906,9 @@ object Dor_bits(d_ptr a, d_ptr b)
     longb = b->dbl;
     c = longa | longb;
     if (c > NOVALUE && c < TOO_BIG_INT) 
-	return c; // an integer
+        return c; // an integer
     else
-	return (object)NewDouble((double)c); 
+        return (object)NewDouble((double)c); 
 }
 
 object xor_bits(long a, long b)
@@ -926,9 +928,9 @@ object Dxor_bits(d_ptr a, d_ptr b)
     longb = b->dbl;
     c = longa ^ longb;
     if (c > NOVALUE && c < TOO_BIG_INT) 
-	return c; // an integer
+        return c; // an integer
     else
-	return (object)NewDouble((double)c); 
+        return (object)NewDouble((double)c); 
 }
 
 object not_bits(long a)
@@ -944,68 +946,68 @@ object Dnot_bits(d_ptr a)
     long c;
     
     if (a->dbl < MIN_BITWISE_DBL ||
-	a->dbl > MAX_BITWISE_DBL)
-	 check32(a, a);  // error msg
+        a->dbl > MAX_BITWISE_DBL)
+         check32(a, a);  // error msg
     longa = a->dbl;
     c = ~longa;
     if (c > NOVALUE && c < TOO_BIG_INT) 
-	return c; // an integer
+        return c; // an integer
     else
-	return (object)NewDouble((double)c); 
+        return (object)NewDouble((double)c); 
 }
 
-object power(long a, long b)
-/* integer a to the power b */
-{
-    long i, p;
+// object power(long a, long b)
+// /* integer a to the power b */
+// {
+//     long i, p;
+// 
+//     if (a == 2 && b >= 0 && b <= 29) {
+//         /* positive power of 2 */
+//         return MAKE_INT(1 << b);
+//     }
+//     else if (a == 0 && b <= 0) {
+//         RTFatal("can't raise 0 to power <= 0");
+//         return 0;
+//     }
+//     else if (b == 0) {
+//         return ATOM_1;
+//     }
+//     else if (b >= 1 && b <= 4 && a >= -178 && a <= 178) {
+//         p = a;  
+//         for (i = 2; i <= b; i++)
+//             p = p * a;
+//         return MAKE_INT(p);
+//     }
+//     else
+//         return (object)NewDouble(pow((double)a, (double)b));
+// }
 
-    if (a == 2 && b >= 0 && b <= 29) {
-	/* positive power of 2 */
-	return MAKE_INT(1 << b);
-    }
-    else if (a == 0 && b <= 0) {
-	RTFatal("can't raise 0 to power <= 0");
-	return 0;
-    }
-    else if (b == 0) {
-	return ATOM_1;
-    }
-    else if (b >= 1 && b <= 4 && a >= -178 && a <= 178) {
-	p = a;  
-	for (i = 2; i <= b; i++)
-	    p = p * a;
-	return MAKE_INT(p);
-    }
-    else
-	return (object)NewDouble(pow((double)a, (double)b));
-}
-
-object Dpower(d_ptr a, d_ptr b)
-/* double power */
-{
-    if (a->dbl == 0.0 && b->dbl <= 0.0)
-	RTFatal("can't raise 0 to power <= 0");
-    if (a->dbl < 0.0 && floor(b->dbl) != b->dbl)
-	RTFatal("can't raise negative number to non-integer power");
-    return (object)NewDouble(pow(a->dbl, b->dbl));
-}
+// object Dpower(d_ptr a, d_ptr b)
+// /* double power */
+// {
+//     if (a->dbl == 0.0 && b->dbl <= 0.0)
+//         RTFatal("can't raise 0 to power <= 0");
+//     if (a->dbl < 0.0 && floor(b->dbl) != b->dbl)
+//         RTFatal("can't raise negative number to non-integer power");
+//     return (object)NewDouble(pow(a->dbl, b->dbl));
+// }
 
 object equals(long a, long b)
 /* integer a = b */
 {
     if (a == b)
-	return ATOM_1;
+        return ATOM_1;
     else
-	return ATOM_0;
+        return ATOM_0;
 }
 
 object Dequals(d_ptr a, d_ptr b)
 /* double a = b */
 {
     if (a->dbl == b->dbl) 
-	return ATOM_1;
+        return ATOM_1;
     else 
-	return ATOM_0;
+        return ATOM_0;
 }
 
 
@@ -1013,18 +1015,18 @@ object less(long a, long b)
 /* integer a < b */
 {
     if (a < b)
-	return ATOM_1;
+        return ATOM_1;
     else
-	return ATOM_0;
+        return ATOM_0;
 }
 
 object Dless(d_ptr a, d_ptr b)
 /* double a < b */
 {
     if (a->dbl < b->dbl)
-	return ATOM_1;
+        return ATOM_1;
     else
-	return ATOM_0;
+        return ATOM_0;
 }
 
 
@@ -1032,19 +1034,19 @@ object greater(long a, long b)
 /* integer a > b */
 {
     if (a > b)
-	return ATOM_1;
+        return ATOM_1;
     else
-	return ATOM_0;
+        return ATOM_0;
 }
 
 object Dgreater(d_ptr a, d_ptr b)
 /* double a > b */
 {
     if (a->dbl > b->dbl) {
-	return ATOM_1;
+        return ATOM_1;
     }
     else {
-	return ATOM_0;
+        return ATOM_0;
     }
 }
 
@@ -1053,18 +1055,18 @@ object noteq(long a, long b)
 /* integer a != b */
 {
     if (a != b)
-	return ATOM_1;
+        return ATOM_1;
     else
-	return ATOM_0;
+        return ATOM_0;
 }
 
 object Dnoteq(d_ptr a, d_ptr b)
 /* double a != b */
 {
     if (a->dbl != b->dbl)
-	return ATOM_1;
+        return ATOM_1;
     else
-	return ATOM_0;
+        return ATOM_0;
 }
 
 
@@ -1072,18 +1074,18 @@ object lesseq(long a, long b)
 /* integer a <= b */
 {
     if (a <= b) 
-	return ATOM_1;
+        return ATOM_1;
     else
-	return ATOM_0;
+        return ATOM_0;
 }
 
 object Dlesseq(d_ptr a, d_ptr b)
 /* double a <= b */
 {
     if (a->dbl <= b->dbl)
-	return ATOM_1;
+        return ATOM_1;
     else
-	return ATOM_0;
+        return ATOM_0;
 }
 
 
@@ -1091,18 +1093,18 @@ object greatereq(long a, long b)
 /* integer a >= b */
 {
     if (a >= b)
-	return ATOM_1;
+        return ATOM_1;
     else
-	return ATOM_0;
+        return ATOM_0;
 }
 
 object Dgreatereq(d_ptr a, d_ptr b)
 /* double a >= b */
 {
     if (a->dbl >= b->dbl)
-	return ATOM_1;
+        return ATOM_1;
     else
-	return ATOM_0;
+        return ATOM_0;
 }
 
 
@@ -1110,18 +1112,18 @@ object Band(long a, long b)
 /* integer a and b */
 {
     if (a != 0 && b != 0)
-	return ATOM_1;
+        return ATOM_1;
     else
-	return ATOM_0;
+        return ATOM_0;
 }
 
 object Dand(d_ptr a, d_ptr b)
 /* double a and b */
 {
     if (a->dbl != 0.0 && b->dbl != 0.0)
-	return ATOM_1;
+        return ATOM_1;
     else
-	return ATOM_0;
+        return ATOM_0;
 }
 
 
@@ -1129,36 +1131,36 @@ object Bor(long a, long b)
 /* integer a or b */
 {
     if (a != 0 || b != 0)
-	return ATOM_1;
+        return ATOM_1;
     else
-	return ATOM_0;
+        return ATOM_0;
 }
 
 object Dor(d_ptr a, d_ptr b)
 /* double a or b */
 {
     if (a->dbl != 0.0 || b->dbl != 0.0)
-	 return ATOM_1;
+         return ATOM_1;
      else
-	 return ATOM_0;
+         return ATOM_0;
 }
 
 object Bxor(long a, long b)
 /* integer a xor b */
 {
     if ((a != 0) != (b != 0))
-	return ATOM_1;
+        return ATOM_1;
     else
-	return ATOM_0;
+        return ATOM_0;
 }
 
 object Dxor(d_ptr a, d_ptr b)
 /* double a xor b */
 {
     if ((a->dbl != 0.0) != (b->dbl != 0.0))
-	 return ATOM_1;
+         return ATOM_1;
      else
-	 return ATOM_0;
+         return ATOM_0;
 }
 
 /* --- Unary Ops --- */
@@ -1167,9 +1169,9 @@ object uminus(long a)
 /* integer -a */
 {
     if (a == MININT_VAL)
-	return (object)NewDouble((double)-MININT_VAL);
+        return (object)NewDouble((double)-MININT_VAL);
     else
-	return MAKE_INT(-a);
+        return MAKE_INT(-a);
 }
 
 object Duminus(d_ptr a)
@@ -1183,121 +1185,121 @@ object unot(long a)
 /* compute c := not a */
 {
     if (a == 0)
-	return ATOM_1;
+        return ATOM_1;
     else
-	return ATOM_0;
+        return ATOM_0;
 }
 
 object Dnot(d_ptr a)
 /* double not a */
 {
     if (a->dbl == 0.0)
-	return ATOM_1;
+        return ATOM_1;
     else
-	return ATOM_0;
+        return ATOM_0;
 }
 
 
-object e_sqrt(long a)
-/* integer square_root(a) */
-{
-    if (a < 0)
-	RTFatal("attempt to take square root of a negative number");
-    return (object)NewDouble( sqrt((double)a) );
-}
-
-object De_sqrt(d_ptr a)
-/* double square root(a) */
-{
-    if (a->dbl < 0)
-	RTFatal("attempt to take square root of a negative number");
-    return (object)NewDouble( sqrt(a->dbl) );
-}
-
-
-object e_sin(long a)
-/* sin of an angle a (radians) */
-{
-    return (object)NewDouble( sin((double)a) );
-}
-
-object De_sin(d_ptr a)
-/* double sin of a */
-{
-    return (object)NewDouble( sin(a->dbl) );
-}
-
-object e_cos(long a)
-/* cos of an angle a (radians) */
-{
-    return (object)NewDouble( cos((double)a) );
-}
-
-object De_cos(d_ptr a)
-/* double cos of a */
-{
-    return (object)NewDouble( cos(a->dbl) );
-}
-
-object e_tan(long a)
-/* tan of an angle a (radians) */
-{
-    return (object)NewDouble( tan((double)a) );
-}
-
-object De_tan(d_ptr a)
-/* double tan of a */
-{
-    return (object)NewDouble( tan(a->dbl) );
-}
-
-object e_arctan(long a)
-/* arctan of an angle a (radians) */
-{
-    return (object)NewDouble( atan((double)a) );
-}
-
-object De_arctan(d_ptr a)
-/* double arctan of a */
-{
-    return (object)NewDouble( atan(a->dbl) );
-}
-
-object e_log(long a)
-/* natural log of a (integer) */
-{
-    if (a <= 0)
-	RTFatal("may only take log of a positive number");
-    return (object)NewDouble( log((double)a) );
-}
-
-object De_log(d_ptr a)
-/* natural log of a (double) */
-{
-    if (a->dbl <= 0.0)
-	RTFatal("may only take log of a positive number");
-    return (object)NewDouble( log(a->dbl) );
-}
-
-object e_floor(long a)  // not used anymore
-/* floor of a number - no op since a is already known to be an int */
-{
-    return a; 
-}
-
-object De_floor(d_ptr a)
-/* floor of a number */
-{
-    double temp;
-
-    temp = floor(a->dbl); 
-#ifndef ERUNTIME    
-    if (fabs(temp) < MAXINT_DBL)
-	return MAKE_INT((long)temp);
-    else 
-#endif      
-	return (object)NewDouble(temp);
-}
+// object e_sqrt(long a)
+// /* integer square_root(a) */
+// {
+//     if (a < 0)
+//         RTFatal("attempt to take square root of a negative number");
+//     return (object)NewDouble( sqrt((double)a) );
+// }
+// 
+// object De_sqrt(d_ptr a)
+// /* double square root(a) */
+// {
+//     if (a->dbl < 0)
+//         RTFatal("attempt to take square root of a negative number");
+//     return (object)NewDouble( sqrt(a->dbl) );
+// }
+// 
+// 
+// object e_sin(long a)
+// /* sin of an angle a (radians) */
+// {
+//     return (object)NewDouble( sin((double)a) );
+// }
+// 
+// object De_sin(d_ptr a)
+// /* double sin of a */
+// {
+//     return (object)NewDouble( sin(a->dbl) );
+// }
+// 
+// object e_cos(long a)
+// /* cos of an angle a (radians) */
+// {
+//     return (object)NewDouble( cos((double)a) );
+// }
+// 
+// object De_cos(d_ptr a)
+// /* double cos of a */
+// {
+//     return (object)NewDouble( cos(a->dbl) );
+// }
+// 
+// object e_tan(long a)
+// /* tan of an angle a (radians) */
+// {
+//     return (object)NewDouble( tan((double)a) );
+// }
+// 
+// object De_tan(d_ptr a)
+// /* double tan of a */
+// {
+//     return (object)NewDouble( tan(a->dbl) );
+// }
+// 
+// object e_arctan(long a)
+// /* arctan of an angle a (radians) */
+// {
+//     return (object)NewDouble( atan((double)a) );
+// }
+// 
+// object De_arctan(d_ptr a)
+// /* double arctan of a */
+// {
+//     return (object)NewDouble( atan(a->dbl) );
+// }
+// 
+// object e_log(long a)
+// /* natural log of a (integer) */
+// {
+//     if (a <= 0)
+//         RTFatal("may only take log of a positive number");
+//     return (object)NewDouble( log((double)a) );
+// }
+// 
+// object De_log(d_ptr a)
+// /* natural log of a (double) */
+// {
+//     if (a->dbl <= 0.0)
+//         RTFatal("may only take log of a positive number");
+//     return (object)NewDouble( log(a->dbl) );
+// }
+// 
+// object e_floor(long a)  // not used anymore
+// /* floor of a number - no op since a is already known to be an int */
+// {
+//     return a; 
+// }
+// 
+// object De_floor(d_ptr a)
+// /* floor of a number */
+// {
+//     double temp;
+// 
+//     temp = floor(a->dbl); 
+// #ifndef ERUNTIME    
+//     if (fabs(temp) < MAXINT_DBL)
+//         return MAKE_INT((long)temp);
+//     else 
+// #endif      
+//         return (object)NewDouble(temp);
+// }
 
 #define V(a,b) ((((a) << 1) & 0xFFFF0000) | (((b) >> 14) & 0x0000FFFF))
 
@@ -1326,14 +1328,14 @@ object De_floor(d_ptr a)
 //     time_of_day = time(NULL);
 //     local = localtime(&time_of_day);
 //     seed2 = local->tm_yday * 86400 + local->tm_hour * 3600 + 
-// 	    local->tm_min * 60 +     local->tm_sec;   
+//          local->tm_min * 60 +     local->tm_sec;   
 // #ifdef EWINDOWS 
 //     seed1 = GetTickCount();  // milliseconds since Windows started
 // #endif  
 //     if (seed1 == 0)
-// 	seed1 = 1;    
+//      seed1 = 1;    
 //     if (seed2 == 0)
-// 	seed2 = 1;    
+//      seed2 = 1;    
 //     good_rand();  // skip first one, second will be more random-looking
 // }
 // 
@@ -1345,8 +1347,8 @@ object De_floor(d_ptr a)
 //     result.rem = numer % denom;
 // 
 //     if (numer >= 0 && result.rem < 0)   {
-// 	++result.quot;
-// 	result.rem -= denom;
+//      ++result.quot;
+//      result.rem -= denom;
 //     }
 // 
 //     return result;
@@ -1359,13 +1361,13 @@ object De_floor(d_ptr a)
 //     long alpha, beta;
 // 
 //     if ((seed1 == 0L) || (seed2 == 0L)) {
-// 	if (rand_was_set) {
-// 	    /* need repeatable sequence of numbers */
-// 	    seed1 = 123456;
-// 	    seed2 = 9999;
-// 	}
-// 	else 
-// 	    setran();
+//      if (rand_was_set) {
+//          /* need repeatable sequence of numbers */
+//          seed1 = 123456;
+//          seed2 = 9999;
+//      }
+//      else 
+//          setran();
 //     }
 //     /* seed = seed * PROOT % PRIME */
 //     temp = my_ldiv(seed1, quo1);
@@ -1375,18 +1377,18 @@ object De_floor(d_ptr a)
 //     /* normalize */
 // 
 //     if (alpha > beta) 
-// 	seed1 = alpha - beta;
+//      seed1 = alpha - beta;
 //     else
-// 	seed1 = alpha - beta + prim1;
+//      seed1 = alpha - beta + prim1;
 // 
 //     temp = my_ldiv(seed2, quo2);
 //     alpha = root2 * temp.rem;
 //     beta = rem2 * temp.quot;
 // 
 //     if (alpha > beta) 
-// 	seed2 = alpha - beta;
+//      seed2 = alpha - beta;
 //     else
-// 	seed2 = alpha - beta + prim2;    
+//      seed2 = alpha - beta + prim2;    
 // 
 //     return V(seed1, seed2);
 // }
@@ -1396,7 +1398,7 @@ object De_floor(d_ptr a)
 // /* a is a legal integer value */
 // {
 //     if (a <= 0)
-// 	RTFatal("argument to rand must be >= 1");
+//      RTFatal("argument to rand must be >= 1");
 //     return MAKE_INT((good_rand() % (unsigned)a) + 1);
 // }
 // 
@@ -1405,9 +1407,9 @@ object De_floor(d_ptr a)
 // /* random number from 1 to a (a <= 1.07 billion) */
 // {
 //     if (a->dbl < 1.0)
-// 	RTFatal("argument to rand must be >= 1");
+//      RTFatal("argument to rand must be >= 1");
 //     if (a->dbl > MAXINT_DBL)
-// 	RTFatal("argument to rand must be <= 1073741823");
+//      RTFatal("argument to rand must be <= 1073741823");
 // //  return (object)NewDouble( (double)(1 + good_rand() % (unsigned)(a->dbl)) );
 //     return (object)(1 + good_rand() % (unsigned)(a->dbl));
 // }
@@ -1424,28 +1426,28 @@ object De_floor(d_ptr a)
 //     object (*int_fn)();
 // 
 //     if (IS_ATOM_DBL(a))
-// 	return (*optable[fn].dblfn)(DBL_PTR(a));
+//      return (*optable[fn].dblfn)(DBL_PTR(a));
 // 
 //     else {
-// 	/* a must be a SEQUENCE */
-// 	a = (object)SEQ_PTR(a);
-// 	length = ((s1_ptr)a)->length;
-// 	c = NewS1(length);
-// 	cp = c->base;
-// 	ap = ((s1_ptr)a)->base;
-// 	int_fn = optable[fn].intfn;
-// 	while (TRUE) {
-// 	    x = *(++ap);
-// 	    if (IS_ATOM_INT(x)) {
-// 		*(++cp) = (*int_fn)(INT_VAL(x));
-// 	    }
-// 	    else {
-// 		if (x == NOVALUE)
-// 		    break;
-// 		*(++cp) = unary_op(fn, x);
-// 	    }
-// 	}
-// 	return MAKE_SEQ(c);
+//      /* a must be a SEQUENCE */
+//      a = (object)SEQ_PTR(a);
+//      length = ((s1_ptr)a)->length;
+//      c = NewS1(length);
+//      cp = c->base;
+//      ap = ((s1_ptr)a)->base;
+//      int_fn = optable[fn].intfn;
+//      while (TRUE) {
+//          x = *(++ap);
+//          if (IS_ATOM_INT(x)) {
+//              *(++cp) = (*int_fn)(INT_VAL(x));
+//          }
+//          else {
+//              if (x == NOVALUE)
+//                  break;
+//              *(++cp) = unary_op(fn, x);
+//          }
+//      }
+//      return MAKE_SEQ(c);
 //     }
 // }
 // 
@@ -1456,20 +1458,20 @@ object De_floor(d_ptr a)
 //     struct d temp_d;
 // 
 //     if (IS_ATOM_INT(a)) { 
-// 	if (IS_ATOM_INT(b)) 
-// 	    return (*optable[fn].intfn)(INT_VAL(a), INT_VAL(b));
-// 	else {
-// 	    temp_d.dbl = (double)INT_VAL(a);
-// 	    return (*optable[fn].dblfn)(&temp_d, DBL_PTR(b));
-// 	}
+//      if (IS_ATOM_INT(b)) 
+//          return (*optable[fn].intfn)(INT_VAL(a), INT_VAL(b));
+//      else {
+//          temp_d.dbl = (double)INT_VAL(a);
+//          return (*optable[fn].dblfn)(&temp_d, DBL_PTR(b));
+//      }
 //     }
 //     else {
-// 	if (IS_ATOM_INT(b)) {
-// 	    temp_d.dbl = (double)INT_VAL(b);
-// 	    return (*optable[fn].dblfn)(DBL_PTR(a), &temp_d);
-// 	}
-// 	else
-// 	    return (*optable[fn].dblfn)(DBL_PTR(a), DBL_PTR(b));
+//      if (IS_ATOM_INT(b)) {
+//          temp_d.dbl = (double)INT_VAL(b);
+//          return (*optable[fn].dblfn)(DBL_PTR(a), &temp_d);
+//      }
+//      else
+//          return (*optable[fn].dblfn)(DBL_PTR(a), DBL_PTR(b));
 //     }
 // }
 // 
@@ -1488,103 +1490,103 @@ object De_floor(d_ptr a)
 //     /* handle all ATOM:ATOM cases except INT:INT - not allowed 
 //        n.b. IS_ATOM_DBL actually only distinguishes ATOMS from SEQUENCES */
 //     if (IS_ATOM_INT(a) && IS_ATOM_DBL(b)) { 
-// 	/* in test above b can't be an int if a is */
-// 	temp_d.dbl = (double)INT_VAL(a);
-// 	return (*optable[fn].dblfn)(&temp_d, DBL_PTR(b));
+//      /* in test above b can't be an int if a is */
+//      temp_d.dbl = (double)INT_VAL(a);
+//      return (*optable[fn].dblfn)(&temp_d, DBL_PTR(b));
 //     } 
 //     else if (IS_ATOM_DBL(a)) { 
-// 	/* a could be an int, but then b must be a sequence */
-// 	if (IS_ATOM_INT(b)) {
-// 	    temp_d.dbl = (double)INT_VAL(b);
-// 	    return (*optable[fn].dblfn)(DBL_PTR(a), &temp_d);
-// 	}
-// 	else if (IS_ATOM_DBL(b))  {
-// 	    return (*optable[fn].dblfn)(DBL_PTR(a), DBL_PTR(b));
-// 	}
+//      /* a could be an int, but then b must be a sequence */
+//      if (IS_ATOM_INT(b)) {
+//          temp_d.dbl = (double)INT_VAL(b);
+//          return (*optable[fn].dblfn)(DBL_PTR(a), &temp_d);
+//      }
+//      else if (IS_ATOM_DBL(b))  {
+//          return (*optable[fn].dblfn)(DBL_PTR(a), DBL_PTR(b));
+//      }
 //     }
 //     
 //     /* result is a sequence */
 //     int_fn = optable[fn].intfn;
 //     if (IS_ATOM(a)) {
-// 	/* b must be a sequence */
-// 	b = (object)SEQ_PTR(b);
-// 	length = ((s1_ptr)b)->length;
-// 	c = NewS1(length);
-// 	cp = c->base;
-// 	bp = ((s1_ptr)b)->base;
-// 	if (IS_ATOM_INT(a)) {
-// 	    while (TRUE) {
-// 		x = *(++bp);
-// 		if (IS_ATOM_INT(x)) {
-// 		    *(++cp) = (*int_fn)(INT_VAL(a), INT_VAL(x));
-// 		}
-// 		else {
-// 		    if (x == NOVALUE)
-// 			break;
-// 		    *(++cp) = binary_op(fn, a, x);
-// 		}
-// 	    }
-// 	}
-// 	else {
-// 	    // a is not an integer
-// 	    while (--length >= 0) {
-// 		*(++cp) = binary_op(fn, a, *(++bp));
-// 	    }
-// 	}
+//      /* b must be a sequence */
+//      b = (object)SEQ_PTR(b);
+//      length = ((s1_ptr)b)->length;
+//      c = NewS1(length);
+//      cp = c->base;
+//      bp = ((s1_ptr)b)->base;
+//      if (IS_ATOM_INT(a)) {
+//          while (TRUE) {
+//              x = *(++bp);
+//              if (IS_ATOM_INT(x)) {
+//                  *(++cp) = (*int_fn)(INT_VAL(a), INT_VAL(x));
+//              }
+//              else {
+//                  if (x == NOVALUE)
+//                      break;
+//                  *(++cp) = binary_op(fn, a, x);
+//              }
+//          }
+//      }
+//      else {
+//          // a is not an integer
+//          while (--length >= 0) {
+//              *(++cp) = binary_op(fn, a, *(++bp));
+//          }
+//      }
 //     }
 //     else if (IS_ATOM(b)) {
-// 	/* a must be a sequence */
-// 	a = (object)SEQ_PTR(a);
-// 	length = ((s1_ptr)a)->length;
-// 	c = NewS1(length);
-// 	cp = c->base;
-// 	ap = ((s1_ptr)a)->base;
-// 	if (IS_ATOM_INT(b)) {
-// 	    while (TRUE) { 
-// 		x = *(++ap);
-// 		if (IS_ATOM_INT(x)) {
-// 		    *(++cp) = (*int_fn)(INT_VAL(x), INT_VAL(b));
-// 		}
-// 		else {
-// 		    if (x == NOVALUE)
-// 			break;
-// 		    *(++cp) = binary_op(fn, x, b);
-// 		}
-// 	    }
-// 	}
-// 	else {
-// 	    // b is not an integer
-// 	    while (--length >= 0) { 
-// 		*(++cp) = binary_op(fn, *(++ap), b);
-// 	    }
-// 	}
+//      /* a must be a sequence */
+//      a = (object)SEQ_PTR(a);
+//      length = ((s1_ptr)a)->length;
+//      c = NewS1(length);
+//      cp = c->base;
+//      ap = ((s1_ptr)a)->base;
+//      if (IS_ATOM_INT(b)) {
+//          while (TRUE) { 
+//              x = *(++ap);
+//              if (IS_ATOM_INT(x)) {
+//                  *(++cp) = (*int_fn)(INT_VAL(x), INT_VAL(b));
+//              }
+//              else {
+//                  if (x == NOVALUE)
+//                      break;
+//                  *(++cp) = binary_op(fn, x, b);
+//              }
+//          }
+//      }
+//      else {
+//          // b is not an integer
+//          while (--length >= 0) { 
+//              *(++cp) = binary_op(fn, *(++ap), b);
+//          }
+//      }
 //     }
 //     else {
-// 	/* a and b must both be sequences */
-// 	a = (object)SEQ_PTR(a);
-// 	b = (object)SEQ_PTR(b);
-// 	length = ((s1_ptr)a)->length;
-// 	if (length != ((s1_ptr)b)->length) {
-// 	    sprintf(TempBuff, 
-// 		"sequence lengths are not the same (%ld != %ld)",
-// 		length, ((s1_ptr)b)->length);
-// 	    RTFatal(TempBuff);
-// 	}
-// 	c = NewS1(length);
-// 	cp = c->base;
-// 	ap = ((s1_ptr)a)->base;
-// 	bp = ((s1_ptr)b)->base+1;
-// 	while (TRUE) { 
-// 	    x = *(++ap);
-// 	    if (IS_ATOM_INT(x) && IS_ATOM_INT(*bp)) {
-// 		*(++cp) = (*int_fn)(INT_VAL(x), INT_VAL(*bp++));
-// 	    }
-// 	    else {
-// 		if (x == NOVALUE)
-// 		    break;
-// 		*(++cp) = binary_op(fn, x, *bp++);
-// 	    }
-// 	}
+//      /* a and b must both be sequences */
+//      a = (object)SEQ_PTR(a);
+//      b = (object)SEQ_PTR(b);
+//      length = ((s1_ptr)a)->length;
+//      if (length != ((s1_ptr)b)->length) {
+//          sprintf(TempBuff, 
+//              "sequence lengths are not the same (%ld != %ld)",
+//              length, ((s1_ptr)b)->length);
+//          RTFatal(TempBuff);
+//      }
+//      c = NewS1(length);
+//      cp = c->base;
+//      ap = ((s1_ptr)a)->base;
+//      bp = ((s1_ptr)b)->base+1;
+//      while (TRUE) { 
+//          x = *(++ap);
+//          if (IS_ATOM_INT(x) && IS_ATOM_INT(*bp)) {
+//              *(++cp) = (*int_fn)(INT_VAL(x), INT_VAL(*bp++));
+//          }
+//          else {
+//              if (x == NOVALUE)
+//                  break;
+//              *(++cp) = binary_op(fn, x, *bp++);
+//          }
+//      }
 //     }
 //     return MAKE_SEQ(c);
 // }
@@ -1602,57 +1604,57 @@ int compare(object a, object b)
     int c;
 
     if (IS_ATOM(a)) {
-	if (!IS_ATOM(b))
-	    return -1;
-	if (IS_ATOM_INT(a)) {
-	    /* b *must* be a double */
-	    da = (double)a; 
-	    db = DBL_PTR(b)->dbl;
-	}
-	else {
-	    da = DBL_PTR(a)->dbl;
-	    if (IS_ATOM_INT(b)) 
-		db = (double)b;
-	    else
-		db = DBL_PTR(b)->dbl;
-	}
-	return (da < db) ? -1: (da == db) ? 0: 1;
+        if (!IS_ATOM(b))
+            return -1;
+        if (IS_ATOM_INT(a)) {
+            /* b *must* be a double */
+            da = (double)a; 
+            db = DBL_PTR(b)->dbl;
+        }
+        else {
+            da = DBL_PTR(a)->dbl;
+            if (IS_ATOM_INT(b)) 
+                db = (double)b;
+            else
+                db = DBL_PTR(b)->dbl;
+        }
+        return (da < db) ? -1: (da == db) ? 0: 1;
     }
 
     else {
-	/* a must be a SEQUENCE */
-	if (!IS_SEQUENCE(b))
-	    return 1;
-	a = (object)SEQ_PTR(a);
-	b = (object)SEQ_PTR(b);
-	ap = ((s1_ptr)a)->base;
-	bp = ((s1_ptr)b)->base;
-	lengtha = ((s1_ptr)a)->length;
-	lengthb = ((s1_ptr)b)->length;
-	if (lengtha < lengthb)
-	    length = lengtha;
-	else
-	    length = lengthb;
-	while (--length >= 0) {
-	    ap++;
-	    bp++;
-	    av = *ap;
-	    bv = *bp;
-	    if (av != bv) {
-		if (IS_ATOM_INT(av) && IS_ATOM_INT(bv)) {
-		    if (av < bv)
-			return -1;
-		    else 
-			return 1;
-		}
-		else { 
-		    c = compare(av, bv);
-		    if (c != 0)
-			return c;
-		}
-	    }
-	}
-	return (lengtha < lengthb) ? -1: (lengtha == lengthb) ? 0: 1;
+        /* a must be a SEQUENCE */
+        if (!IS_SEQUENCE(b))
+            return 1;
+        a = (object)SEQ_PTR(a);
+        b = (object)SEQ_PTR(b);
+        ap = ((s1_ptr)a)->base;
+        bp = ((s1_ptr)b)->base;
+        lengtha = ((s1_ptr)a)->length;
+        lengthb = ((s1_ptr)b)->length;
+        if (lengtha < lengthb)
+            length = lengtha;
+        else
+            length = lengthb;
+        while (--length >= 0) {
+            ap++;
+            bp++;
+            av = *ap;
+            bv = *bp;
+            if (av != bv) {
+                if (IS_ATOM_INT(av) && IS_ATOM_INT(bv)) {
+                    if (av < bv)
+                        return -1;
+                    else 
+                        return 1;
+                }
+                else { 
+                    c = compare(av, bv);
+                    if (c != 0)
+                        return c;
+                }
+            }
+        }
+        return (lengtha < lengthb) ? -1: (lengtha == lengthb) ? 0: 1;
     }
 }
 
@@ -1665,53 +1667,53 @@ long find(object a, s1_ptr b)
     object bv;
 
     if (!IS_SEQUENCE(b))
-	RTFatal("second argument of find() must be a sequence");
+        RTFatal("second argument of find() must be a sequence");
 
     b = SEQ_PTR(b);
     bp = b->base;
     
     if (IS_ATOM_INT(a)) {
-	while (TRUE) {
-	    bv = *(++bp);
-	    if (IS_ATOM_INT(bv)) {
-		if (a == bv) 
-		    return bp - (object_ptr)b->base;
-	    }
-	    else if (bv == NOVALUE) {
-		break;  // we hit the end marker
-	    }
-	    else if (compare(a, bv) == 0) {  /* not INT-INT case */
-		return bp - (object_ptr)b->base;
-	    }
-	}
+        while (TRUE) {
+            bv = *(++bp);
+            if (IS_ATOM_INT(bv)) {
+                if (a == bv) 
+                    return bp - (object_ptr)b->base;
+            }
+            else if (bv == NOVALUE) {
+                break;  // we hit the end marker
+            }
+            else if (compare(a, bv) == 0) {  /* not INT-INT case */
+                return bp - (object_ptr)b->base;
+            }
+        }
     }
     
     else if (IS_SEQUENCE(a)) {
-	long a_len;
-	
-	length = b->length;
-	a_len = SEQ_PTR(a)->length;
-	while (length > 0) {
-	    bv = *(++bp);
-	    if (IS_SEQUENCE(bv)) {
-		if (a_len == SEQ_PTR(bv)->length) {
-		    /* a is SEQUENCE => not INT-INT case */
-		    if (compare(a, bv) == 0)
-			return bp - (object_ptr)b->base;
-		}
-	    }
-	    length--;
-	}
+        long a_len;
+        
+        length = b->length;
+        a_len = SEQ_PTR(a)->length;
+        while (length > 0) {
+            bv = *(++bp);
+            if (IS_SEQUENCE(bv)) {
+                if (a_len == SEQ_PTR(bv)->length) {
+                    /* a is SEQUENCE => not INT-INT case */
+                    if (compare(a, bv) == 0)
+                        return bp - (object_ptr)b->base;
+                }
+            }
+            length--;
+        }
     }
     
     else {
-	length = b->length;
-	while (length > 0) {
-	    /* a is ATOM double => not INT-INT case */
-	    if (compare(a, *(++bp)) == 0)
-		return bp - (object_ptr)b->base;
-	    length--;
-	}
+        length = b->length;
+        while (length > 0) {
+            /* a is ATOM double => not INT-INT case */
+            if (compare(a, *(++bp)) == 0)
+                return bp - (object_ptr)b->base;
+            length--;
+        }
     }
     
     return 0; 
@@ -1729,17 +1731,17 @@ long e_match(s1_ptr a, s1_ptr b)
     long lengtha, lengthb;
 
     if (!IS_SEQUENCE(a))
-	RTFatal("first argument of match() must be a sequence");
+        RTFatal("first argument of match() must be a sequence");
     
     if (!IS_SEQUENCE(b))
-	RTFatal("second argument of match() must be a sequence");
+        RTFatal("second argument of match() must be a sequence");
     
     a = SEQ_PTR(a);
     b = SEQ_PTR(b);
     
     lengtha = a->length;
     if (lengtha == 0)
-	RTFatal("first argument of match() must be a non-empty sequence");
+        RTFatal("first argument of match() must be a non-empty sequence");
     
     lengthb = b->length;
     b1 = b->base;
@@ -1748,28 +1750,28 @@ long e_match(s1_ptr a, s1_ptr b)
     ntries = lengthb - lengtha + 1;
     
     while (--ntries >= 0) {
-	ai = a1;
-	bi = bp;
-	len_remaining = lengtha;
-	
-	do {
-	    ai++;
-	    bi++;
-	    av = *ai;
-	    bv = *bi;
-	    if (av != bv) {
-		if (IS_ATOM_INT(av) && IS_ATOM_INT(bv)) {
-		    bp++;
-		    break;
-		}
-		else if (compare(av, bv) != 0) {
-		    bp++;
-		    break;
-		}
-	    }
-	    if (--len_remaining == 0)
-		return bp - b1 + 1; /* perfect match */
-	} while (TRUE);
+        ai = a1;
+        bi = bp;
+        len_remaining = lengtha;
+        
+        do {
+            ai++;
+            bi++;
+            av = *ai;
+            bv = *bi;
+            if (av != bv) {
+                if (IS_ATOM_INT(av) && IS_ATOM_INT(bv)) {
+                    bp++;
+                    break;
+                }
+                else if (compare(av, bv) != 0) {
+                    bp++;
+                    break;
+                }
+            }
+            if (--len_remaining == 0)
+                return bp - b1 + 1; /* perfect match */
+        } while (TRUE);
     }
     
     return 0; /* couldn't match */
@@ -1783,33 +1785,33 @@ void CheckSlice(s1_ptr a, long startval, long endval, long length)
     long n;
 
     if (IS_ATOM(a))
-	RTFatal("attempt to slice an atom");
+        RTFatal("attempt to slice an atom");
 
     if (startval < 1) {
-	sprintf(TempBuff, "slice lower index is less than 1 (%ld)", startval);
-	RTFatal(TempBuff);
+        sprintf(TempBuff, "slice lower index is less than 1 (%ld)", startval);
+        RTFatal(TempBuff);
     }
     if (endval < 0) {
-	sprintf(TempBuff, "slice upper index is less than 0 (%ld)", endval);
-	RTFatal(TempBuff);
+        sprintf(TempBuff, "slice upper index is less than 0 (%ld)", endval);
+        RTFatal(TempBuff);
     }
 
     if (length < 0 ) {
-	sprintf(TempBuff, "slice length is less than 0 (%ld)", length);
-	RTFatal(TempBuff);
+        sprintf(TempBuff, "slice length is less than 0 (%ld)", length);
+        RTFatal(TempBuff);
     }
 
     a = SEQ_PTR(a);
     n = a->length;
     if (startval > n + 1 || length > 0 && startval > n) {
-	sprintf(TempBuff, "slice starts past end of sequence (%ld > %ld)", 
-		startval, n);
-	RTFatal(TempBuff);
+        sprintf(TempBuff, "slice starts past end of sequence (%ld > %ld)", 
+                startval, n);
+        RTFatal(TempBuff);
     }
     if (endval > n) {
-	sprintf(TempBuff, "slice ends past end of sequence (%ld > %ld)",
-		endval, n);
-	RTFatal(TempBuff);
+        sprintf(TempBuff, "slice ends past end of sequence (%ld > %ld)",
+                endval, n);
+        RTFatal(TempBuff);
     } 
 }
 #endif
@@ -1826,24 +1828,24 @@ void RHS_Slice(s1_ptr a, object start, object end)
     object save;
     
     if (IS_ATOM_INT(start))
-	startval = INT_VAL(start);
+        startval = INT_VAL(start);
     else if (IS_ATOM_DBL(start)) {
-	startval = (long)(DBL_PTR(start)->dbl);
+        startval = (long)(DBL_PTR(start)->dbl);
     }
     else
-	RTFatal("slice lower index is not an atom");
+        RTFatal("slice lower index is not an atom");
 
     if (IS_ATOM_INT(end))
-	endval = INT_VAL(end);
+        endval = INT_VAL(end);
     else if (IS_ATOM_DBL(end)) {
-	endval = (long)(DBL_PTR(end)->dbl);
-	 /* f.p.: if the double is too big for
-	    a long WATCOM produces the most negative number. This
-	    will be caught as a bad subscript, although the value in the
-	    diagnostic will be wrong */
+        endval = (long)(DBL_PTR(end)->dbl);
+         /* f.p.: if the double is too big for
+            a long WATCOM produces the most negative number. This
+            will be caught as a bad subscript, although the value in the
+            diagnostic will be wrong */
     }
     else
-	RTFatal("slice upper index is not an atom");
+        RTFatal("slice upper index is not an atom");
     length = endval - startval + 1;
 
 #ifndef ERUNTIME 
@@ -1852,55 +1854,55 @@ void RHS_Slice(s1_ptr a, object start, object end)
     
     olda = SEQ_PTR(a);
     if (*rhs_slice_target == (object)a && 
-	olda->ref == 1 &&
-	(olda->base + olda->length - (object_ptr)olda) < 8 * (length+1)) {  
-				   // we must limit the wasted space
-	/* do it in-place */       // or we could even run out of memory
-	object_ptr p;
-	
-	/* update the sequence descriptor */
-	p = olda->base+1;
-	olda->base = olda->base + startval - 1;
-	
-	/* deref the lower excluded elements */
-	for (; p <= olda->base; p++)
-	    DeRef(*p);
-	
-	/* deref the upper excluded elements */
-	for (p = olda->base + 1 + length;
-	     p <= olda->base + 1 + olda->length - startval;
-	     p++) 
-	    DeRef(*p);
-	
-	olda->postfill += olda->length - endval;
-	olda->length = length;  
-	*(olda->base + length + 1) = NOVALUE; // new end marker
+        olda->ref == 1 &&
+        (olda->base + olda->length - (object_ptr)olda) < 8 * (length+1)) {  
+                                   // we must limit the wasted space
+        /* do it in-place */       // or we could even run out of memory
+        object_ptr p;
+        
+        /* update the sequence descriptor */
+        p = olda->base+1;
+        olda->base = olda->base + startval - 1;
+        
+        /* deref the lower excluded elements */
+        for (; p <= olda->base; p++)
+            DeRef(*p);
+        
+        /* deref the upper excluded elements */
+        for (p = olda->base + 1 + length;
+             p <= olda->base + 1 + olda->length - startval;
+             p++) 
+            DeRef(*p);
+        
+        olda->postfill += olda->length - endval;
+        olda->length = length;  
+        *(olda->base + length + 1) = NOVALUE; // new end marker
     }
     else {
-	/* allocate a new sequence */
-	newa = NewS1(length);
-	p = newa->base;
-	q = olda->base + startval;
-	
-	// plant a sentinel
-	sentinel = q + length;
-	save = *(sentinel);
-	*(sentinel) = NOVALUE;
-	
-	while (TRUE) {
-	    temp = *q++;
-	    *(++p) = temp;
-	    if (!IS_ATOM_INT(temp)) {
-		if (temp == NOVALUE)
-		    break;
-		RefDS(temp);
-	    }
-	}
-	
-	*(sentinel) = save;
-	
-	DeRef(*rhs_slice_target);
-	*rhs_slice_target = MAKE_SEQ(newa);
+        /* allocate a new sequence */
+        newa = NewS1(length);
+        p = newa->base;
+        q = olda->base + startval;
+        
+        // plant a sentinel
+        sentinel = q + length;
+        save = *(sentinel);
+        *(sentinel) = NOVALUE;
+        
+        while (TRUE) {
+            temp = *q++;
+            *(++p) = temp;
+            if (!IS_ATOM_INT(temp)) {
+                if (temp == NOVALUE)
+                    break;
+                RefDS(temp);
+            }
+        }
+        
+        *(sentinel) = save;
+        
+        DeRef(*rhs_slice_target);
+        *rhs_slice_target = MAKE_SEQ(newa);
     }
 }
 
@@ -1917,20 +1919,20 @@ void AssignSlice(object start, object end, s1_ptr val)
     seq_ptr = assign_slice_seq; /* "4th" arg */   
 
     if (IS_ATOM_INT(start))
-	startval = INT_VAL(start);
+        startval = INT_VAL(start);
     else if (IS_ATOM_DBL(start)) {
-	startval = (long)(DBL_PTR(start)->dbl);
+        startval = (long)(DBL_PTR(start)->dbl);
     }
     else
-	RTFatal("slice lower index is not an atom");
+        RTFatal("slice lower index is not an atom");
 
     if (IS_ATOM_INT(end))
-	endval = INT_VAL(end);
+        endval = INT_VAL(end);
     else if (IS_ATOM_DBL(end)) {
-	endval = (long)(DBL_PTR(end)->dbl); /* see above comments on f.p. */
+        endval = (long)(DBL_PTR(end)->dbl); /* see above comments on f.p. */
     }
     else
-	RTFatal("slice upper index is not an atom");
+        RTFatal("slice upper index is not an atom");
 
     length = endval - startval + 1;
 
@@ -1940,40 +1942,40 @@ void AssignSlice(object start, object end, s1_ptr val)
 
     sp = SEQ_PTR(*seq_ptr);
     if (!UNIQUE(sp)) {
-	sp = (s1_ptr)SequenceCopy(sp);
-	*seq_ptr = (s1_ptr)MAKE_SEQ(sp);
+        sp = (s1_ptr)SequenceCopy(sp);
+        *seq_ptr = (s1_ptr)MAKE_SEQ(sp);
     }
     s_elem = sp->base + startval; 
 
     if (IS_ATOM(val)) {
-	if (!IS_ATOM_INT(val))   
-	    (DBL_PTR(val)->ref) += length;
-	
-	while (--length >= 0) {
-	    DeRef(*s_elem);
-	    *s_elem++ = (object)val; 
-	}
+        if (!IS_ATOM_INT(val))   
+            (DBL_PTR(val)->ref) += length;
+        
+        while (--length >= 0) {
+            DeRef(*s_elem);
+            *s_elem++ = (object)val; 
+        }
     }
     else {
-	val = SEQ_PTR(val);
-	v_elem = val->base+1;
-	if (val->length != length) {
+        val = SEQ_PTR(val);
+        v_elem = val->base+1;
+        if (val->length != length) {
 #ifndef DONT_USE_RTFATAL
-	    sprintf(TempBuff, 
-	    "lengths do not match on assignment to slice (%ld != %ld)",
-	    length, val->length);
+            sprintf(TempBuff, 
+            "lengths do not match on assignment to slice (%ld != %ld)",
+            length, val->length);
 #endif
-	    RTFatal(TempBuff);
-	}
-	while (TRUE) {
-	    if (!IS_ATOM_INT(*v_elem)) {
-		if (*v_elem == NOVALUE)
-		    break;
-		RefDS(*v_elem);
-	    }
-	    DeRef(*s_elem);
-	    *s_elem++ = *v_elem++; 
-	}
+            RTFatal(TempBuff);
+        }
+        while (TRUE) {
+            if (!IS_ATOM_INT(*v_elem)) {
+                if (*v_elem == NOVALUE)
+                    break;
+                RefDS(*v_elem);
+            }
+            DeRef(*s_elem);
+            *s_elem++ = *v_elem++; 
+        }
     }
 }
 
@@ -2008,21 +2010,21 @@ void MakeCString(char *s, object obj)
     object x;
 
     if (IS_ATOM(obj)) 
-	*s++ = Char(obj);
+        *s++ = Char(obj);
     else {
-	obj = (object)SEQ_PTR(obj);
-	elem = ((s1_ptr)obj)->base;
-	while (TRUE) { 
-	    x = *(++elem);
-	    if (IS_ATOM_INT(x)) {
-		*s++ = (char)x;
-	    }
-	    else {
-		if (x == NOVALUE)
-		    break;
-		*s++ = doChar(x);
-	    }
-	}
+        obj = (object)SEQ_PTR(obj);
+        elem = ((s1_ptr)obj)->base;
+        while (TRUE) { 
+            x = *(++elem);
+            if (IS_ATOM_INT(x)) {
+                *s++ = (char)x;
+            }
+            else {
+                if (x == NOVALUE)
+                    break;
+                *s++ = doChar(x);
+            }
+        }
     }
     *s = '\0';
 }
@@ -2031,9 +2033,9 @@ object make_atom32(unsigned c32)
 /* make a Euphoria atom from an unsigned C value */
 {
     if (c32 <= (unsigned)MAXINT)
-	return c32;
+        return c32;
     else
-	return NewDouble((double)c32);
+        return NewDouble((double)c32);
 }
 
 //here
@@ -2047,74 +2049,74 @@ long find_from(object a, s1_ptr b, object c)
     object bv;
 
     if (!IS_SEQUENCE(b))
-	RTFatal("second argument of find_from() must be a sequence");
+        RTFatal("second argument of find_from() must be a sequence");
 
     b = SEQ_PTR(b);
     length = b->length;
 
     // same rules as the lower limit on a slice
     if (IS_ATOM_INT(c)) {
-	;
+        ;
     }
     else if (IS_ATOM_DBL(c)) {
-	c = (long)(DBL_PTR(c)->dbl);
+        c = (long)(DBL_PTR(c)->dbl);
     }
     else
-	RTFatal("third argument of find_from() must be an atom");
-		
+        RTFatal("third argument of find_from() must be an atom");
+                
     // we allow c to be $+1, just as we allow the lower limit
     // of a slice to be $+1, i.e. the empty sequence
     if (c < 1 || c > length+1) {
 #ifndef DONT_USE_RTFATAL
-	sprintf(TempBuff, "third argument of find_from() is out of bounds (%ld)", c);
+        sprintf(TempBuff, "third argument of find_from() is out of bounds (%ld)", c);
 #endif
-	RTFatal(TempBuff);
+        RTFatal(TempBuff);
     }
-		
+                
     bp = b->base;
     bp += c - 1;
     if (IS_ATOM_INT(a)) {
-	while (TRUE) {
-	    bv = *(++bp);
-	    if (IS_ATOM_INT(bv)) {
-		if (a == bv) 
-		    return bp - (object_ptr)b->base;
-	    }
-	    else if (bv == NOVALUE) {
-		break; // we hit the end marker
-	    }
-	    else if (compare(a, bv) == 0) {  /* not INT-INT case */
-		return bp - (object_ptr)b->base;
-	    }
-	}
+        while (TRUE) {
+            bv = *(++bp);
+            if (IS_ATOM_INT(bv)) {
+                if (a == bv) 
+                    return bp - (object_ptr)b->base;
+            }
+            else if (bv == NOVALUE) {
+                break; // we hit the end marker
+            }
+            else if (compare(a, bv) == 0) {  /* not INT-INT case */
+                return bp - (object_ptr)b->base;
+            }
+        }
     }
     
     else if (IS_SEQUENCE(a)) {
-	long a_len;
-		
-	length -= c - 1;
-	a_len = SEQ_PTR(a)->length;
-	while (length > 0) {
-	    bv = *(++bp);
-	    if (IS_SEQUENCE(bv)) {
-		if (a_len == SEQ_PTR(bv)->length) {
-		    /* a is SEQUENCE => not INT-INT case */
-		    if (compare(a, bv) == 0)
-			return bp - (object_ptr)b->base;
-		}
-	    }
-	    length--;
-	}
+        long a_len;
+                
+        length -= c - 1;
+        a_len = SEQ_PTR(a)->length;
+        while (length > 0) {
+            bv = *(++bp);
+            if (IS_SEQUENCE(bv)) {
+                if (a_len == SEQ_PTR(bv)->length) {
+                    /* a is SEQUENCE => not INT-INT case */
+                    if (compare(a, bv) == 0)
+                        return bp - (object_ptr)b->base;
+                }
+            }
+            length--;
+        }
     }
     
     else {
-	length -= c - 1;
-	while (length > 0) {
-	    /* a is ATOM double => not INT-INT case */
-	    if (compare(a, *(++bp)) == 0)
-		return bp - (object_ptr)b->base;
-	    length--;
-	}
+        length -= c - 1;
+        while (length > 0) {
+            /* a is ATOM double => not INT-INT case */
+            if (compare(a, *(++bp)) == 0)
+                return bp - (object_ptr)b->base;
+            length--;
+        }
     }
     
     return 0; 
@@ -2131,37 +2133,37 @@ long e_match_from(s1_ptr a, s1_ptr b, object c)
     long lengtha, lengthb;
 
     if (!IS_SEQUENCE(a))
-	RTFatal("first argument of match_from() must be a sequence");
+        RTFatal("first argument of match_from() must be a sequence");
     
     if (!IS_SEQUENCE(b))
-	RTFatal("second argument of match_from() must be a sequence");
+        RTFatal("second argument of match_from() must be a sequence");
     
     a = SEQ_PTR(a);
     b = SEQ_PTR(b);
     
     lengtha = a->length;
     if (lengtha == 0)
-	RTFatal("first argument of match_from() must be a non-empty sequence");
+        RTFatal("first argument of match_from() must be a non-empty sequence");
     
     // same rules as the lower limit on a slice
     if (IS_ATOM_INT(c)) {
-	;
+        ;
     }
     else if (IS_ATOM_DBL(c)) {
-	c = (long)(DBL_PTR(c)->dbl);
+        c = (long)(DBL_PTR(c)->dbl);
     }
     else
-	RTFatal("third argument of match_from() must be an atom");
-		
+        RTFatal("third argument of match_from() must be an atom");
+                
     lengthb = b->length;
 
     // we allow c to be $+1, just as we allow the lower limit
     // of a slice to be $+1, i.e. the empty sequence
     if (c < 1 || c > lengthb+1) {
 #ifndef DONT_USE_RTFATAL
-	sprintf(TempBuff, "third argument of match_from() is out of bounds (%ld)", c);
+        sprintf(TempBuff, "third argument of match_from() is out of bounds (%ld)", c);
 #endif
-	RTFatal(TempBuff);
+        RTFatal(TempBuff);
     }
 
     b1 = b->base;
@@ -2169,28 +2171,28 @@ long e_match_from(s1_ptr a, s1_ptr b, object c)
     a1 = a->base;
     ntries = lengthb - lengtha - c + 2; // will be max 0, when c is lengthb+1
     while (--ntries >= 0) {
-	ai = a1;
-	bi = bp;
+        ai = a1;
+        bi = bp;
 
-	len_remaining = lengtha;
-	do {
-	    ai++;
-	    bi++;
-	    av = *ai;
-	    bv = *bi;
-	    if (av != bv) {
-		if (IS_ATOM_INT(av) && IS_ATOM_INT(bv)) {
-		    bp++;
-		    break;
-		}
-		else if (compare(av, bv) != 0) {
-		    bp++;
-		    break;
-		}
-	    }
-	    if (--len_remaining == 0)
-		return(bp - b1 + 1); /* perfect match */
-	} while (TRUE);
+        len_remaining = lengtha;
+        do {
+            ai++;
+            bi++;
+            av = *ai;
+            bv = *bi;
+            if (av != bv) {
+                if (IS_ATOM_INT(av) && IS_ATOM_INT(bv)) {
+                    bp++;
+                    break;
+                }
+                else if (compare(av, bv) != 0) {
+                    bp++;
+                    break;
+                }
+            }
+            if (--len_remaining == 0)
+                return(bp - b1 + 1); /* perfect match */
+        } while (TRUE);
     }
     return 0; /* couldn't match */
 }

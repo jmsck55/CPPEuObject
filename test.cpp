@@ -90,7 +90,7 @@ int main()
     //s1.NewStr("Hi");
     s1 = "Hi";
     SHOW_DEBUG(s1);
-    s2 = s1; // convert a "Sequence" to an "Object".
+    s2 = s1; // copies sequence.
     SHOW_DEBUG(s2);
     s2 = eu::S_repeat(*(eu::Object*)&s1, (object)2);
     SHOW_DEBUG(s2);
