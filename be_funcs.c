@@ -24,14 +24,14 @@ object Date()
     local = localtime(&time_of_day);
     result = NewS1(8);
     obj_ptr = result->base;
-    obj_ptr[1] = MAKE_INT(local->tm_year);  
-    obj_ptr[2] = MAKE_INT(local->tm_mon+1);   
-    obj_ptr[3] = MAKE_INT(local->tm_mday);   
-    obj_ptr[4] = MAKE_INT(local->tm_hour);   
-    obj_ptr[5] = MAKE_INT(local->tm_min);   
-    obj_ptr[6] = MAKE_INT(local->tm_sec);   
-    obj_ptr[7] = MAKE_INT(local->tm_wday+1);   
-    obj_ptr[8] = MAKE_INT(local->tm_yday+1);   
+    obj_ptr[1] = MAKE_INT(local->tm_year);
+    obj_ptr[2] = MAKE_INT(local->tm_mon+1);
+    obj_ptr[3] = MAKE_INT(local->tm_mday);
+    obj_ptr[4] = MAKE_INT(local->tm_hour);
+    obj_ptr[5] = MAKE_INT(local->tm_min);
+    obj_ptr[6] = MAKE_INT(local->tm_sec);
+    obj_ptr[7] = MAKE_INT(local->tm_wday+1);
+    obj_ptr[8] = MAKE_INT(local->tm_yday+1);
     return MAKE_SEQ(result);
 }
 
@@ -150,7 +150,7 @@ object DRandom(d_ptr a)
 	return MAKE_UINT(res);
 }
 
-/* When hashing, we treat doubles differently from integers.  But if a 
+/* When hashing, we treat doubles differently from integers.  But if a
  * double can be represented as an integer, we want to use that.
  */
 #define IS_DOUBLE_AN_INTEGER( X ) \
@@ -200,25 +200,25 @@ object calc_hash(object a, object b)
 	if (IS_ATOM_INT(b)) {
 		// if (b == -6)
 		// 	return calc_hsieh30(a);	// Will always return a Euphoria integer.
-		// 
+		//
 		// if (b == -5)
 		// 	return make_atom32(calc_hsieh32(a));
-		// 
+		//
 		// if (b == -4)
 		// 	return make_atom32(calc_adler32(a));
-		// 
+		//
 		// if (b == -3)
 		// 	return make_atom32(calc_fletcher32(a));
-		// 
+		//
 		// if (b == -2)
 		// 	return calc_MD5(a);
-		// 
+		//
 		// if (b == -1)
 		// 	return calc_SHA256(a);
 
 		if (b < 0)
 			RTFatal("second argument of hash() must not be a negative integer.");
-		
+
 		if (b == 0)
 		{
 			if (IS_ATOM_INT(a)) {

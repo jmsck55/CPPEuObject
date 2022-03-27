@@ -5,7 +5,7 @@
 //
 // Included by "common.h"
 
-// If under Windows define EWINDOWS, else comment out.
+// If under Windows, define EWINDOWS, else comment it out.
 //#define EWINDOWS
 
 // Define this macro (DONE_DEBUGGING) before distributing software:

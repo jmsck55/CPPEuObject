@@ -11,6 +11,11 @@ using namespace std;
 
 #define COUNT(n) n
 
+#define EOBJECT Object
+#define ESEQUENCE Sequence
+#define EATOM Atom
+#define EINTEGER Integer
+
 #ifdef DONE_DEBUGGING
 #define SHOW_DEBUG(x)
 #else
@@ -27,11 +32,11 @@ int main()
     double dbl;
     char ch;
     char *str;
-    eu::Integer i1, i2;
-    eu::Atom a1, a2, a3, a4;
-    eu::Object a, b, c, d;
-    eu::Sequence s1, s2, s3, s4;
-    
+    eu::EINTEGER i1, i2;
+    eu::EATOM a1, a2, a3, a4;
+    eu::EOBJECT a, b, c, d;
+    eu::ESEQUENCE s1, s2, s3, s4;
+
 // 2. Language Definition
 
     puts("\n-- examples of atoms:");
@@ -47,7 +52,7 @@ int main()
     a2 = -1e6;
     a2.println(0,0,"%e");
     SHOW_DEBUG(a2);
-    
+
     puts("\n-- examples of sequences:");
     s1 = eu::seq(COUNT(8), 2, 3, 5, 7, 11, 13, 17, 19);
     s1.println();
@@ -64,7 +69,7 @@ int main()
     s4 = eu::seq(COUNT(0));
     s4.println();
     SHOW_DEBUG(s4);
-    
+
     puts("\n-- Numbers can also be entered in hexadecimal. For example:");
     a1 = 0xFE;
     a1.println(0,0,"#%X",1);
@@ -72,39 +77,41 @@ int main()
     a2 = 0xA000;
     a2.println(0,0,"#%X",1);
     SHOW_DEBUG(a2);
-    a3 = (double)68718428168;
+    dbl = (double)68718428168;
+    printf("%f %i\n", dbl, IS_DOUBLE_TO_INT(dbl));
+    a3 = dbl;
     a3.println(0,0,"%f");
     SHOW_DEBUG(a3);
     a4 = -0x10; // -16
     a4.println();
     SHOW_DEBUG(a4);
-    
+
     puts("\n2.2 Expressions");
     puts("\nTo be continued...\n");
-    
-    
+
+
     puts("\n-- More examples:");
     dbl = ((double)1/(double)7);
-    a1 = dbl;
+    a1.NewAtom(dbl);
     SHOW_DEBUG(a1);
     a2 = a1;
     SHOW_DEBUG(a2);
-    
+
     //s1.NewStr("Hi");
     s1 = "Hi";
     SHOW_DEBUG(s1);
     s2 = s1; // copies sequence.
     SHOW_DEBUG(s2);
-    s2 = eu::S_repeat(*(eu::Object*)&s1, (object)2);
+    s2 = eu::seq(NOVALUE, s1, s1, NOVALUE);
     SHOW_DEBUG(s2);
     SHOW_DEBUG(s1);
     if (true)
     {
-        eu::Sequence tmp = s2;
+        eu::ESEQUENCE tmp = s2;
         SHOW_DEBUG(s1);
     }
     SHOW_DEBUG(s1);
-    
+
     str = s1.GetCharStr();
     cout << str << endl;
     free(str);

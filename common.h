@@ -93,11 +93,11 @@
 
 /* an object is represented as a 32-bit value as follows:
 
-        unused  : 011xxxxx xxxxxxxx xxxxxxxx xxxxxxxx 
+        unused  : 011xxxxx xxxxxxxx xxxxxxxx xxxxxxxx
         unused  : 010xxxxx xxxxxxxx xxxxxxxx xxxxxxxx
 
         TOO_BIG:  01000000 00000000 00000000 00000000   (just too big for INT)
-        
+
        +ATOM-INT: 001vvvvv vvvvvvvv vvvvvvvv vvvvvvvv   (31-bit integer value)
        +ATOM-INT: 000vvvvv vvvvvvvv vvvvvvvv vvvvvvvv   (31-bit integer value)
        -ATOM-INT: 111vvvvv vvvvvvvv vvvvvvvv vvvvvvvv   (31-bit integer value)
@@ -109,13 +109,13 @@
 
         SEQUENCE: 100ppppp pppppppp pppppppp pppppppp   (29-bit pointer)
 
-   We ensure 8-byte alignment for s1 and dbl blocks - lower 3 bits 
+   We ensure 8-byte alignment for s1 and dbl blocks - lower 3 bits
    aren't needed - only 29 bits are stored.
 */
 
 /* NO VALUE objects can occur only in a few well-defined places,
    so we can simplify some tests. For speed we first check for ATOM-INT
-   since that's what most objects are. */ 
+   since that's what most objects are. */
 
 #define NOVALUE      ((long)0xbfffffffL)
 #define TOO_BIG_INT  ((long)0x40000000L)
@@ -172,7 +172,7 @@ struct d {                         /* a double precision number */
     long ref;                      /* reference count */
 }; /* total 12 bytes */
 
-#define D_SIZE (sizeof(struct d))  
+#define D_SIZE (sizeof(struct d))
 
 struct free_block {                /* a free storage block */
     struct free_block *next;       /* pointer to next free block */
@@ -203,7 +203,7 @@ typedef struct s1 *s1_ptr;
 typedef struct free_block *free_block_ptr;
 
 struct sline {      /* source line table entry */
-    char *src;               /* text of line, 
+    char *src;               /* text of line,
                                 first 4 bytes used for count when profiling */
     unsigned short line;     /* line number within file */
     unsigned char file_no;   /* file number */
@@ -233,7 +233,7 @@ typedef int *opcode_type;
 #ifdef EBSD
 #define MAX_CACHED_SIZE 0        /* don't use storage cache at all */
 #else
-#define MAX_CACHED_SIZE 1024     /* this size (in bytes) or less are cached 
+#define MAX_CACHED_SIZE 1024     /* this size (in bytes) or less are cached
                                     Note: other vars must change if this does */
 #endif
 
@@ -241,10 +241,10 @@ typedef int *opcode_type;
 #define MAKE_DBL(x) ( (object) (((unsigned long)(x) >> 3) + (long)0xA0000000) )
 #define DBL_PTR(ob) ( (d_ptr)  (((long)(ob)) << 3) )
 #define MAKE_SEQ(x) ( (object) (((unsigned long)(x) >> 3) + (long)0x80000000) )
-#define SEQ_PTR(ob) ( (s1_ptr) (((long)(ob)) << 3) ) 
+#define SEQ_PTR(ob) ( (s1_ptr) (((long)(ob)) << 3) )
 
 /* ref a double or a sequence (both need same 3 bit shift) */
-#define RefDS(a) ++(DBL_PTR(a)->ref)    
+#define RefDS(a) ++(DBL_PTR(a)->ref)
 
 /* ref a general object */
 #define Ref(a) if (IS_DBL_OR_SEQUENCE(a)) { RefDS(a); }
@@ -274,7 +274,7 @@ typedef int *opcode_type;
 struct file_info {
     FILE *fptr;  // C FILE pointer
     int mode;    // file mode
-}; 
+};
 
 struct arg_info {
     int (*address)();     // pointer to C function
@@ -299,7 +299,7 @@ struct tcb {
     int status;      // status: ST_ACTIVE, ST_SUSPENDED, ST_DEAD
     double start;    // start time of current run
     double min_inc;  // time increment for min
-    double max_inc;  // time increment for max 
+    double max_inc;  // time increment for max
     double min_time; // minimum activation time
                      // or number of executions remaining before sharing
     double max_time; // maximum activation time (determines task order)
@@ -376,7 +376,7 @@ struct char_cell {
 
 #define LOW_MEMORY_MAX ((unsigned)0x0010FFEF)
 // It used to be ((unsigned)0x000FFFFF)
-// but I found putsxy accessing ROM font above here 
+// but I found putsxy accessing ROM font above here
 // successfully on Millennium. It got the address from a DOS interrupt.
 
 #define DOING_SPRINTF -9999999 // indicates sprintf rather than printf
