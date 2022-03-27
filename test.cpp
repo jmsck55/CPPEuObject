@@ -36,7 +36,7 @@ int main()
     eu::EATOM a1, a2, a3, a4;
     eu::EOBJECT a, b, c, d;
     eu::ESEQUENCE s1, s2, s3, s4;
-
+#if 1
 // 2. Language Definition
 
     puts("\n-- examples of atoms:");
@@ -96,13 +96,16 @@ int main()
     SHOW_DEBUG(a1);
     a2 = a1;
     SHOW_DEBUG(a2);
-
+#endif
     //s1.NewStr("Hi");
     s1 = "Hi";
     SHOW_DEBUG(s1);
     s2 = s1; // copies sequence.
     SHOW_DEBUG(s2);
-    s2 = eu::seq(NOVALUE, s1, s1, NOVALUE);
+    s3 = eu::seq(COUNT(1), s1);
+    SHOW_DEBUG(s1);
+    s2 = eu::seq(NOVALUE, s3, s1, NOVALUE);
+    SHOW_DEBUG(s3);
     SHOW_DEBUG(s2);
     SHOW_DEBUG(s1);
     if (true)

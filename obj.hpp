@@ -97,12 +97,17 @@ namespace eu
                 {
                         if (IS_DBL_OR_SEQUENCE(obj))
                         {
+			#ifndef DONE_DEBUGGING
+				d_ptr a = DBL_PTR(obj);
+				s1_ptr s = SEQ_PTR(obj);
+			#endif
                                 RefDS(obj);
                                 if (IS_SEQUENCE(obj))
                                 {
                                         object_ptr ptr = SEQ_PTR(obj)->base;
                                         while (*(++ptr) != NOVALUE)
                                         {
+						
                                                 (*(base_class*)ptr).RefObj();
                                         }
                                 }
@@ -110,15 +115,22 @@ namespace eu
                 }
                 void DeRefObj()
                 {
-                        if (IS_SEQUENCE(obj)) // NOTE: may not need this if statement, DeRef(obj) does it already.
-                        {
-                                object_ptr ptr = SEQ_PTR(obj)->base;
-                                while (*(++ptr) != NOVALUE)
-                                {
-                                        (*(base_class*)ptr).DeRefObj();
-                                }
+                        if (IS_DBL_OR_SEQUENCE(obj))
+			{
+			#ifndef DONE_DEBUGGING
+				d_ptr a = DBL_PTR(obj);
+				s1_ptr s = SEQ_PTR(obj);
+			#endif
+				if (IS_SEQUENCE(obj)) // NOTE: may not need this if statement, DeRef(obj) does it already.
+				{
+					object_ptr ptr = SEQ_PTR(obj)->base;
+					while (*(++ptr) != NOVALUE)
+					{
+						(*(base_class*)ptr).DeRefObj();
+					}
+				}
+				DeRefDS(obj)
                         }
-                        DeRef(obj)
                 }
 #ifndef DONE_DEBUGGING
                 //long etype;

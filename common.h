@@ -42,13 +42,19 @@
 #include <stdio.h>
 
 // For faster code, alignment should be (2 on 16-bit machines), (4 on 32-bit machines), (8 on 64-bit machines)
+#ifdef BITS64
+#pragma align(8)
+#else
 #pragma align(4)
-
+#endif
 
 #ifdef DONE_DEBUGGING
+#undef EXTRA_CHECK
 #define ERUNTIME
 #define DONT_USE_RTFATAL
 #define RTFatal(remove_error_messages) SimpleRTFatal("")
+#else
+#define RTInternal RTFatal
 #endif
 
 #define FALSE 0

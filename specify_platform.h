@@ -5,6 +5,12 @@
 //
 // Included by "common.h"
 
+// 64-bit not fully supported yet.
+//#define BITS64
+
+// Use when debugging source code:
+#define EXTRA_CHECK
+
 // If under Windows, define EWINDOWS, else comment it out.
 //#define EWINDOWS
 
