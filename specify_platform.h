@@ -3,7 +3,15 @@
 //
 // Here you specify which platform you are using:
 //
-// Included by "common.h"
+// Included by "pch.h"
+
+#ifndef _PLATFORM_H
+#define _PLATFORM_H
+
+// Standard defines:
+#define USE_STDARG_H
+#define USE_MATH_H
+#define USE_STANDARD_LIBRARY
 
 // Define if using GCC
 //#define ELINUX
@@ -16,3 +24,5 @@
 
 // Define this macro (DONE_DEBUGGING) before distributing software:
 //#define DONE_DEBUGGING
+
+#endif // _PLATFORM_H

@@ -9,7 +9,7 @@
 // stdarg.h is included in common.h via a macro, below.
 #define USE_STDARG_H
 //#include <stdarg.h> /* va_list, va_start, va_arg, va_end */
-#include "common.h"
+//#include "pch.h"
 
 #define MIN_SAFE_CHAR 32
 #define MAX_SAFE_CHAR 127

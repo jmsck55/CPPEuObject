@@ -2,6 +2,8 @@
 // common.h
 //
 // 32/64-bit using macro BITS64 for 64-bit
+//
+// Included by pch.h
 
 #ifndef _COMMON_H
 #define _COMMON_H
@@ -16,52 +18,19 @@
 //#define DONE_DEBUGGING
 
 // If you want to specify these macros on the command line, comment out the next line:
-#include "specify_platform.h"
+//#include "specify_platform.h"
 
 // End Platform
 
-#ifdef EWINDOWS
-#include <windows.h>
-#endif
-
-#ifdef USE_STDARG_H
-#include <stdarg.h> /* va_list, va_start, va_arg, va_end */
-#endif
-
-#include <string.h>
-
-#ifndef EWINDOWS
-#include <unistd.h>
-#endif
-
-#ifdef USE_STANDARD_LIBRARY
-#include <time.h>
-#endif
-
-#include <stdlib.h>
-
-#ifdef USE_MATH_H
-#include <math.h>
-#endif
-
-#include <stdio.h>
-
-#ifdef __GNUC__
-#include <stdint.h>
-// 64-bit not fully supported yet.
-#if INTPTR_MAX == INT64_MAX
-#define BITS64
-#endif // INTPTR_MAX == INT64_MAX
-#endif // __GNUC__
 
 // For faster code, alignment should be (2 on 16-bit machines), (4 on 32-bit machines), (8 on 64-bit machines)
 #ifdef BITS64
-#pragma align(8)
+//#pragma align(8)
 #define EDOUBLE long double
 #define ELONG long long
 #define REGISTER
 #else
-#pragma align(4)
+//#pragma align(4)
 #define EDOUBLE double
 #define ELONG long
 #define REGISTER register

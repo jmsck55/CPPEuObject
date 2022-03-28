@@ -3,6 +3,7 @@
 //
 // 32/64-bit using macro BITS64 for 64-bit
 
+#include "pch.h"
 #include "be_eu.h"
 
 /* convert atom to char. *must avoid side effects in elem* */

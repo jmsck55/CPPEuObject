@@ -6,17 +6,18 @@
 #ifndef _BE_EU_H
 #define _BE_EU_H
 
+#include "pch.h"
 #include "common.h"
 
 #ifndef MAX_SEQ_LEN
 #if INTPTR_MAX == INT32_MAX
-//#	define MAX_SEQ_LEN ((((unsigned long)0xFFFFFFFF - sizeof(struct s1)) / sizeof(object)) - 1)
+//#     define MAX_SEQ_LEN ((((unsigned long)0xFFFFFFFF - sizeof(struct s1)) / sizeof(object)) - 1)
 #define MAX_SEQ_LEN 1073741800
 #else
-//#	define MAX_SEQ_LEN ((((unsigned long long)0xFFFFFFFFFFFFFFFFLL - sizeof(struct s1)) / sizeof(object)) - 1)
+//#     define MAX_SEQ_LEN ((((unsigned long long)0xFFFFFFFFFFFFFFFFLL - sizeof(struct s1)) / sizeof(object)) - 1)
 #define MAX_SEQ_LEN 0x0FFFFFFFFFFFFFF8LL
 #endif
-#endif		                /* maximum sequence length set such that it doesn't overflow */
+#endif                          /* maximum sequence length set such that it doesn't overflow */
 
 #ifdef BITS64
 // from: be_runtime.c

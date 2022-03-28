@@ -3,6 +3,9 @@
 
 #include <iostream>
 
+extern "C" {
+#include "pch.h"
+}
 #include "eu.hpp"
 #include "test.hpp"
 

@@ -3,6 +3,7 @@
 //
 // 32/64-bit using macro BITS64 for 64-bit
 
+#include "pch.h"
 #include "be_funcs.h"
 
 // From be_runtime.c
@@ -195,7 +196,7 @@ object calc_hash32(object a, object b)
                 } ieee_uint;
 #else
 #ifndef __GNUC__
-                _declspec(align(1)) // 1 should work on any system. (change the 4 to a 2 on 16-bit)
+                _declspec(align(4)) // 1 should work on any system. (change the 4 to a 2 on 16-bit)
 #endif // Microsoft
                 struct dbllong
                 {
@@ -203,7 +204,7 @@ object calc_hash32(object a, object b)
                         unsigned int b;
                 } ieee_uint
 #ifdef __GNUC__
-                __attribute__ ((aligned(1)))
+                __attribute__ ((aligned(4)))
 #endif // GCC
                 ; // 1 should work on any system. (change the 4 to a 2 on 16-bit)
 #endif // INTPTR_MAX == INT32_MAX
