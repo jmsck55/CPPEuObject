@@ -29,7 +29,7 @@ void myShowDebug(eu::base_class* x)
 
 int main()
 {
-    double dbl;
+    EDOUBLE dbl;
     char ch;
     char *str;
     eu::EINTEGER i1, i2;
@@ -77,8 +77,8 @@ int main()
     a2 = 0xA000;
     a2.println(0,0,"#%X",1);
     SHOW_DEBUG(a2);
-    dbl = (double)68718428168;
-    printf("%f %i\n", dbl, IS_DOUBLE_TO_INT(dbl));
+    dbl = (EDOUBLE)68718428168;
+    printf("%f %i\n", (double)dbl, IS_DOUBLE_TO_INT(dbl));
     a3 = dbl;
     a3.println(0,0,"%f");
     SHOW_DEBUG(a3);
@@ -91,7 +91,7 @@ int main()
 
 
     puts("\n-- More examples:");
-    dbl = ((double)1/(double)7);
+    dbl = ((EDOUBLE)1/(EDOUBLE)7);
     a1.NewAtom(dbl);
     SHOW_DEBUG(a1);
     a2 = a1;

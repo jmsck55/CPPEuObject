@@ -1,6 +1,7 @@
 //
 // common.h
 //
+// 32/64-bit using macro BITS64 for 64-bit
 
 #ifndef _COMMON_H
 #define _COMMON_H
@@ -29,6 +30,10 @@
 
 #include <string.h>
 
+#ifndef EWINDOWS
+#include <unistd.h>
+#endif
+
 #ifdef USE_STANDARD_LIBRARY
 #include <time.h>
 #endif
@@ -41,16 +46,34 @@
 
 #include <stdio.h>
 
+#ifdef __GNUC__
+#include <stdint.h>
+
+// 64-bit not fully supported yet.
+#if INTPTR_MAX == INT64_MAX
+#define BITS64
+#endif
+#endif
+
 // For faster code, alignment should be (2 on 16-bit machines), (4 on 32-bit machines), (8 on 64-bit machines)
 #ifdef BITS64
 #pragma align(8)
+#define EDOUBLE long double
+#define ELONG long long
 #else
 #pragma align(4)
+#define EDOUBLE double
+#define ELONG long
+#endif
+#ifdef BITS64
+#define ELONG_WIDTH "ll"
+#else
+#define ELONG_WIDTH "l"
 #endif
 
 #ifdef DONE_DEBUGGING
 #undef EXTRA_CHECK
-#define ERUNTIME
+//#define ERUNTIME
 #define DONT_USE_RTFATAL
 #define RTFatal(remove_error_messages) SimpleRTFatal("")
 #else
@@ -123,6 +146,17 @@
    so we can simplify some tests. For speed we first check for ATOM-INT
    since that's what most objects are. */
 
+#ifdef BITS64
+#define NOVALUE      ((long long)0xbfffffffffffffffLL)
+#define TOO_BIG_INT  ((long long)0x4000000000000000LL)
+#define HIGH_BITS    ((long long)0xC000000000000000LL)
+#define IS_ATOM_INT(ob)       (((long long)(ob)) > NOVALUE)
+#define IS_ATOM_INT_NV(ob)    ((long long)(ob) >= NOVALUE)
+
+#define MAKE_UINT(x) ((object)(( ((unsigned long long)x) <= ((unsigned long long)0x3FFFFFFFFFFFFFFFLL)) \
+                          ? (unsigned long long)x : \
+                            (unsigned long long)NewDouble((long double)(unsigned long long)x)))
+#else
 #define NOVALUE      ((long)0xbfffffffL)
 #define TOO_BIG_INT  ((long)0x40000000L)
 #define HIGH_BITS    ((long)0xC0000000L)
@@ -132,13 +166,27 @@
 #define MAKE_UINT(x) ((object)(( ((unsigned long)x) <= ((unsigned long)0x3FFFFFFFL)) \
                           ? (unsigned long)x : \
                             (unsigned long)NewDouble((double)(unsigned long)x)))
-
+#endif
 /* these are obsolete */
+#ifdef BITS64
+#define INT_VAL(x)        ((long long int)(x))
+#else
 #define INT_VAL(x)        ((int)(x))
+#endif
 #define MAKE_INT(x)       ((object)(x))
 
 /* N.B. the following distinguishes DBL's from SEQUENCES -
    must eliminate the INT case first */
+#ifdef BITS64
+#define IS_ATOM_DBL(ob)         (((object)(ob)) >= (long long)0xA000000000000000LL)
+
+#define IS_ATOM(ob)             (((long long)(ob)) >= (long long)0xA000000000000000LL)
+#define IS_SEQUENCE(ob)         (((long long)(ob))  < (long long)0xA000000000000000LL)
+
+#define ASEQ(s) (((unsigned long long)s & (unsigned long long)0xE000000000000000LL) == (unsigned long long)0x8000000000000000LL)
+
+#define IS_DBL_OR_SEQUENCE(ob)  (((long long)(ob)) < NOVALUE)
+#else
 #define IS_ATOM_DBL(ob)         (((object)(ob)) >= (long)0xA0000000)
 
 #define IS_ATOM(ob)             (((long)(ob)) >= (long)0xA0000000)
@@ -147,7 +195,26 @@
 #define ASEQ(s) (((unsigned long)s & (unsigned long)0xE0000000) == (unsigned long)0x80000000)
 
 #define IS_DBL_OR_SEQUENCE(ob)  (((long)(ob)) < NOVALUE)
-
+#endif
+#ifdef BITS64
+#undef MININT
+#define MININT     (long long)0xC000000000000000LL
+#define MAXINT     (long long)0x3FFFFFFFFFFFFFFFLL
+#define MININT_VAL MININT
+#define MININT_DBL ((long double)MININT_VAL)
+#define MAXINT_VAL MAXINT
+#define MAXINT_DBL ((long double)MAXINT_VAL)
+#define INT55      (long long)0x003FFFFFFFFFFFFFLL
+#define INT47      (long long)0x00003FFFFFFFFFFFLL
+#define INT31      (long long)0x000000003FFFFFFFLL
+#define INT23      (long)0x003FFFFFL
+#define INT16      (long)0x00007FFFL
+#define INT15      (long)0x00003FFFL
+#define ATOM_M1    -1
+#define ATOM_0     0
+#define ATOM_1     1
+#define ATOM_2     2
+#else
 #undef MININT
 #define MININT     (long)0xC0000000
 #define MAXINT     (long)0x3FFFFFFF
@@ -162,7 +229,25 @@
 #define ATOM_0     0
 #define ATOM_1     1
 #define ATOM_2     2
+#endif
+#ifdef BITS64
+typedef long long int integer;
+typedef long long object;
+typedef object *object_ptr;
 
+struct s1 {                        /* a sequence header block */
+    object_ptr base;               /* pointer to (non-existent) 0th element */
+    long long length;                   /* number of elements */
+    long long ref;                      /* reference count */
+    long long postfill;                 /* number of post-fill objects */
+}; /* total 8*4=32 bytes */
+
+struct d {                         /* a double precision number */
+    long double dbl;                    /* double precision value */
+    long long ref;                      /* reference count */
+}; /* total 8*3=24 bytes */
+#else
+typedef int integer;
 typedef long object;
 typedef object *object_ptr;
 
@@ -177,9 +262,9 @@ struct d {                         /* a double precision number */
     double dbl;                    /* double precision value */
     long ref;                      /* reference count */
 }; /* total 12 bytes */
-
+#endif
 #define D_SIZE (sizeof(struct d))
-
+#if 0
 struct free_block {                /* a free storage block */
     struct free_block *next;       /* pointer to next free block */
     long filler;
@@ -203,9 +288,10 @@ struct ns_list {
     int seq_num;
     int file_num;
 };
-
+#endif // if 0
 typedef struct d  *d_ptr;
 typedef struct s1 *s1_ptr;
+#if 0
 typedef struct free_block *free_block_ptr;
 
 struct sline {      /* source line table entry */
@@ -231,7 +317,7 @@ typedef int opcode_type;
 typedef int *opcode_type;
 #define opcode(x) jumptab[x-1]
 #endif
-
+#endif // if 0
 #define UNKNOWN -1
 
 #define EXPR_SIZE 200  /* initial size of call stack */
@@ -242,13 +328,18 @@ typedef int *opcode_type;
 #define MAX_CACHED_SIZE 1024     /* this size (in bytes) or less are cached
                                     Note: other vars must change if this does */
 #endif
-
 /* MACROS */
+#ifdef BITS64
+#define MAKE_DBL(x) ( (object) (((unsigned long long)(x) >> 3) + (long long)0xA000000000000000LL) )
+#define DBL_PTR(ob) ( (d_ptr)  (((long long)(ob)) << 3) )
+#define MAKE_SEQ(x) ( (object) (((unsigned long long)(x) >> 3) + (long long)0x8000000000000000LL) )
+#define SEQ_PTR(ob) ( (s1_ptr) (((long long)(ob)) << 3) )
+#else
 #define MAKE_DBL(x) ( (object) (((unsigned long)(x) >> 3) + (long)0xA0000000) )
 #define DBL_PTR(ob) ( (d_ptr)  (((long)(ob)) << 3) )
 #define MAKE_SEQ(x) ( (object) (((unsigned long)(x) >> 3) + (long)0x80000000) )
 #define SEQ_PTR(ob) ( (s1_ptr) (((long)(ob)) << 3) )
-
+#endif
 /* ref a double or a sequence (both need same 3 bit shift) */
 #define RefDS(a) ++(DBL_PTR(a)->ref)
 
@@ -276,7 +367,7 @@ typedef int *opcode_type;
 #define EF_READ   1
 #define EF_WRITE  2
 #define EF_APPEND 4
-
+#if 0
 struct file_info {
     FILE *fptr;  // C FILE pointer
     int mode;    // file mode
@@ -327,7 +418,7 @@ struct private_block {
    struct private_block *next; // pointer to next block
    object block[1];            // variable-length array of saved private data
 };
-
+#endif // if 0
 #ifdef ELINUX
 #define MAX_LINES 100
 #define MAX_COLS 200
@@ -353,7 +444,26 @@ struct char_cell {
 #define EXTRA_EXPAND(x) (4 + (x) + ((x) >> 2))
 
 #define DEFAULT_SAMPLE_SIZE 25000
+#ifdef BITS64
+#define MAX_BITWISE_DBL ((long double)(unsigned long long)0xFFFFFFFFFFFFFFFFLL)
+#define MIN_BITWISE_DBL ((long double)(signed long long)  0x8000000000000000LL)
 
+/* .dll argument & return value types */
+#define C_TYPE     0x0F00000000000000LL
+#define C_DOUBLE   0x0300000000000008LL
+#define C_FLOAT    0x0300000000000004LL
+#define C_CHAR     0x0100000000000001LL
+#define C_UCHAR    0x0200000000000001LL
+#define C_SHORT    0x0100000000000002LL
+#define C_USHORT   0x0200000000000002LL
+#define E_INTEGER  0x0600000000000004LL
+#define E_ATOM     0x0700000000000004LL
+#define E_SEQUENCE 0x0800000000000004LL
+#define E_OBJECT   0x0900000000000004LL
+
+#define E_DBL      0x0500000000000004LL
+#define E_FLOAT128 0x0A00000000000004LL
+#else
 #define MAX_BITWISE_DBL ((double)(unsigned long)0xFFFFFFFF)
 #define MIN_BITWISE_DBL ((double)(signed long)  0x80000000)
 
@@ -371,7 +481,8 @@ struct char_cell {
 #define E_OBJECT   0x09000004
 
 #define E_DBL      0x05000004
-
+#define E_FLOAT128 0x0A000004
+#endif
 #define C_STDCALL 0
 #define C_CDECL 1
 

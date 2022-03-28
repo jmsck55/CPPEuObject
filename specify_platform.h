@@ -5,8 +5,8 @@
 //
 // Included by "common.h"
 
-// 64-bit not fully supported yet.
-//#define BITS64
+// Define if using GCC
+//#define ELINUX
 
 // Use when debugging source code:
 #define EXTRA_CHECK
