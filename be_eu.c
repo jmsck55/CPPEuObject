@@ -42,7 +42,7 @@ void SimpleRTFatal(char *msg)
 //    if (crash_msg == NULL || crash_count > 0) {
         screen_output(stderr, "\nFatal run-time error:\n");
 #ifdef DONT_USE_RTFATAL
-        screen_output(stderr, "Please contact your software vendor.");
+        screen_output(stderr, "Please contact your software publisher.");
 #endif
         screen_output(stderr, msg);
         screen_output(stderr, "\n\n");
@@ -69,7 +69,7 @@ void SimpleRTFatal(char *msg)
 }
 
 #ifndef DONT_USE_RTFATAL
-void RTFatal(char *msg)
+void RTFatal(const char *msg)
 /* handle run time fatal errors */
 {
 //#ifndef ERUNTIME
@@ -77,7 +77,7 @@ void RTFatal(char *msg)
 //      CleanUpError(msg, NULL);
 //    else
 //#endif
-        SimpleRTFatal(msg);
+        SimpleRTFatal((char *)msg);
 }
 #endif
 
@@ -124,7 +124,7 @@ s1_ptr NewS1(ELONG size)
 /* make a new s1 sequence block with a single reference count */
 /* size is number of elements, NOVALUE is added as an end marker */
 {
-    register s1_ptr s1;
+    REGISTER s1_ptr s1;
 
     if (size > MAX_SEQ_LEN) {
         // multiply by 4 could overflow 32 bits
@@ -160,13 +160,13 @@ object NewString(const char *s)
     return MAKE_SEQ(c1);
 }
 
-s1_ptr SequenceCopy(register s1_ptr a)
+s1_ptr SequenceCopy(REGISTER s1_ptr a)
 /* take a single-ref copy of sequence 'a' */
 {
     s1_ptr c;
-    register object_ptr cp, ap;
-    register ELONG length;
-    register object temp_ap;
+    REGISTER object_ptr cp, ap;
+    REGISTER ELONG length;
+    REGISTER object temp_ap;
 
     /* a is a SEQ_PTR */
     length = a->length;
@@ -189,7 +189,7 @@ s1_ptr SequenceCopy(register s1_ptr a)
 object NewDouble(EDOUBLE d)
 /* allocate space for a new double value */
 {
-    register d_ptr n;
+    REGISTER d_ptr n;
 
     n = (d_ptr)EMalloc((ELONG)D_SIZE);
 

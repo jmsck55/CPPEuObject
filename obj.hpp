@@ -91,7 +91,7 @@ namespace eu
         friend class Sequence;
         friend class Dbl;
         private: // used by friend functions/classes, not inherited.
-                ELONG const type() { return NULL; }
+                ELONG const type() { return 0; }
         protected: // protected in order to be inherited by other classes.
                 object obj;
                 //object GetObject() { return obj; }
@@ -320,7 +320,7 @@ namespace eu
         friend class Sequence;
         private:
                 ELONG const type() { return E_INTEGER; }
-                Integer(object ob) { obj = ob; }
+                //Integer(object ob) { obj = ob; }
         public:
                 Integer() { obj = NOVALUE; } // default constructor
                 ~Integer() { DeRefObj(); obj = NOVALUE; } // default destructor
@@ -355,7 +355,7 @@ namespace eu
                 
                 //Atom(d_ptr ptr) { ++(ptr->ref); obj = MAKE_DBL(ptr); }
                 Atom(EDOUBLE d) { obj = IS_DOUBLE_TO_INT(d) ? (object)d : NewDouble(d); }
-                Atom(integer val) { obj = TYPE_CHECK_INTEGER(val) ? val : NewDouble((EDOUBLE)val); }
+                //Atom(integer val) { obj = TYPE_CHECK_INTEGER(val) ? val : NewDouble((EDOUBLE)val); }
                 
                 void NewAtom(EDOUBLE d) { DeRefObj(); obj = IS_DOUBLE_TO_INT(d) ? (object)d : NewDouble(d); }
                 void NewAtom(integer i) { DeRefObj(); obj = TYPE_CHECK_INTEGER(i) ? i : NewDouble((EDOUBLE)i); }
@@ -415,7 +415,14 @@ namespace eu
                 //Sequence (Sequence&& x) { obj = x.obj; x.obj = NOVALUE; } // move constructor
                 //Sequence& operator= (Sequence&& x) { DeRefObj(); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
                 //Sequence(s1_ptr ptr) { ++(ptr->ref); obj = MAKE_SEQ(ptr); }
-                Sequence(const char * str) { obj = NewString(str); }
+                base_class& operator= (const object& x)
+                {
+                        DeRefObj();
+                        obj = x;
+                        RefObj();
+                        return *this;
+                }
+		Sequence(const char * str) { obj = NewString(str); }
                 void NewStr(const char * str) { DeRefObj(); obj = NewString(str); }
                 char * GetCharStr() {
                         if (IS_DBL_OR_SEQUENCE(obj) && IS_SEQUENCE(obj) && is_seq_string(obj, 1, 255)) {
@@ -449,20 +456,20 @@ namespace eu
                         RTFatal("Expected target and argument Sequences in 'E_assign_to_slice()'");
                 }
                 
-                Object Sequence::E_at(ELONG int i); // use (1 to length) or (-1 to -length) // make "obj = seq[index]"
+                object E_at(ELONG int i); // use (1 to length) or (-1 to -length) // make "obj = seq[index]"
 
-                friend Sequence S_repeat(Object item, object repcount);
+                friend Sequence S_repeat(object item, object repcount);
                 
-                void Sequence::prepend(Object a);
-                void Sequence::append(Object a);
+                void prepend(object a);
+                void append(object a);
                 
-                friend void S_prepend(Sequence target, Sequence src, Object a);
-                friend void S_append(Sequence target, Sequence src, Object a);
-                friend void S_concat(Sequence target, Object a, Object b);
+                friend void S_prepend(Sequence target, Sequence src, object a);
+                friend void S_append(Sequence target, Sequence src, object a);
+                friend void S_concat(Sequence target, object a, object b);
                 friend void S_concatN(Sequence target, Sequence source);
                 
-                friend ELONG E_find(Object a, Sequence b);
-                friend ELONG E_find_from(Object a, Sequence b, object c);
+                friend ELONG E_find(object a, Sequence b);
+                friend ELONG E_find_from(object a, Sequence b, object c);
                 friend ELONG E_match(Sequence a, Sequence b);
                 friend ELONG E_match_from(Sequence a, Sequence b, object c);
         };
@@ -493,24 +500,25 @@ namespace eu
                 char GetChar() { return doChar(obj); } // aborts if type is sequence.
                 
                 friend ELONG int E_compare(Object a, Object b);
-                friend ELONG E_find(Object a, Sequence b);
-                friend ELONG E_find_from(Object a, Sequence b, object c);
-                
-                friend Sequence S_repeat(Object item, object repcount);
-                friend void S_prepend(Sequence target, Sequence src, Object a);
-                friend void S_append(Sequence target, Sequence src, Object a);
-                friend void S_concat(Sequence target, Object a, Object b);
+		
+                friend object Sequence::E_at(ELONG int i);
+		friend void Sequence::prepend(object a);
+		friend void Sequence::append(object a);
+		friend void S_prepend(Sequence target, Sequence src, object a);
+		friend void S_append(Sequence target, Sequence src, object a);
+		friend void S_concat(Sequence target, object a, object b);
+
         };
         
         ELONG int E_compare(Object a, Object b) { return compare(a.obj, b.obj); }
 
-        ELONG E_find(Object a, Sequence b) { return find(a.obj, (s1_ptr)b.obj); }
+        ELONG E_find(object a, Sequence b) { return find(a, (s1_ptr)b.obj); }
         ELONG E_match(Sequence a, Sequence b) { return e_match((s1_ptr)a.obj, (s1_ptr)b.obj); }
         
-        ELONG E_find_from(Object a, Sequence b, object c) { return find_from(a.obj, (s1_ptr)b.obj, c); }
+        ELONG E_find_from(object a, Sequence b, object c) { return find_from(a, (s1_ptr)b.obj, c); }
         ELONG E_match_from(Sequence a, Sequence b, object c) { return e_match_from((s1_ptr)a.obj, (s1_ptr)b.obj, c); }
         
-        Object Sequence::E_at(ELONG int i) { // use (1 to length) or (-1 to -length)
+        object Sequence::E_at(ELONG int i) { // use (1 to length) or (-1 to -length)
                 Object ret;
                 if (IS_DBL_OR_SEQUENCE(obj) && IS_SEQUENCE(obj) && TYPE_CHECK_INTEGER(i)) {
                         s1_ptr ptr = SEQ_PTR(obj);
@@ -532,51 +540,57 @@ namespace eu
                 {
                         RTFatal("Expected a Sequence and a valid index number in 'E_at()'");
                 }
-                return ret;
+                return ret.obj;
         }
-        Sequence S_repeat(Object item, object repcount)
+        Sequence S_repeat(object item, object repcount)
         {
                 Sequence ret;
-                ret.obj = Repeat(item.obj, repcount);
+                ret.obj = Repeat(item, repcount);
                 return ret;
         }
-        void Sequence::prepend(Object a)
+        void Sequence::prepend(object a)
         {
-                Ref(a.obj)
-                Prepend(&obj, obj, a.obj);
+		Object * temp = (Object *)&a;
+		temp->RefObj();
+                Prepend(&obj, obj, a);
         }
-        void Sequence::append(Object a)
+        void Sequence::append(object a)
         {
-                Ref(a.obj)
-                Append(&obj, obj, a.obj);
+		Object * temp = (Object *)&a;
+		temp->RefObj();
+                Append(&obj, obj, a);
         }
-        void S_prepend(Sequence target, Sequence src, Object a)
+        void S_prepend(Sequence target, Sequence src, object a)
         {
-                Ref(a.obj)
-                Prepend(&(target.obj), src.obj, a.obj);
+		Object * temp = (Object *)&a;
+		temp->RefObj();
+                Prepend(&(target.obj), src.obj, a);
         }
-        void S_append(Sequence target, Sequence src, Object a)
+        void S_append(Sequence target, Sequence src, object a)
         {
-                Ref(a.obj)
-                Append(&(target.obj), src.obj, a.obj);
+		Object * temp = (Object *)&a;
+		temp->RefObj();
+                Append(&(target.obj), src.obj, a);
         }
-        void S_concat(Sequence target, Object a, Object b)
+        void S_concat(Sequence target, object a, object b)
         {
-                bool is_seq_a = IS_DBL_OR_SEQUENCE(a.obj) && IS_SEQUENCE(a.obj);
-                bool is_seq_b = IS_DBL_OR_SEQUENCE(b.obj) && IS_SEQUENCE(b.obj);
+                bool is_seq_a = IS_DBL_OR_SEQUENCE(a) && IS_SEQUENCE(a);
+                bool is_seq_b = IS_DBL_OR_SEQUENCE(b) && IS_SEQUENCE(b);
                 if (is_seq_a && (!is_seq_b))
                 {
-                        Ref(b.obj)
-                        Append(&(target.obj), a.obj, b.obj);
+			Object * temp = (Object *)&b;
+			temp->RefObj();
+                        Append(&(target.obj), a, b);
                 }
                 else if ((!is_seq_a) && is_seq_b)
                 {
-                        Ref(a.obj)
-                        Prepend(&(target.obj), b.obj, a.obj);
+			Object * temp = (Object *)&a;
+			temp->RefObj();
+                        Prepend(&(target.obj), b, a);
                 }
                 else
                 {
-                        Concat(&(target.obj), a.obj, (s1_ptr)b.obj);
+                        Concat(&(target.obj), a, (s1_ptr)b);
                 }
         }
 #ifdef USE_MATH_H

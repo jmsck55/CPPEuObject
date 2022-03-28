@@ -46,10 +46,10 @@ int main()
     i2 = 1000;
     i2.println();
     SHOW_DEBUG(i2);
-    a1 = 98.6;
+    a1 = (EDOUBLE)98.6;
     a1.println();
     SHOW_DEBUG(a1);
-    a2 = -1e6;
+    a2 = (EDOUBLE)-1e6;
     a2.println(0,0,"%e");
     SHOW_DEBUG(a2);
 
@@ -71,10 +71,10 @@ int main()
     SHOW_DEBUG(s4);
 
     puts("\n-- Numbers can also be entered in hexadecimal. For example:");
-    a1 = 0xFE;
+    a1 = (EDOUBLE)0xFE;
     a1.println(0,0,"#%X",1);
     SHOW_DEBUG(a1);
-    a2 = 0xA000;
+    a2 = (EDOUBLE)0xA000;
     a2.println(0,0,"#%X",1);
     SHOW_DEBUG(a2);
     dbl = (EDOUBLE)68718428168;
@@ -82,7 +82,7 @@ int main()
     a3 = dbl;
     a3.println(0,0,"%f");
     SHOW_DEBUG(a3);
-    a4 = -0x10; // -16
+    a4 = (EDOUBLE)-0x10; // -16
     a4.println();
     SHOW_DEBUG(a4);
 

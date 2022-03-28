@@ -25,14 +25,14 @@ void Cleanup(long long int status);
 void UserCleanup(long long int status);
 void SimpleRTFatal(char *msg);
 #ifndef DONT_USE_RTFATAL
-void RTFatal(char *msg);
+void RTFatal(const char *msg);
 #endif
 void SpaceMessage();
 char *EMalloc(unsigned long long nbytes);
 char *ERealloc(char *orig, unsigned long long newsize);
 s1_ptr NewS1(long long size);
 object NewString(const char *s);
-s1_ptr SequenceCopy(register s1_ptr a);
+s1_ptr SequenceCopy(REGISTER s1_ptr a);
 object NewDouble(long double d);
 object Dadd(d_ptr a, d_ptr b);
 object Dminus(d_ptr a, d_ptr b);
@@ -146,14 +146,14 @@ void Cleanup(long int status);
 void UserCleanup(long int status);
 void SimpleRTFatal(char *msg);
 #ifndef DONT_USE_RTFATAL
-void RTFatal(char *msg);
+void RTFatal(const char *msg);
 #endif
 void SpaceMessage();
 char *EMalloc(unsigned long nbytes);
 char *ERealloc(char *orig, unsigned long newsize);
 s1_ptr NewS1(long size);
 object NewString(const char *s);
-s1_ptr SequenceCopy(register s1_ptr a);
+s1_ptr SequenceCopy(REGISTER s1_ptr a);
 object NewDouble(double d);
 object Dadd(d_ptr a, d_ptr b);
 object Dminus(d_ptr a, d_ptr b);

@@ -48,22 +48,23 @@
 
 #ifdef __GNUC__
 #include <stdint.h>
-
 // 64-bit not fully supported yet.
 #if INTPTR_MAX == INT64_MAX
 #define BITS64
-#endif
-#endif
+#endif // INTPTR_MAX == INT64_MAX
+#endif // __GNUC__
 
 // For faster code, alignment should be (2 on 16-bit machines), (4 on 32-bit machines), (8 on 64-bit machines)
 #ifdef BITS64
 #pragma align(8)
 #define EDOUBLE long double
 #define ELONG long long
+#define REGISTER
 #else
 #pragma align(4)
 #define EDOUBLE double
 #define ELONG long
+#define REGISTER register
 #endif
 #ifdef BITS64
 #define ELONG_WIDTH "ll"
