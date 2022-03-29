@@ -186,7 +186,7 @@ namespace eu
                         #endif
                                 RefDS(obj);
                                 // memory leak:
-				// if (IS_SEQUENCE(obj))
+                                // if (IS_SEQUENCE(obj))
                                 // {
                                 //         object_ptr ptr = SEQ_PTR(obj)->base;
                                 //         while (*(++ptr) != NOVALUE)
@@ -261,7 +261,7 @@ namespace eu
                 //void Delete() { DeRefObj(); }
                 eulong int get_etype() { if (obj == NOVALUE) return 0; if (IS_ATOM_INT(obj)) return E_INTEGER; if (IS_ATOM_DBL(obj)) return E_ATOM; if (IS_SEQUENCE(obj)) return E_SEQUENCE; return E_OBJECT; }
                 bool is_initialized() { return obj != NOVALUE; }
-		object GetValue() { RefObj(); return obj; }
+                object GetValue() { RefObj(); return obj; }
                 base_class& operator= (const base_class& x)
                 {
                         DeRefObj();
@@ -336,7 +336,7 @@ namespace eu
                         }
                         va_end(vl);
                         ob = MAKE_SEQ(ptr);
-			// (*(base_class*)&ob).RefObj(); // memory leak.
+                        // (*(base_class*)&ob).RefObj(); // memory leak.
                         return ob; // return value.
                 }
                 RTFatal("Expected a number or NOVALUE as the first parameter of 'seq()'");
@@ -467,14 +467,18 @@ namespace eu
                 void ScreenOutput(FILE *f) { char * out_string = GetCharStr(); screen_output(f, out_string); }
                 eulong length() { if (IS_DBL_OR_SEQUENCE(obj) && IS_SEQUENCE(obj)) { return SEQ_PTR(obj)->length; } else { RTFatal("Expected a Sequence, but found an Atom, in 'length()'"); return -1; } }
 
-                void E_construct_slice(Sequence src, object start, object end) { // assign src[start..end] to this "obj", i.e. "obj = src[start..end]"
+                object E_construct_slice(Sequence src, object start, object end) { // assign src[start..end] to this "obj", i.e. "obj = src[start..end]"
                         if (IS_DBL_OR_SEQUENCE(obj) && IS_SEQUENCE(obj) &&
                         IS_DBL_OR_SEQUENCE(src.obj) && IS_SEQUENCE(src.obj)) {
                                 rhs_slice_target = &obj; // DeRef()'s "obj" in next statement below.
                                 RHS_Slice((s1_ptr)src.obj, start, end); // takes all object's.
                                 rhs_slice_target = NULL;
+                                return obj;
                         }
-                        RTFatal("Expected target and argument Sequences in 'E_construct_slice()'");
+                        else {
+                                RTFatal("Expected target and argument Sequences in 'E_construct_slice()'");
+                                return NOVALUE;
+                        }
                 }
                 void E_assign_to_slice(object start, object end, Sequence val) { // make "slice[start..end] = val", val should be the same length as "end - start + 1"
                         if (IS_DBL_OR_SEQUENCE(obj) && IS_SEQUENCE(obj) &&
@@ -483,7 +487,9 @@ namespace eu
                                 AssignSlice(start, end, (s1_ptr)val.obj);
                                 assign_slice_seq = NULL;
                         }
-                        RTFatal("Expected target and argument Sequences in 'E_assign_to_slice()'");
+                        else {
+                                RTFatal("Expected target and argument Sequences in 'E_assign_to_slice()'");
+                        }
                 }
 
                 object E_at(eulong int i); // use (1 to length) or (-1 to -length) // make "obj = seq[index]"
@@ -509,37 +515,6 @@ namespace eu
                 s1_ptr p = SEQ_PTR(sources.obj);
                 Concat_N(&(target.obj), p->base, p->length);
         }
-
-
-        class Object : public base_class
-        {
-        friend class Sequence;
-        friend class Integer;
-        friend class Atom;
-        private:
-                eulong const type() { return E_OBJECT; }
-                Object(object ob) { obj = ob; }
-        public:
-                Object() { obj = NOVALUE; } // default constructor
-                ~Object() { DeRefObj(); obj = NOVALUE; } // default destructor
-                Object(const Object& x) { obj = x.obj; RefObj(); } // copy constructor
-                //Object& operator= (const Object& x) { DeRefObj(); obj = x.obj; RefObj(); return *this; } // copy assignment
-                //Object(Object&& x) { obj = x.obj; x.obj = NOVALUE; } // move constructor
-                //Object& operator= (Object&& x) { DeRefObj(); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
-
-
-                char GetChar() { return doChar(obj); } // aborts if type is sequence.
-
-                //friend eulong int E_compare(object a, object b);
-
-                //friend object Sequence::E_at(eulong int i);
-                //friend void Sequence::prepend(object a);
-                //friend void Sequence::append(object a);
-                //friend void S_prepend(Sequence target, Sequence src, object a);
-                //friend void S_append(Sequence target, Sequence src, object a);
-                //friend void S_concat(Sequence target, object a, object b);
-
-        };
 
         eulong int E_compare(object a, object b) { return compare(a, b); }
 
@@ -581,22 +556,22 @@ namespace eu
         }
         void Sequence::prepend(object a)
         {
-		Ref(a)
+                Ref(a)
                 Prepend(&obj, obj, a);
         }
         void Sequence::append(object a)
         {
-		Ref(a)
+                Ref(a)
                 Append(&obj, obj, a);
         }
         void S_prepend(Sequence target, Sequence src, object a)
         {
-		Ref(a)
+                Ref(a)
                 Prepend(&(target.obj), src.obj, a);
         }
         void S_append(Sequence target, Sequence src, object a)
         {
-		Ref(a)
+                Ref(a)
                 Append(&(target.obj), src.obj, a);
         }
         void S_concat(Sequence target, object a, object b)
@@ -605,12 +580,12 @@ namespace eu
                 bool is_seq_b = IS_DBL_OR_SEQUENCE(b) && IS_SEQUENCE(b);
                 if (is_seq_a && (!is_seq_b))
                 {
-			Ref(b)
+                        Ref(b)
                         Append(&(target.obj), a, b);
                 }
                 else if ((!is_seq_a) && is_seq_b)
                 {
-			Ref(a)
+                        Ref(a)
                         Prepend(&(target.obj), b, a);
                 }
                 else
@@ -618,6 +593,28 @@ namespace eu
                         Concat(&(target.obj), a, (s1_ptr)b);
                 }
         }
+
+        class Object : public base_class
+        {
+        friend class Sequence;
+        friend class Integer;
+        friend class Atom;
+        private:
+                eulong const type() { return E_OBJECT; }
+                Object(object ob) { obj = ob; }
+        public:
+                Object() { obj = NOVALUE; } // default constructor
+                ~Object() { DeRefObj(); obj = NOVALUE; } // default destructor
+                Object(const Object& x) { obj = x.obj; RefObj(); } // copy constructor
+                //Object& operator= (const Object& x) { DeRefObj(); obj = x.obj; RefObj(); return *this; } // copy assignment
+                //Object(Object&& x) { obj = x.obj; x.obj = NOVALUE; } // move constructor
+                //Object& operator= (Object&& x) { DeRefObj(); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
+
+
+                char GetChar() { return doChar(obj); } // aborts if type is sequence.
+
+        };
+
 #ifdef USE_MATH_H
         class Dbl : public base_class
         {
