@@ -1,4 +1,4 @@
-//
+// Copyright (c) 2022 James Cook
 // obj.hpp
 // Classfile for EuObject
 //

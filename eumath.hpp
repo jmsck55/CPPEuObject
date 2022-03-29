@@ -1,4 +1,4 @@
-//
+// Copyright (c) 2022 James Cook
 // eumath.hpp
 // Floating-point Math Classfile for EuObject
 // "class Dbl" uses integers and doubles.

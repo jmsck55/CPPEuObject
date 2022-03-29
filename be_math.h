@@ -1,4 +1,4 @@
-//
+// Copyright (c) 2022 James Cook
 // be_math.h
 //
 // Functions that use the math library: #include <math.h>

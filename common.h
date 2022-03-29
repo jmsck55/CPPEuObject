@@ -1,4 +1,4 @@
-//
+// Copyright (c) 2022 James Cook
 // common.h
 //
 // 32/64-bit using macro BITS64 for 64-bit

@@ -1,4 +1,4 @@
-//
+// Copyright (c) 2022 James Cook
 // eu.hpp
 // Main include file for C++ version of CPPEuObject.
 

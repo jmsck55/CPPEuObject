@@ -1,4 +1,4 @@
-//
+// Copyright (c) 2022 James Cook
 // eufuncs.hpp
 // Additional Functions Classfile for EuObject
 //

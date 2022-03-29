@@ -1,4 +1,4 @@
-//
+// Copyright (c) 2022 James Cook
 // pch.h
 //
 // A "C" precompiled header.

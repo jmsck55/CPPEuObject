@@ -1,4 +1,4 @@
-//
+// Copyright (c) 2022 James Cook
 // test.cpp
 
 #include <iostream>
