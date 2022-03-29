@@ -33,7 +33,7 @@ void myShowDebug(eu::base_class* x)
 int main()
 {
         char ch;
-        EDOUBLE dbl;
+        eudouble dbl;
         char *str;
         //eu::EOBJECT a; //, b, c, d;
 
@@ -50,10 +50,10 @@ int main()
                 i2 = 1000;
                 i2.println();
                 SHOW_DEBUG("i2", i2);
-                a1 = (EDOUBLE)98.6;
+                a1 = (eudouble)98.6;
                 a1.println();
                 SHOW_DEBUG("a1", a1);
-                a2 = (EDOUBLE)-1e6;
+                a2 = (eudouble)-1e6;
                 a2.println(0,0,"%e");
                 SHOW_DEBUG("a2", a2);
         }
@@ -87,18 +87,18 @@ int main()
         if (true) {
                 eu::EATOM a1, a2, a3, a4;
                 puts("\n-- Numbers can also be entered in hexadecimal. For example:");
-                a1 = (EDOUBLE)0xFE;
+                a1 = (eudouble)0xFE;
                 a1.println(0,0,"#%X",1);
                 SHOW_DEBUG("a1", a1);
-                a2 = (EDOUBLE)0xA000;
+                a2 = (eudouble)0xA000;
                 a2.println(0,0,"#%X",1);
                 SHOW_DEBUG("a2", a2);
-                dbl = (EDOUBLE)68718428168;
+                dbl = (eudouble)68718428168;
                 printf("%f %i\n", (double)dbl, IS_DOUBLE_TO_INT(dbl));
                 a3 = dbl;
                 a3.println(0,0,"%f");
                 SHOW_DEBUG("a3", a3);
-                a4 = (EDOUBLE)-0x10; // -16
+                a4 = (eudouble)-0x10; // -16
                 a4.println();
                 SHOW_DEBUG("a4", a4);
         }
@@ -109,7 +109,7 @@ int main()
                 eu::ESEQUENCE s1, s2, s3;
                 eu::EATOM a1, a2;
                 puts("\n-- More examples:");
-                dbl = ((EDOUBLE)1/(EDOUBLE)7);
+                dbl = ((eudouble)1/(eudouble)7);
                 a1.NewAtom(dbl);
                 SHOW_DEBUG("a1", a1);
                 a2 = a1;

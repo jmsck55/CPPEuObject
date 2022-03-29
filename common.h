@@ -26,13 +26,13 @@
 // For faster code, alignment should be (2 on 16-bit machines), (4 on 32-bit machines), (8 on 64-bit machines)
 #ifdef BITS64
 //#pragma align(8)
-#define EDOUBLE long double
-#define ELONG long long
+#define eudouble long double
+#define eulong long long
 #define REGISTER
 #else
 //#pragma align(4)
-#define EDOUBLE double
-#define ELONG long
+#define eudouble double
+#define eulong long
 #define REGISTER register
 #endif
 #ifdef BITS64

@@ -16,10 +16,10 @@ object Dremainder(d_ptr a, d_ptr b)
     return (object)NewDouble(fmod(a->dbl, b->dbl)); /* for now */
 }
 
-object power(ELONG a, ELONG b)
+object power(eulong a, eulong b)
 /* integer a to the power b */
 {
-    ELONG i, p;
+    eulong i, p;
 
 #ifdef BITS64
     if (a == 2 && b >= 0 && b <= 61) {
@@ -43,7 +43,7 @@ object power(ELONG a, ELONG b)
         return MAKE_INT(p);
     }
     else
-        return (object)NewDouble(pow((EDOUBLE)a, (EDOUBLE)b));
+        return (object)NewDouble(pow((eudouble)a, (eudouble)b));
 }
 
 object Dpower(d_ptr a, d_ptr b)
@@ -57,16 +57,16 @@ object Dpower(d_ptr a, d_ptr b)
 }
 
 
-object e_sqrt(ELONG a)
+object e_sqrt(eulong a)
 /* integer square_root(a) */
 {
     if (a < 0)
         RTFatal("attempt to take square root of a negative number");
-    return (object)NewDouble( sqrt((EDOUBLE)a) );
+    return (object)NewDouble( sqrt((eudouble)a) );
 }
 
 object De_sqrt(d_ptr a)
-/* EDOUBLE square root(a) */
+/* eudouble square root(a) */
 {
     if (a->dbl < 0)
         RTFatal("attempt to take square root of a negative number");
@@ -74,71 +74,71 @@ object De_sqrt(d_ptr a)
 }
 
 
-object e_sin(ELONG a)
+object e_sin(eulong a)
 /* sin of an angle a (radians) */
 {
-    return (object)NewDouble( sin((EDOUBLE)a) );
+    return (object)NewDouble( sin((eudouble)a) );
 }
 
 object De_sin(d_ptr a)
-/* EDOUBLE sin of a */
+/* eudouble sin of a */
 {
     return (object)NewDouble( sin(a->dbl) );
 }
 
-object e_cos(ELONG a)
+object e_cos(eulong a)
 /* cos of an angle a (radians) */
 {
-    return (object)NewDouble( cos((EDOUBLE)a) );
+    return (object)NewDouble( cos((eudouble)a) );
 }
 
 object De_cos(d_ptr a)
-/* EDOUBLE cos of a */
+/* eudouble cos of a */
 {
     return (object)NewDouble( cos(a->dbl) );
 }
 
-object e_tan(ELONG a)
+object e_tan(eulong a)
 /* tan of an angle a (radians) */
 {
-    return (object)NewDouble( tan((EDOUBLE)a) );
+    return (object)NewDouble( tan((eudouble)a) );
 }
 
 object De_tan(d_ptr a)
-/* EDOUBLE tan of a */
+/* eudouble tan of a */
 {
     return (object)NewDouble( tan(a->dbl) );
 }
 
-object e_arctan(ELONG a)
+object e_arctan(eulong a)
 /* arctan of an angle a (radians) */
 {
-    return (object)NewDouble( atan((EDOUBLE)a) );
+    return (object)NewDouble( atan((eudouble)a) );
 }
 
 object De_arctan(d_ptr a)
-/* EDOUBLE arctan of a */
+/* eudouble arctan of a */
 {
     return (object)NewDouble( atan(a->dbl) );
 }
 
-object e_log(ELONG a)
+object e_log(eulong a)
 /* natural log of a (integer) */
 {
     if (a <= 0)
         RTFatal("may only take log of a positive number");
-    return (object)NewDouble( log((EDOUBLE)a) );
+    return (object)NewDouble( log((eudouble)a) );
 }
 
 object De_log(d_ptr a)
-/* natural log of a (EDOUBLE) */
+/* natural log of a (eudouble) */
 {
     if (a->dbl <= 0.0)
         RTFatal("may only take log of a positive number");
     return (object)NewDouble( log(a->dbl) );
 }
 
-object e_floor(ELONG a)  // not used anymore
+object e_floor(eulong a)  // not used anymore
 /* floor of a number - no op since a is already known to be an int */
 {
     return a; 
@@ -147,12 +147,12 @@ object e_floor(ELONG a)  // not used anymore
 object De_floor(d_ptr a)
 /* floor of a number */
 {
-    EDOUBLE temp;
+    eudouble temp;
 
     temp = floor(a->dbl); 
 #ifndef ERUNTIME    
     if (fabs(temp) < MAXINT_DBL)
-        return MAKE_INT((ELONG)temp);
+        return MAKE_INT((eulong)temp);
     else 
 #endif      
         return (object)NewDouble(temp);
