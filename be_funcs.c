@@ -188,26 +188,26 @@ object calc_hash32(object a, object b)
         union TF
         {
                 double ieee_double;
-#if INTPTR_MAX == INT32_MAX
+//#if INTPTR_MAX == INT32_MAX
                 struct dbllong
                 {
                         unsigned int a;
                         unsigned int b;
                 } ieee_uint;
-#else
-#ifndef __GNUC__
-                _declspec(align(4)) // 1 should work on any system. (change the 4 to a 2 on 16-bit)
-#endif // Microsoft
-                struct dbllong
-                {
-                        unsigned int a;
-                        unsigned int b;
-                } ieee_uint
-#ifdef __GNUC__
-                __attribute__ ((aligned(4)))
-#endif // GCC
-                ; // 1 should work on any system. (change the 4 to a 2 on 16-bit)
-#endif // INTPTR_MAX == INT32_MAX
+//#else
+//#ifndef __GNUC__
+//                _declspec(align(4)) // 1 should work on any system. (change the 4 to a 2 on 16-bit)
+//#endif // Microsoft
+//                struct dbllong
+//                {
+//                        unsigned int a;
+//                        unsigned int b;
+//                } ieee_uint
+//#ifdef __GNUC__
+//                __attribute__ ((aligned(4)))
+//#endif // GCC
+//                ; // 1 should work on any system. (change the 4 to a 2 on 16-bit)
+//#endif // INTPTR_MAX == INT32_MAX
                 unsigned char ieee_char[8];
         } tf, seeder, prev;
 
