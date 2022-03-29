@@ -105,7 +105,7 @@ int main()
         puts("\n2.2 Expressions");
         puts("\nTo be continued...\n");
 
-        if (false) { // has some error, still working on it.
+        if (true) { // has some error, still working on it.
                 eu::ESEQUENCE s1, s2, s3;
                 eu::EATOM a1, a2;
                 puts("\n-- More examples:");
@@ -118,15 +118,15 @@ int main()
                 //s1.NewStr("Hi");
                 s1 = "Hi";
                 SHOW_DEBUG("s1", s1);
-                s2 = s1; // copies sequence.
+                s2 = s1.GetValue(); // copies sequence, always use "GetValue()" (to increase ref count by one), or else "memory violation" (i.e. Program Crash.)
                 SHOW_DEBUG("s2", s2);
-                s3 = eu::seq(COUNT(1), s1);
+                s3 = eu::seq(COUNT(1), s1.GetValue());
                 SHOW_DEBUG("s1", s1);
-                s2 = eu::seq(NOVALUE, s3, s1, NOVALUE);
+                s2 = eu::seq(NOVALUE, s3.GetValue(), s1.GetValue(), NOVALUE);
                 SHOW_DEBUG("s3", s3);
                 SHOW_DEBUG("s2", s2);
                 SHOW_DEBUG("s1", s1);
-                if (true)
+                if (false) // Here.
                 {
                         eu::ESEQUENCE tmp = s2;
                         SHOW_DEBUG("s1", s1);

@@ -261,6 +261,7 @@ namespace eu
                 //void Delete() { DeRefObj(); }
                 eulong int get_etype() { if (obj == NOVALUE) return 0; if (IS_ATOM_INT(obj)) return E_INTEGER; if (IS_ATOM_DBL(obj)) return E_ATOM; if (IS_SEQUENCE(obj)) return E_SEQUENCE; return E_OBJECT; }
                 bool is_initialized() { return obj != NOVALUE; }
+		object GetValue() { RefObj(); return obj; }
                 base_class& operator= (const base_class& x)
                 {
                         DeRefObj();
