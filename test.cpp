@@ -101,19 +101,20 @@ int main()
                 a4 = (eudouble)-0x10; // -16
                 a4.println();
                 SHOW_DEBUG("a4", a4);
-        }
-        puts("\n2.2 Expressions");
-        puts("\nTo be continued...\n");
-
-        if (true) { // has some error, still working on it.
-                eu::ESEQUENCE s1, s2, s3;
-                eu::EATOM a1, a2;
+                
+                puts("\n2.2 Expressions");
+                puts("\nTo be continued...\n");
+                
                 puts("\n-- More examples:");
                 dbl = ((eudouble)1/(eudouble)7);
                 a1.NewAtom(dbl);
                 SHOW_DEBUG("a1", a1);
                 a2 = a1;
                 SHOW_DEBUG("a2", a2);
+        }
+
+        if (true) {
+                eu::ESEQUENCE s1, s2, s3;
                 
                 //s1.NewStr("Hi");
                 s1 = "Hi";
@@ -126,9 +127,9 @@ int main()
                 SHOW_DEBUG("s3", s3);
                 SHOW_DEBUG("s2", s2);
                 SHOW_DEBUG("s1", s1);
-                if (false) // Here.
+                if (true)
                 {
-                        eu::ESEQUENCE tmp = s2;
+                        eu::ESEQUENCE tmp = s2.GetValue(); // must use "GetValue()" here.
                         SHOW_DEBUG("s1", s1);
                 }
                 SHOW_DEBUG("s1", s1);
