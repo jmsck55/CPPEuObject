@@ -1,3 +1,3 @@
-copy libeuobj.dll libeuobjupx.dll
-upx libeuobjupx.dll
+copy jceuobj.dll jceuobju.dll
+upx jceuobju.dll
 pause
