@@ -1,7 +1,9 @@
 # CPPEuObject
 CPPEuObject is the name of the project designed to use a CPP class instead of using the Euphoria Interpreter.
 
-Financial Support:
+https://github.com/jmsck55/CPPEuObject
+
+Payment:
 
 Give whatever money you would give me to single women, and to single women with children, and to orphans, especially of English origin, who do not have enough financial support.
 

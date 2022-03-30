@@ -18,7 +18,7 @@ s1_ptr *assign_slice_seq;
 
 //From: be_runtime.c
 
-void Cleanup(eulong int status)
+void Cleanup(elong status)
 /* clean things up before leaving 0 - ok, non 0 - error */
 {
 // #ifdef EWINDOWS
@@ -30,7 +30,7 @@ void Cleanup(eulong int status)
     exit(status);
 }
 
-void UserCleanup(eulong int status)
+void UserCleanup(elong status)
 /* Euphoria abort() */
 {
 //    user_abort = TRUE;
@@ -91,20 +91,20 @@ void SpaceMessage()
     RTFatal("Your program has run out of memory.\nOne moment please...");
 }
 
-char *EMalloc(unsigned eulong nbytes)
+char *EMalloc(ulong nbytes)
 /* storage allocator */
 /* Always returns a pointer that has 8-byte alignment (essential for our
    internal representation of an object). */
 {
     char * ret = (char*)malloc(nbytes);
-    if (((eulong)ret) % 8)
+    if (((elong)ret) % 8)
     {
         RTFatal("Error: EMalloc does not have 8-byte alignment.");
     }
     return ret;
 }
 
-char *ERealloc(char *orig, unsigned eulong newsize)
+char *ERealloc(char *orig, ulong newsize)
 /* Enlarge or shrink a malloc'd block.
    orig must not be NULL - not supported.
    Return a pointer to a storage area of the desired size
@@ -114,14 +114,14 @@ char *ERealloc(char *orig, unsigned eulong newsize)
 {
     // we always have 8-alignment
     char * ret = (char*)realloc(orig, newsize);
-    if (((eulong)ret) % 8)
+    if (((elong)ret) % 8)
     {
         RTFatal("Error: ERealloc does not have 8-byte alignment.");
     }
     return ret;
 }
 
-s1_ptr NewS1(eulong size)
+s1_ptr NewS1(elong size)
 /* make a new s1 sequence block with a single reference count */
 /* size is number of elements, NOVALUE is added as an end marker */
 {
@@ -146,12 +146,12 @@ s1_ptr NewS1(eulong size)
 object NewString(const char *s)
 /* create a new string sequence */
 {
-    eulong int len;
+    elong len;
     object_ptr obj_ptr;
     s1_ptr c1;
 
     len = strlen(s);
-    c1 = NewS1((eulong)len);
+    c1 = NewS1((elong)len);
     obj_ptr = (object_ptr)c1->base;
     if (len > 0) {
         do {
@@ -166,7 +166,7 @@ s1_ptr SequenceCopy(REGISTER s1_ptr a)
 {
     s1_ptr c;
     REGISTER object_ptr cp, ap;
-    REGISTER eulong length;
+    REGISTER elong length;
     REGISTER object temp_ap;
 
     /* a is a SEQ_PTR */
@@ -192,7 +192,7 @@ object NewDouble(eudouble d)
 {
     REGISTER d_ptr n;
 
-    n = (d_ptr)EMalloc((eulong)D_SIZE);
+    n = (d_ptr)EMalloc((elong)D_SIZE);
 
     n->ref = 1;
     n->dbl = d;
@@ -242,7 +242,7 @@ void Prepend(object_ptr target, object s1, object a)
     object_ptr p, q;
     s1_ptr t;
     s1_ptr s1p, new_seq;
-    eulong len, new_len;
+    elong len, new_len;
     object temp;
 
     t = (s1_ptr)*target;
@@ -289,7 +289,7 @@ void Append(object_ptr target, object s1, object a)
     object_ptr p, q;
     s1_ptr t;
     s1_ptr s1p, new_s1p, new_seq;
-    eulong len, new_len;
+    elong len, new_len;
     object_ptr base, last;
     object temp;
 
@@ -356,7 +356,7 @@ void Concat(object_ptr target, object a_obj, s1_ptr b)
 {
     object_ptr p, q;
     s1_ptr c, a;
-    eulong na, nb;
+    elong na, nb;
     object temp;
 
     if (IS_ATOM(a_obj)) {
@@ -435,7 +435,7 @@ void Concat(object_ptr target, object a_obj, s1_ptr b)
     *target = MAKE_SEQ(c);
 }
 
-void Concat_N(object_ptr target, object_ptr  source, eulong int n)
+void Concat_N(object_ptr target, object_ptr  source, elong n)
 /* run-time library version for Translator
  * Concatenate n objects (n > 2). This is more efficient
  * than doing multiple calls to Concat() above, since we
@@ -445,7 +445,7 @@ void Concat_N(object_ptr target, object_ptr  source, eulong int n)
 {
     s1_ptr result;
     object s_obj, temp;
-    eulong int i, size;
+    elong i, size;
     object_ptr p, q;
 
     /* Compute the total size of all the operands */
@@ -490,7 +490,7 @@ void Concat_N(object_ptr target, object_ptr  source, eulong int n)
     *target = MAKE_SEQ(result);
 }
 
-void Concat_Ni(object_ptr target, object_ptr *source, eulong int n)
+void Concat_Ni(object_ptr target, object_ptr *source, elong n)
 /* version used by interpreter
  * Concatenate n objects (n > 2). This is more efficient
  * than doing multiple calls to Concat() above, since we
@@ -500,7 +500,7 @@ void Concat_Ni(object_ptr target, object_ptr *source, eulong int n)
 {
     s1_ptr result;
     object s_obj, temp;
-    eulong int i, size;
+    elong i, size;
     object_ptr p, q;
 
     /* Compute the total size of all the operands */
@@ -546,7 +546,7 @@ void Concat_Ni(object_ptr target, object_ptr *source, eulong int n)
 }
 
 // used by translator
-void RepeatElem(eulong int *addr, object item, eulong int repcount)
+void RepeatElem(elong *addr, object item, elong repcount)
 /* replicate an object in memory - used by RIGHT_BRACE op */
 /* repcount will be at least 10 */
 {
@@ -563,7 +563,7 @@ object Repeat(object item, object repcount)
 {
     object_ptr obj_ptr;
     eudouble d;
-    eulong count;
+    elong count;
     s1_ptr s1;
 
     if (IS_ATOM_INT(repcount)) {
@@ -582,7 +582,7 @@ object Repeat(object item, object repcount)
         if (d < 0.0)
 #endif
             RTFatal("repetition count must not be negative");
-        count = (eulong)d;
+        count = (elong)d;
     }
 
     else
@@ -632,7 +632,7 @@ void de_reference(s1_ptr a)
 #ifdef EXTRA_CHECK
     s1_ptr a1;
 
-    if ((eulong)a == NOVALUE || IS_ATOM_INT(a))
+    if ((elong)a == NOVALUE || IS_ATOM_INT(a))
         RTInternal("bad object passed to de_reference");
     if (DBL_PTR(a)->ref > 1000)
         RTInternal("more than 1000 refs");
@@ -682,8 +682,8 @@ void de_reference(s1_ptr a)
                         // switch to subsequence
                         // was: de_reference((s1_ptr)t);
                         t = (object)SEQ_PTR(t);
-                        ((s1_ptr)t)->ref = (eulong)a;
-                        ((s1_ptr)t)->length = (eulong)p;
+                        ((s1_ptr)t)->ref = (elong)a;
+                        ((s1_ptr)t)->length = (elong)p;
                         a = (s1_ptr)t;
                         p = a->base;
                     }
@@ -693,13 +693,13 @@ void de_reference(s1_ptr a)
     }
 }
 
-void DeRef1(eulong int a)
+void DeRef1(elong a)
 /* Saves space. Use in top-level code (outside of loops) */
 {
     DeRef(a);
 }
 
-void DeRef5(eulong int a, eulong int b, eulong int c, eulong int d, eulong int e)
+void DeRef5(elong a, elong b, elong c, elong d, elong e)
 /* Saves space. Use instead of 5 in-line DeRef's */
 {
     DeRef(a);
@@ -722,7 +722,7 @@ void de_reference_i(s1_ptr a)
 #ifdef EXTRA_CHECK
     s1_ptr a1;
 
-    if ((eulong)a == NOVALUE || IS_ATOM_INT(a))
+    if ((elong)a == NOVALUE || IS_ATOM_INT(a))
         RTInternal("bad object passed to de_reference");
     if (DBL_PTR(a)->ref > 1000)
         RTInternal("more than 1000 refs");
@@ -754,11 +754,11 @@ object DoubleToInt(object d)
     eudouble temp_dbl;
 
     temp_dbl = DBL_PTR(d)->dbl;
-    if (((eudouble)((eulong)temp_dbl)) == temp_dbl && // modified by James Cook (jmsck55), not to use math.h's floor()
+    if (((eudouble)((elong)temp_dbl)) == temp_dbl && // modified by James Cook (jmsck55), not to use math.h's floor()
         temp_dbl <= MAXINT_DBL &&
         temp_dbl >= MININT_DBL) {
             /* return it in integer repn */
-            return MAKE_INT((eulong)temp_dbl);
+            return MAKE_INT((elong)temp_dbl);
     }
     else
         return d; /* couldn't convert */
@@ -777,10 +777,10 @@ object x()
 }
 
 
-object add(eulong a, eulong b)
+object add(elong a, elong b)
 /* integer add */
 {
-    eulong c;
+    elong c;
 
     c = a + b;
     if (c + HIGH_BITS < 0)
@@ -789,10 +789,10 @@ object add(eulong a, eulong b)
         return (object)NewDouble((eudouble)c);
 }
 
-object minus(eulong a, eulong b)
+object minus(elong a, elong b)
 /* integer subtract */
 {
-    eulong c;
+    elong c;
 
     c = a - b;
     if (c + HIGH_BITS < 0)
@@ -801,7 +801,7 @@ object minus(eulong a, eulong b)
         return (object)NewDouble((eudouble)c);
 }
 
-object multiply(eulong a, eulong b)
+object multiply(elong a, elong b)
 /* integer multiply */
 /* n.b. char type is signed */
 // Updated by James Cook (jmsck55), to use 64-bit values:
@@ -838,7 +838,7 @@ object multiply(eulong a, eulong b)
     return (object)NewDouble(a * (eudouble)b);
 }
 
-object divide(eulong a, eulong b)
+object divide(elong a, elong b)
 /* compute a / b */
 {
     if (b == 0)
@@ -857,7 +857,7 @@ object Ddivide(d_ptr a, d_ptr b)
     return (object)NewDouble(a->dbl / b->dbl);
 }
 
-object eremainder(eulong a, eulong b)  // avoid conflict with "remainder" math fn
+object eremainder(elong a, elong b)  // avoid conflict with "remainder" math fn
 /* integer remainder of a divided by b */
 {
     if (b == 0)
@@ -889,7 +889,7 @@ void check_bits(d_ptr a, d_ptr b) // actually "check64()" on 64-bit systems
         RTFatal("bitwise operations are limited to 32-bit numbers");
 }
 
-object and_bits(eulong a, eulong b)
+object and_bits(elong a, elong b)
 /* integer a AND b */
 {
     return MAKE_INT(a & b);
@@ -898,8 +898,8 @@ object and_bits(eulong a, eulong b)
 object Dand_bits(d_ptr a, d_ptr b)
 /* double a AND b */
 {
-    unsigned eulong longa, longb;
-    eulong c;
+    ulong longa, longb;
+    elong c;
 
     check_bits(a, b);
     longa = a->dbl;
@@ -911,7 +911,7 @@ object Dand_bits(d_ptr a, d_ptr b)
         return (object)NewDouble((eudouble)c);
 }
 
-object or_bits(eulong a, eulong b)
+object or_bits(elong a, elong b)
 /* integer a OR b */
 {
     return MAKE_INT(a | b);
@@ -920,8 +920,8 @@ object or_bits(eulong a, eulong b)
 object Dor_bits(d_ptr a, d_ptr b)
 /* double a OR b */
 {
-    unsigned eulong longa, longb;
-    eulong c;
+    ulong longa, longb;
+    elong c;
 
     check_bits(a, b);
     longa = a->dbl;
@@ -933,7 +933,7 @@ object Dor_bits(d_ptr a, d_ptr b)
         return (object)NewDouble((eudouble)c);
 }
 
-object xor_bits(eulong a, eulong b)
+object xor_bits(elong a, elong b)
 /* integer a XOR b */
 {
     return MAKE_INT(a ^ b);
@@ -942,8 +942,8 @@ object xor_bits(eulong a, eulong b)
 object Dxor_bits(d_ptr a, d_ptr b)
 /* double a XOR b */
 {
-    unsigned eulong longa, longb;
-    eulong c;
+    ulong longa, longb;
+    elong c;
 
     check_bits(a, b);
     longa = a->dbl;
@@ -955,7 +955,7 @@ object Dxor_bits(d_ptr a, d_ptr b)
         return (object)NewDouble((eudouble)c);
 }
 
-object not_bits(eulong a)
+object not_bits(elong a)
 /* integer bitwise NOT of a */
 {
     return MAKE_INT(~a); // Euphoria integer will produce Euphoria integer
@@ -964,8 +964,8 @@ object not_bits(eulong a)
 object Dnot_bits(d_ptr a)
 /* double bitwise NOT of a */
 {
-    unsigned eulong longa;
-    eulong c;
+    ulong longa;
+    elong c;
 
     if (a->dbl < MIN_BITWISE_DBL ||
         a->dbl > MAX_BITWISE_DBL)
@@ -978,10 +978,10 @@ object Dnot_bits(d_ptr a)
         return (object)NewDouble((eudouble)c);
 }
 
-// object power(eulong a, eulong b)
+// object power(elong a, elong b)
 // /* integer a to the power b */
 // {
-//     eulong i, p;
+//     elong i, p;
 // 
 // #ifdef BITS64
 //     if (a == 2 && b >= 0 && b <= 61) {
@@ -1018,7 +1018,7 @@ object Dnot_bits(d_ptr a)
 //     return (object)NewDouble(pow(a->dbl, b->dbl));
 // }
 
-object equals(eulong a, eulong b)
+object equals(elong a, elong b)
 /* integer a = b */
 {
     if (a == b)
@@ -1037,7 +1037,7 @@ object Dequals(d_ptr a, d_ptr b)
 }
 
 
-object less(eulong a, eulong b)
+object less(elong a, elong b)
 /* integer a < b */
 {
     if (a < b)
@@ -1056,7 +1056,7 @@ object Dless(d_ptr a, d_ptr b)
 }
 
 
-object greater(eulong a, eulong b)
+object greater(elong a, elong b)
 /* integer a > b */
 {
     if (a > b)
@@ -1077,7 +1077,7 @@ object Dgreater(d_ptr a, d_ptr b)
 }
 
 
-object noteq(eulong a, eulong b)
+object noteq(elong a, elong b)
 /* integer a != b */
 {
     if (a != b)
@@ -1096,7 +1096,7 @@ object Dnoteq(d_ptr a, d_ptr b)
 }
 
 
-object lesseq(eulong a, eulong b)
+object lesseq(elong a, elong b)
 /* integer a <= b */
 {
     if (a <= b)
@@ -1115,7 +1115,7 @@ object Dlesseq(d_ptr a, d_ptr b)
 }
 
 
-object greatereq(eulong a, eulong b)
+object greatereq(elong a, elong b)
 /* integer a >= b */
 {
     if (a >= b)
@@ -1134,7 +1134,7 @@ object Dgreatereq(d_ptr a, d_ptr b)
 }
 
 
-object Band(eulong a, eulong b)
+object Band(elong a, elong b)
 /* integer a and b */
 {
     if (a != 0 && b != 0)
@@ -1153,7 +1153,7 @@ object Dand(d_ptr a, d_ptr b)
 }
 
 
-object Bor(eulong a, eulong b)
+object Bor(elong a, elong b)
 /* integer a or b */
 {
     if (a != 0 || b != 0)
@@ -1171,7 +1171,7 @@ object Dor(d_ptr a, d_ptr b)
          return ATOM_0;
 }
 
-object Bxor(eulong a, eulong b)
+object Bxor(elong a, elong b)
 /* integer a xor b */
 {
     if ((a != 0) != (b != 0))
@@ -1191,7 +1191,7 @@ object Dxor(d_ptr a, d_ptr b)
 
 /* --- Unary Ops --- */
 
-object uminus(eulong a)
+object uminus(elong a)
 /* integer -a */
 {
     if (a == MININT_VAL)
@@ -1207,7 +1207,7 @@ object Duminus(d_ptr a)
 }
 
 
-object unot(eulong a)
+object unot(elong a)
 /* compute c := not a */
 {
     if (a == 0)
@@ -1226,7 +1226,7 @@ object Dnot(d_ptr a)
 }
 
 
-// object e_sqrt(eulong a)
+// object e_sqrt(elong a)
 // /* integer square_root(a) */
 // {
 //     if (a < 0)
@@ -1243,7 +1243,7 @@ object Dnot(d_ptr a)
 // }
 //
 //
-// object e_sin(eulong a)
+// object e_sin(elong a)
 // /* sin of an angle a (radians) */
 // {
 //     return (object)NewDouble( sin((eudouble)a) );
@@ -1255,7 +1255,7 @@ object Dnot(d_ptr a)
 //     return (object)NewDouble( sin(a->dbl) );
 // }
 //
-// object e_cos(eulong a)
+// object e_cos(elong a)
 // /* cos of an angle a (radians) */
 // {
 //     return (object)NewDouble( cos((eudouble)a) );
@@ -1267,7 +1267,7 @@ object Dnot(d_ptr a)
 //     return (object)NewDouble( cos(a->dbl) );
 // }
 //
-// object e_tan(eulong a)
+// object e_tan(elong a)
 // /* tan of an angle a (radians) */
 // {
 //     return (object)NewDouble( tan((eudouble)a) );
@@ -1279,7 +1279,7 @@ object Dnot(d_ptr a)
 //     return (object)NewDouble( tan(a->dbl) );
 // }
 //
-// object e_arctan(eulong a)
+// object e_arctan(elong a)
 // /* arctan of an angle a (radians) */
 // {
 //     return (object)NewDouble( atan((eudouble)a) );
@@ -1291,7 +1291,7 @@ object Dnot(d_ptr a)
 //     return (object)NewDouble( atan(a->dbl) );
 // }
 //
-// object e_log(eulong a)
+// object e_log(elong a)
 // /* natural log of a (integer) */
 // {
 //     if (a <= 0)
@@ -1307,7 +1307,7 @@ object Dnot(d_ptr a)
 //     return (object)NewDouble( log(a->dbl) );
 // }
 //
-// object e_floor(eulong a)  // not used anymore
+// object e_floor(elong a)  // not used anymore
 // /* floor of a number - no op since a is already known to be an int */
 // {
 //     return a;
@@ -1321,7 +1321,7 @@ object Dnot(d_ptr a)
 //     temp = floor(a->dbl);
 // #ifndef ERUNTIME
 //     if (fabs(temp) < MAXINT_DBL)
-//         return MAKE_INT((eulong)temp);
+//         return MAKE_INT((elong)temp);
 //     else
 // #endif
 //         return (object)NewDouble(temp);
@@ -1618,16 +1618,16 @@ object Dnot(d_ptr a)
 // }
 
 
-eulong int compare(object a, object b)
+elong compare(object a, object b)
 /* Compare general objects a and b. Return 0 if they are identical,
    1 if a > b, -1 if a < b. All atoms are less than all sequences.
    The INT-INT case *must* be taken care of by the caller */
 {
     object_ptr ap, bp;
     object av, bv;
-    eulong length, lengtha, lengthb;
+    elong length, lengtha, lengthb;
     eudouble da, db;
-    eulong int c;
+    elong c;
 
     if (IS_ATOM(a)) {
         if (!IS_ATOM(b))
@@ -1685,10 +1685,10 @@ eulong int compare(object a, object b)
 }
 
 
-eulong find(object a, s1_ptr b)
+elong find(object a, s1_ptr b)
 /* find object a as an element of sequence b */
 {
-    eulong length;
+    elong length;
     object_ptr bp;
     object bv;
 
@@ -1715,7 +1715,7 @@ eulong find(object a, s1_ptr b)
     }
 
     else if (IS_SEQUENCE(a)) {
-        eulong a_len;
+        elong a_len;
 
         length = b->length;
         a_len = SEQ_PTR(a)->length;
@@ -1746,15 +1746,15 @@ eulong find(object a, s1_ptr b)
 }
 
 
-eulong e_match(s1_ptr a, s1_ptr b)
+elong e_match(s1_ptr a, s1_ptr b)
 /* find sequence a as a slice within sequence b
    sequence a may not be empty */
 {
-    eulong ntries, len_remaining;
+    elong ntries, len_remaining;
     object_ptr a1, b1, bp;
     object_ptr ai, bi;
     object av, bv;
-    eulong lengtha, lengthb;
+    elong lengtha, lengthb;
 
     if (!IS_SEQUENCE(a))
         RTFatal("first argument of match() must be a sequence");
@@ -1804,11 +1804,11 @@ eulong e_match(s1_ptr a, s1_ptr b)
 }
 
 #ifndef ERUNTIME
-void CheckSlice(s1_ptr a, eulong startval, eulong endval, eulong length)
+void CheckSlice(s1_ptr a, elong startval, elong endval, elong length)
 /* check legality of a slice, return integer values of start, length */
 /* startval and endval are deref'd */
 {
-    eulong n;
+    elong n;
 
     if (IS_ATOM(a))
         RTFatal("attempt to slice an atom");
@@ -1845,9 +1845,9 @@ void CheckSlice(s1_ptr a, eulong startval, eulong endval, eulong length)
 void RHS_Slice(s1_ptr a, object start, object end)
 /* Construct slice a[start..end] */
 {
-    eulong startval;
-    eulong length;
-    eulong endval;
+    elong startval;
+    elong length;
+    elong endval;
     s1_ptr newa, olda;
     object temp;
     object_ptr p, q, sentinel;
@@ -1856,7 +1856,7 @@ void RHS_Slice(s1_ptr a, object start, object end)
     if (IS_ATOM_INT(start))
         startval = INT_VAL(start);
     else if (IS_ATOM_DBL(start)) {
-        startval = (eulong)(DBL_PTR(start)->dbl);
+        startval = (elong)(DBL_PTR(start)->dbl);
     }
     else
         RTFatal("slice lower index is not an atom");
@@ -1864,7 +1864,7 @@ void RHS_Slice(s1_ptr a, object start, object end)
     if (IS_ATOM_INT(end))
         endval = INT_VAL(end);
     else if (IS_ATOM_DBL(end)) {
-        endval = (eulong)(DBL_PTR(end)->dbl);
+        endval = (elong)(DBL_PTR(end)->dbl);
          /* f.p.: if the double is too big for
             a long WATCOM produces the most negative number. This
             will be caught as a bad subscript, although the value in the
@@ -1938,7 +1938,7 @@ void AssignSlice(object start, object end, s1_ptr val)
 {
     s1_ptr *seq_ptr;
     s1_ptr sp;
-    eulong startval, endval, length;
+    elong startval, endval, length;
     object_ptr s_elem;
     object_ptr v_elem;
 
@@ -1947,7 +1947,7 @@ void AssignSlice(object start, object end, s1_ptr val)
     if (IS_ATOM_INT(start))
         startval = INT_VAL(start);
     else if (IS_ATOM_DBL(start)) {
-        startval = (eulong)(DBL_PTR(start)->dbl);
+        startval = (elong)(DBL_PTR(start)->dbl);
     }
     else
         RTFatal("slice lower index is not an atom");
@@ -1955,7 +1955,7 @@ void AssignSlice(object start, object end, s1_ptr val)
     if (IS_ATOM_INT(end))
         endval = INT_VAL(end);
     else if (IS_ATOM_DBL(end)) {
-        endval = (eulong)(DBL_PTR(end)->dbl); /* see above comments on f.p. */
+        endval = (elong)(DBL_PTR(end)->dbl); /* see above comments on f.p. */
     }
     else
         RTFatal("slice upper index is not an atom");
@@ -2067,10 +2067,10 @@ object make_atom32(unsigned long c32)
 //here
 
 
-eulong find_from(object a, s1_ptr b, object c)
+elong find_from(object a, s1_ptr b, object c)
 /* find object a as an element of sequence b starting from c*/
 {
-    eulong length;
+    elong length;
     object_ptr bp;
     object bv;
 
@@ -2085,7 +2085,7 @@ eulong find_from(object a, s1_ptr b, object c)
         ;
     }
     else if (IS_ATOM_DBL(c)) {
-        c = (eulong)(DBL_PTR(c)->dbl);
+        c = (elong)(DBL_PTR(c)->dbl);
     }
     else
         RTFatal("third argument of find_from() must be an atom");
@@ -2148,15 +2148,15 @@ eulong find_from(object a, s1_ptr b, object c)
     return 0;
 }
 
-eulong e_match_from(s1_ptr a, s1_ptr b, object c)
+elong e_match_from(s1_ptr a, s1_ptr b, object c)
 /* find sequence a as a slice within sequence b
    sequence a may not be empty */
 {
-    eulong ntries, len_remaining;
+    elong ntries, len_remaining;
     object_ptr a1, b1, bp;
     object_ptr ai, bi;
     object av, bv;
-    eulong lengtha, lengthb;
+    elong lengtha, lengthb;
 
     if (!IS_SEQUENCE(a))
         RTFatal("first argument of match_from() must be a sequence");
@@ -2176,7 +2176,7 @@ eulong e_match_from(s1_ptr a, s1_ptr b, object c)
         ;
     }
     else if (IS_ATOM_DBL(c)) {
-        c = (eulong)(DBL_PTR(c)->dbl);
+        c = (elong)(DBL_PTR(c)->dbl);
     }
     else
         RTFatal("third argument of match_from() must be an atom");

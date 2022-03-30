@@ -15,10 +15,10 @@
 #define MAX_SAFE_CHAR 127
 
 #define TYPE_CHECK_INTEGER(val) (((val) > NOVALUE) && ((val) < TOO_BIG_INT))
-#define IS_DOUBLE_TO_INT(temp_dbl) (((eudouble)((eulong)temp_dbl)) == temp_dbl && temp_dbl <= MAXINT_DBL && temp_dbl >= MININT_DBL)
-#define GET_DOUBLE(ob) (eudouble)(IS_ATOM_INT(ob) ? (eudouble)ob : DBL_PTR(ob)->dbl)
-#define NEW_DOUBLE(ob) (object)(IS_ATOM_INT(ob) ? NewDouble((eudouble)ob) : RefRet(ob))
-#define GET_READONLY_ATOM_VAL(ob) (object)(IS_ATOM_INT(ob) ? ob : DoubleToInt(ob))
+#define IS_DOUBLE_TO_INT(temp_dbl) (((eu::eudouble)((eu::elong)temp_dbl)) == temp_dbl && temp_dbl <= MAXINT_DBL && temp_dbl >= MININT_DBL)
+#define GET_DOUBLE(ob) (eu::eudouble)(IS_ATOM_INT(ob) ? (eu::eudouble)ob : DBL_PTR(ob)->dbl)
+#define NEW_DOUBLE(ob) (eu::object)(IS_ATOM_INT(ob) ? eu::NewDouble((eu::eudouble)ob) : eu::RefRet(ob))
+#define GET_READONLY_ATOM_VAL(ob) (eu::object)(IS_ATOM_INT(ob) ? ob : eu::DoubleToInt(ob))
 
 // Cast an Object to another very similar type.
 // Types need to be the same size.
@@ -37,9 +37,9 @@ namespace eu
         #endif
         }
 #ifdef USE_STANDARD_LIBRARY
-        extern "C" eulong seed1; // keep "long" seed for now.
-        extern "C" eulong seed2; // keep "long" seed for now.
-        extern "C" eulong int rand_was_set; // keep "int" rand_was_set for now.
+        extern "C" elong seed1; // keep "long" seed for now.
+        extern "C" elong seed2; // keep "long" seed for now.
+        extern "C" elong rand_was_set; // keep "int" rand_was_set for now.
 #endif // USE_STANDARD_LIBRARY
         extern "C" object *rhs_slice_target;
         extern "C" s1_ptr *assign_slice_seq;
@@ -48,10 +48,10 @@ namespace eu
 // typedef struct d atom;
 // typedef struct s1 sequence;
 
-        eulong int is_seq_string(object ob, eulong int minChar = MIN_SAFE_CHAR, eulong int maxChar = MAX_SAFE_CHAR)
+        elong is_seq_string(object ob, elong minChar = MIN_SAFE_CHAR, elong maxChar = MAX_SAFE_CHAR)
         {
                 object_ptr elem;
-                eulong len;
+                elong len;
                 ob = (object)SEQ_PTR(ob);
                 elem = ((s1_ptr)ob)->base;
                 len = ((s1_ptr)ob)->length;
@@ -79,7 +79,7 @@ namespace eu
 
         // TODO: Go through Euphoria's documentation and impliment every routine (function and procedure)
         int Version(void) { return 0; } // Version still in Alpha.
-        void Abort(eulong int error_level) { UserCleanup(error_level); }
+        void Abort(elong error_level) { UserCleanup(error_level); }
 #ifdef BITS64
         void print(object obj, long long int stringflag = 0, long long int debugflag = 0, const char atomformat[] = "%.21g", long long int forceint = 0)
 #else
@@ -91,16 +91,16 @@ namespace eu
                         //object d = DoubleToInt(obj);
                         eudouble a = GET_DOUBLE(obj);
                         if (forceint) {
-                                printf(atomformat, (eulong int)a);
+                                printf(atomformat, (elong)a);
                         }
                         else {
                                 printf(atomformat, a);
                         }
-                        if (((eudouble)((eulong)a)) == a)
+                        if (((eudouble)((elong)a)) == a)
                         {
                                 if (debugflag >= 2 && a <= MAX_BITWISE_DBL && a >= MIN_BITWISE_DBL)
                                 {
-                                        printf("(0x%x)", (unsigned eulong)a);
+                                        printf("(0x%x)", (ulong)a);
                                 }
                                 if (stringflag >= 1)
                                 {
@@ -131,7 +131,7 @@ namespace eu
                                                 printf("[1]");
                                         }
                                         print(*(++ob), stringflag, debugflag, atomformat, forceint);
-                                        for (eulong int i = 2; i <= len; i++) {
+                                        for (elong i = 2; i <= len; i++) {
                                                 printf(", ");
                                                 if (debugflag >= 1) {
 #ifdef BITS64
@@ -170,7 +170,7 @@ namespace eu
         friend class Sequence;
         friend class Dbl;
         private: // used by friend functions/classes, not inherited.
-                eulong const type() { return 0; }
+                elong const type() { return 0; }
         protected: // protected in order to be inherited by other classes.
                 object obj;
                 //object GetObject() { return obj; }
@@ -226,9 +226,9 @@ namespace eu
 #ifndef DONE_DEBUGGING
         public:
                 void ShowDebug() {
-                        eulong int etype = IS_DBL_OR_SEQUENCE(obj) + IS_SEQUENCE(obj);
-                        eulong int ref = 0;
-                        eulong int len = 0;
+                        elong etype = IS_DBL_OR_SEQUENCE(obj) + IS_SEQUENCE(obj);
+                        elong ref = 0;
+                        elong len = 0;
                         s1_ptr ptr = NULL;
                         if (etype > 0)
                         {
@@ -259,7 +259,7 @@ namespace eu
                 base_class(object x) { obj = x; RefObj(); }
                 //object Copy() { RefObj(); return obj; }
                 //void Delete() { DeRefObj(); }
-                eulong int get_etype() { if (obj == NOVALUE) return 0; if (IS_ATOM_INT(obj)) return E_INTEGER; if (IS_ATOM_DBL(obj)) return E_ATOM; if (IS_SEQUENCE(obj)) return E_SEQUENCE; return E_OBJECT; }
+                elong get_etype() { if (obj == NOVALUE) return 0; if (IS_ATOM_INT(obj)) return E_INTEGER; if (IS_ATOM_DBL(obj)) return E_ATOM; if (IS_SEQUENCE(obj)) return E_SEQUENCE; return E_OBJECT; }
                 bool is_initialized() { return obj != NOVALUE; }
                 object GetValue() { RefObj(); return obj; }
                 base_class& operator= (const base_class& x)
@@ -294,10 +294,10 @@ namespace eu
                 }
 
 
-                friend object seq(eulong int n, ... );
+                friend object seq(elong n, ... );
         };
 #ifdef USE_STDARG_H
-        object seq(eulong int n, ... ) {
+        object seq(elong n, ... ) {
                 // Make a sequence with 'n' elements, each element must be an object.
                 va_list vl; // vl is "vee" (v) followed by an "el" (l)
                 va_start(vl, n);
@@ -349,7 +349,7 @@ namespace eu
         friend class Object;
         friend class Sequence;
         private:
-                eulong const type() { return E_INTEGER; }
+                elong const type() { return E_INTEGER; }
                 //Integer(object ob) { obj = ob; }
         public:
                 Integer() { obj = NOVALUE; } // default constructor
@@ -360,8 +360,8 @@ namespace eu
                 //Integer& operator= (Integer&& x) { DeRefObj(); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
 
                 Integer(integer val) { obj = TYPE_CHECK_INTEGER(val) ? val : NOVALUE; }
-                void NewInteger(eulong int val) { DeRefObj(); obj = TYPE_CHECK_INTEGER(val) ? val : NOVALUE; }
-                eulong int GetInteger(void) { return TYPE_CHECK_INTEGER(obj) ? obj : NOVALUE; }
+                void NewInteger(elong val) { DeRefObj(); obj = TYPE_CHECK_INTEGER(val) ? val : NOVALUE; }
+                elong GetInteger(void) { return TYPE_CHECK_INTEGER(obj) ? obj : NOVALUE; }
 
 #ifdef USE_STANDARD_LIBRARY
                 friend Integer IntegerRandom32(Integer a);
@@ -373,7 +373,7 @@ namespace eu
         {
         friend class Object;
         private:
-                eulong const type() { return E_ATOM; }
+                elong const type() { return E_ATOM; }
                 Atom(object ob) { obj = ob; }
         public:
                 Atom() { obj = NOVALUE; } // default constructor
@@ -389,13 +389,13 @@ namespace eu
 
                 void NewAtom(eudouble d) { DeRefObj(); obj = IS_DOUBLE_TO_INT(d) ? (object)d : NewDouble(d); }
                 void NewAtom(integer i) { DeRefObj(); obj = TYPE_CHECK_INTEGER(i) ? i : NewDouble((eudouble)i); }
-                void NewAtom(unsigned eulong int u) { DeRefObj(); obj = TYPE_CHECK_INTEGER(u) ? u : NewDouble((eudouble)u); }
+                void NewAtom(ulong u) { DeRefObj(); obj = TYPE_CHECK_INTEGER(u) ? u : NewDouble((eudouble)u); }
                 eudouble GetAtomDbl(void) { if(IS_ATOM_INT(obj)) { return (eudouble)obj; } else if(IS_ATOM_DBL(obj)) { return DBL_PTR(obj)->dbl; } else { RTFatal("Expected an Atom, but found a Sequence, in 'GetAtomDbl()'"); return (eudouble)0; } }
-                eulong int GetAtomInt(void) { if (IS_ATOM_INT(obj)) { return obj; } else if (IS_ATOM_DBL(obj)) { return (eulong int)(DBL_PTR(obj)->dbl); } RTFatal("Expected an Atom, but found a Sequence, in 'GetAtomInt()'"); return 0; }
-                unsigned eulong int GetAtomUnsignedInt(void) { if (IS_ATOM_INT(obj)) { return (unsigned eulong int)obj; } else if (IS_ATOM_DBL(obj)) { return (unsigned eulong int)(DBL_PTR(obj)->dbl); } RTFatal("Expected an Atom, but found a Sequence, in 'GetAtomUnsignedInt()'"); return 0; }
+                elong GetAtomInt(void) { if (IS_ATOM_INT(obj)) { return obj; } else if (IS_ATOM_DBL(obj)) { return (elong)(DBL_PTR(obj)->dbl); } RTFatal("Expected an Atom, but found a Sequence, in 'GetAtomInt()'"); return 0; }
+                ulong GetAtomUnsignedInt(void) { if (IS_ATOM_INT(obj)) { return (ulong)obj; } else if (IS_ATOM_DBL(obj)) { return (ulong)(DBL_PTR(obj)->dbl); } RTFatal("Expected an Atom, but found a Sequence, in 'GetAtomUnsignedInt()'"); return 0; }
 
                 // TODO: Try to convert Atoms to Integers first, then call the appropriate functions.
-                eulong int TryDoubleToInt(void) { if (IS_DBL_OR_SEQUENCE(obj) && IS_ATOM_DBL(obj)) { object ob = DoubleToInt(obj); if (ob != obj) { DeRefDS(obj) obj = ob; return 1; } return 2; } return 0; }
+                elong TryDoubleToInt(void) { if (IS_DBL_OR_SEQUENCE(obj) && IS_ATOM_DBL(obj)) { object ob = DoubleToInt(obj); if (ob != obj) { DeRefDS(obj) obj = ob; return 1; } return 2; } return 0; }
 
                 Atom operator + (const Atom& param) { Atom ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(param.obj)) { ret.obj = add(obj, param.obj); return ret; } ret.obj = (object)NewDouble(GET_DOUBLE(obj) + GET_DOUBLE(param.obj)); return ret; }
                 Atom operator - (const Atom& param) { Atom ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(param.obj)) { ret.obj = minus(obj, param.obj); return ret; } ret.obj = (object)NewDouble(GET_DOUBLE(obj) - GET_DOUBLE(param.obj)); return ret; }
@@ -435,7 +435,7 @@ namespace eu
         {
         friend class Object;
         private:
-                eulong const type() { return E_SEQUENCE; }
+                elong const type() { return E_SEQUENCE; }
                 Sequence(object ob) { obj = ob; }
         public:
                 Sequence() { obj = NOVALUE; } // default constructor
@@ -456,7 +456,7 @@ namespace eu
                 void NewStr(const char * str) { DeRefObj(); obj = NewString(str); }
                 char * GetCharStr() {
                         if (IS_DBL_OR_SEQUENCE(obj) && IS_SEQUENCE(obj) && is_seq_string(obj, 1, 255)) {
-                                eulong len = SEQ_PTR(obj)->length;
+                                elong len = SEQ_PTR(obj)->length;
                                 char * str = (char *)malloc(len + 1);
                                 MakeCString(str, obj);
                                 return str;
@@ -465,7 +465,7 @@ namespace eu
                         return NULL;
                 }
                 void ScreenOutput(FILE *f) { char * out_string = GetCharStr(); screen_output(f, out_string); }
-                eulong length() { if (IS_DBL_OR_SEQUENCE(obj) && IS_SEQUENCE(obj)) { return SEQ_PTR(obj)->length; } else { RTFatal("Expected a Sequence, but found an Atom, in 'length()'"); return -1; } }
+                elong length() { if (IS_DBL_OR_SEQUENCE(obj) && IS_SEQUENCE(obj)) { return SEQ_PTR(obj)->length; } else { RTFatal("Expected a Sequence, but found an Atom, in 'length()'"); return -1; } }
 
                 object E_construct_slice(Sequence src, object start, object end) { // assign src[start..end] to this "obj", i.e. "obj = src[start..end]"
                         if (IS_DBL_OR_SEQUENCE(obj) && IS_SEQUENCE(obj) &&
@@ -492,7 +492,7 @@ namespace eu
                         }
                 }
 
-                object E_at(eulong int i); // use (1 to length) or (-1 to -length) // make "obj = seq[index]"
+                object E_at(elong i); // use (1 to length) or (-1 to -length) // make "obj = seq[index]"
 
                 friend Sequence S_repeat(object item, object repcount);
 
@@ -504,10 +504,10 @@ namespace eu
                 friend void S_concat(Sequence target, object a, object b); // target = a & b; a and b can be atoms or sequences
                 friend void S_concatN(Sequence target, Sequence source); // concatenate all elements of source, store in target.
 
-                friend eulong E_find(object a, Sequence b); // pos = find(a, b);
-                friend eulong E_find_from(object a, Sequence b, object c); // pos = find_from(a, b, start_from);
-                friend eulong E_match(Sequence a, Sequence b); // pos = match(a, b);
-                friend eulong E_match_from(Sequence a, Sequence b, object c); // pos = match_from(a, b, start_from);
+                friend elong E_find(object a, Sequence b); // pos = find(a, b);
+                friend elong E_find_from(object a, Sequence b, object c); // pos = find_from(a, b, start_from);
+                friend elong E_match(Sequence a, Sequence b); // pos = match(a, b);
+                friend elong E_match_from(Sequence a, Sequence b, object c); // pos = match_from(a, b, start_from);
         };
 
         void S_concatN(Sequence target, Sequence sources)
@@ -516,19 +516,19 @@ namespace eu
                 Concat_N(&(target.obj), p->base, p->length);
         }
 
-        eulong int E_compare(object a, object b) { return compare(a, b); }
+        elong E_compare(object a, object b) { return compare(a, b); }
 
-        eulong E_find(object a, Sequence b) { return find(a, (s1_ptr)b.obj); }
-        eulong E_match(Sequence a, Sequence b) { return e_match((s1_ptr)a.obj, (s1_ptr)b.obj); }
+        elong E_find(object a, Sequence b) { return find(a, (s1_ptr)b.obj); }
+        elong E_match(Sequence a, Sequence b) { return e_match((s1_ptr)a.obj, (s1_ptr)b.obj); }
 
-        eulong E_find_from(object a, Sequence b, object c) { return find_from(a, (s1_ptr)b.obj, c); }
-        eulong E_match_from(Sequence a, Sequence b, object c) { return e_match_from((s1_ptr)a.obj, (s1_ptr)b.obj, c); }
+        elong E_find_from(object a, Sequence b, object c) { return find_from(a, (s1_ptr)b.obj, c); }
+        elong E_match_from(Sequence a, Sequence b, object c) { return e_match_from((s1_ptr)a.obj, (s1_ptr)b.obj, c); }
 
-        object Sequence::E_at(eulong int i) { // use (1 to length) or (-1 to -length)
+        object Sequence::E_at(elong i) { // use (1 to length) or (-1 to -length)
                 object ret;
                 if (IS_DBL_OR_SEQUENCE(obj) && IS_SEQUENCE(obj) && TYPE_CHECK_INTEGER(i)) {
                         s1_ptr ptr = SEQ_PTR(obj);
-                        eulong len = ptr->length;
+                        elong len = ptr->length;
                         if (i < 0) {
                                 i += len;
                                 i++;
@@ -600,7 +600,7 @@ namespace eu
         friend class Integer;
         friend class Atom;
         private:
-                eulong const type() { return E_OBJECT; }
+                elong const type() { return E_OBJECT; }
                 Object(object ob) { obj = ob; }
         public:
                 Object() { obj = NOVALUE; } // default constructor
@@ -621,7 +621,7 @@ namespace eu
         friend class Atom;
         friend class Object;
         private:
-                eulong const type() { return E_DBL; }
+                elong const type() { return 1; }
                 Dbl(object ob) { obj = ob; }
         public:
                 Dbl() { obj = NOVALUE; } // default constructor

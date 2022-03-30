@@ -4,7 +4,7 @@
 #include <iostream>
 
 extern "C" {
-#include "pch.h"
+    #include "pch.h"
 }
 #include "eu.hpp"
 #include "test.hpp"
@@ -27,13 +27,13 @@ void myShowDebug(eu::base_class* x)
     x->ShowDebug();
     puts("[break-point]\n");
 }
-#define SHOW_DEBUG(S, x) printf(S ":"); myShowDebug((eu::base_class*)&x)
+#define SHOW_DEBUG(S, X) printf(S ":"); myShowDebug((eu::base_class*)&X)
 #endif
 
 int main()
 {
         char ch;
-        eudouble dbl;
+        eu::eudouble dbl;
         char *str;
         //eu::EOBJECT a; //, b, c, d;
 
@@ -50,10 +50,10 @@ int main()
                 i2 = 1000;
                 i2.println();
                 SHOW_DEBUG("i2", i2);
-                a1 = (eudouble)98.6;
+                a1 = (eu::eudouble)98.6;
                 a1.println();
                 SHOW_DEBUG("a1", a1);
-                a2 = (eudouble)-1e6;
+                a2 = (eu::eudouble)-1e6;
                 a2.println(0,0,"%e");
                 SHOW_DEBUG("a2", a2);
         }
@@ -87,18 +87,18 @@ int main()
         if (true) {
                 eu::EATOM a1, a2, a3, a4;
                 puts("\n-- Numbers can also be entered in hexadecimal. For example:");
-                a1 = (eudouble)0xFE;
+                a1 = (eu::eudouble)0xFE;
                 a1.println(0,0,"#%X",1);
                 SHOW_DEBUG("a1", a1);
-                a2 = (eudouble)0xA000;
+                a2 = (eu::eudouble)0xA000;
                 a2.println(0,0,"#%X",1);
                 SHOW_DEBUG("a2", a2);
-                dbl = (eudouble)68718428168;
+                dbl = (eu::eudouble)68718428168;
                 printf("%f %i\n", (double)dbl, IS_DOUBLE_TO_INT(dbl));
                 a3 = dbl;
                 a3.println(0,0,"%f");
                 SHOW_DEBUG("a3", a3);
-                a4 = (eudouble)-0x10; // -16
+                a4 = (eu::eudouble)-0x10; // -16
                 a4.println();
                 SHOW_DEBUG("a4", a4);
                 
@@ -106,7 +106,7 @@ int main()
                 puts("\nTo be continued...\n");
                 
                 puts("\n-- More examples:");
-                dbl = ((eudouble)1/(eudouble)7);
+                dbl = ((eu::eudouble)1/(eu::eudouble)7);
                 a1.NewAtom(dbl);
                 SHOW_DEBUG("a1", a1);
                 a2 = a1;

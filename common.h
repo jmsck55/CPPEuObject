@@ -8,31 +8,33 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
-// Begin Platform
-// These macros are set in specify_platform.h
-
-// If under Windows, else comment out.
-//#define EWINDOWS
-
-// Define this macro (DONE_DEBUGGING) before distributing software:
-//#define DONE_DEBUGGING
-
-// If you want to specify these macros on the command line, comment out the next line:
-//#include "specify_platform.h"
-
-// End Platform
-
+#ifdef BUILDING_DLL
+	#ifndef DONE_DEBUGGING
+		#define DONE_DEBUGGING
+	#endif
+	#ifdef __GNUC__
+		#define MY_DLL_API extern
+	#elsedef __WATCOMC__
+		#define MY_DLL_API long FAR PASCAL __export
+	#else
+		#define MY_DLL_API __declspec(dllexport)
+	#endif
+#else
+	#define MY_DLL_API
+#endif // BUILDING_DLL
 
 // For faster code, alignment should be (2 on 16-bit machines), (4 on 32-bit machines), (8 on 64-bit machines)
 #ifdef BITS64
 //#pragma align(8)
-#define eudouble long double
-#define eulong long long
+typedef long double eudouble;
+typedef long long elong;
+typedef unsigned long long ulong;
 #define REGISTER
 #else
 //#pragma align(4)
-#define eudouble double
-#define eulong long
+typedef double eudouble;
+typedef long elong;
+typedef unsigned long ulong;
 #define REGISTER register
 #endif
 #ifdef BITS64
@@ -417,25 +419,10 @@ struct char_cell {
 #ifdef BITS64
 #define MAX_BITWISE_DBL ((long double)(unsigned long long)0xFFFFFFFFFFFFFFFFLL)
 #define MIN_BITWISE_DBL ((long double)(signed long long)  0x8000000000000000LL)
-
-/* .dll argument & return value types */
-#define C_TYPE     0x0F00000000000000LL
-#define C_DOUBLE   0x0300000000000008LL
-#define C_FLOAT    0x0300000000000004LL
-#define C_CHAR     0x0100000000000001LL
-#define C_UCHAR    0x0200000000000001LL
-#define C_SHORT    0x0100000000000002LL
-#define C_USHORT   0x0200000000000002LL
-#define E_INTEGER  0x0600000000000004LL
-#define E_ATOM     0x0700000000000004LL
-#define E_SEQUENCE 0x0800000000000004LL
-#define E_OBJECT   0x0900000000000004LL
-
-#define E_DBL      0x0500000000000004LL
-#define E_FLOAT128 0x0A00000000000004LL
 #else
 #define MAX_BITWISE_DBL ((double)(unsigned long)0xFFFFFFFF)
 #define MIN_BITWISE_DBL ((double)(signed long)  0x80000000)
+#endif
 
 /* .dll argument & return value types */
 #define C_TYPE     0x0F000000
@@ -449,10 +436,16 @@ struct char_cell {
 #define E_ATOM     0x07000004
 #define E_SEQUENCE 0x08000004
 #define E_OBJECT   0x09000004
+#define C_INT      0x01000004
+#define C_UINT     0x02000004
+#define C_LONG     0x01000008
+#define C_ULONG    0x02000008
+#define C_POINTER  0x03000001
+#define C_LONGLONG 0x03000002
 
-#define E_DBL      0x05000004
-#define E_FLOAT128 0x0A000004
-#endif
+//#define E_DBL      0x05000004
+//#define E_FLOAT128 0x0A000004
+
 #define C_STDCALL 0
 #define C_CDECL 1
 

@@ -16,10 +16,10 @@ object Dremainder(d_ptr a, d_ptr b)
     return (object)NewDouble(fmod(a->dbl, b->dbl)); /* for now */
 }
 
-object power(eulong a, eulong b)
+object power(elong a, elong b)
 /* integer a to the power b */
 {
-    eulong i, p;
+    elong i, p;
 
 #ifdef BITS64
     if (a == 2 && b >= 0 && b <= 61) {
@@ -57,7 +57,7 @@ object Dpower(d_ptr a, d_ptr b)
 }
 
 
-object e_sqrt(eulong a)
+object e_sqrt(elong a)
 /* integer square_root(a) */
 {
     if (a < 0)
@@ -74,7 +74,7 @@ object De_sqrt(d_ptr a)
 }
 
 
-object e_sin(eulong a)
+object e_sin(elong a)
 /* sin of an angle a (radians) */
 {
     return (object)NewDouble( sin((eudouble)a) );
@@ -86,7 +86,7 @@ object De_sin(d_ptr a)
     return (object)NewDouble( sin(a->dbl) );
 }
 
-object e_cos(eulong a)
+object e_cos(elong a)
 /* cos of an angle a (radians) */
 {
     return (object)NewDouble( cos((eudouble)a) );
@@ -98,7 +98,7 @@ object De_cos(d_ptr a)
     return (object)NewDouble( cos(a->dbl) );
 }
 
-object e_tan(eulong a)
+object e_tan(elong a)
 /* tan of an angle a (radians) */
 {
     return (object)NewDouble( tan((eudouble)a) );
@@ -110,7 +110,7 @@ object De_tan(d_ptr a)
     return (object)NewDouble( tan(a->dbl) );
 }
 
-object e_arctan(eulong a)
+object e_arctan(elong a)
 /* arctan of an angle a (radians) */
 {
     return (object)NewDouble( atan((eudouble)a) );
@@ -122,7 +122,7 @@ object De_arctan(d_ptr a)
     return (object)NewDouble( atan(a->dbl) );
 }
 
-object e_log(eulong a)
+object e_log(elong a)
 /* natural log of a (integer) */
 {
     if (a <= 0)
@@ -138,7 +138,7 @@ object De_log(d_ptr a)
     return (object)NewDouble( log(a->dbl) );
 }
 
-object e_floor(eulong a)  // not used anymore
+object e_floor(elong a)  // not used anymore
 /* floor of a number - no op since a is already known to be an int */
 {
     return a; 
@@ -152,7 +152,7 @@ object De_floor(d_ptr a)
     temp = floor(a->dbl); 
 #ifndef ERUNTIME    
     if (fabs(temp) < MAXINT_DBL)
-        return MAKE_INT((eulong)temp);
+        return MAKE_INT((elong)temp);
     else 
 #endif      
         return (object)NewDouble(temp);
