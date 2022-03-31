@@ -20,7 +20,7 @@ using namespace std;
 #define EINTEGER Integer
 
 #ifdef DONE_DEBUGGING
-#define SHOW_DEBUG(x)
+#define SHOW_DEBUG(S, X)
 #else
 void myShowDebug(eu::base_class* x)
 {

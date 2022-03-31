@@ -8,19 +8,34 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
-#ifdef BUILDING_DLL
-	#ifndef DONE_DEBUGGING
-		#define DONE_DEBUGGING
-	#endif
-	#ifdef __GNUC__
-		#define MY_DLL_API extern
-	#elsedef __WATCOMC__
-		#define MY_DLL_API long FAR PASCAL __export
-	#else
-		#define MY_DLL_API __declspec(dllexport)
-	#endif
+#ifdef __cplusplus
+#define MY_EXTERN_C extern "C"
 #else
-	#define MY_DLL_API
+#define MY_EXTERN_C
+#endif
+
+#ifdef BUILDING_DLL
+        #ifndef DONE_DEBUGGING
+                #define DONE_DEBUGGING
+        #endif
+        #ifdef __GNUC__
+                #define MY_DLL_API extern
+        #else
+                #define MY_DLL_API MY_EXTERN_C __declspec(dllexport)
+        #endif
+#else
+	#ifdef USING_DLL
+		#ifndef DONE_DEBUGGING
+			#define DONE_DEBUGGING
+		#endif
+		#ifdef __GNUC__
+			#define MY_DLL_API extern
+		#else
+			#define MY_DLL_API MY_EXTERN_C __declspec(dllimport)
+		#endif
+	#else
+		#define MY_DLL_API
+	#endif // USING_DLL
 #endif // BUILDING_DLL
 
 // For faster code, alignment should be (2 on 16-bit machines), (4 on 32-bit machines), (8 on 64-bit machines)

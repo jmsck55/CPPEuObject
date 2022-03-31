@@ -8,7 +8,15 @@
 #ifndef _PLATFORM_H
 #define _PLATFORM_H
 
-//#define BUILDING_DLL
+#ifdef BUILDING_WIN_DLL
+#define BUILDING_DLL
+#define EWINDOWS
+#endif
+
+#ifdef USING_WIN_DLL
+#define USING_DLL
+#define EWINDOWS
+#endif
 
 // Begin Platform
 // These macros are set in specify_platform.h
