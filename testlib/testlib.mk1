@@ -1,0 +1,26 @@
+!define BLANK ""
+C:\Users\jc410\Documents\testlib\testlib.obj : C:\Users\jc410\Documents\test&
+lib\testlib.c .AUTODEPEND
+ @C:
+ cd C:\Users\jc410\Documents\testlib
+ *wcc386 testlib.c -i="C:\Users\jc410\OneDrive\euphoria\watcom/h;C:\Users\jc&
+410\OneDrive\euphoria\watcom/h/nt" -w4 -e25 -dCOMPILING_MY_TEST_DLL -zq -od &
+-d2 -bd -6r -bt=nt -fo=.obj -mf
+
+C:\Users\jc410\Documents\testlib\testlib.dll : C:\Users\jc410\Documents\test&
+lib\testlib.obj .AUTODEPEND
+ @C:
+ cd C:\Users\jc410\Documents\testlib
+ @%write testlib.lk1 FIL testlib.obj
+ @%append testlib.lk1 
+!ifneq BLANK ""
+ *wlib -q -n -b testlib.imp 
+ @%append testlib.lk1 LIBR testlib.imp
+!endif
+!ifneq BLANK ""
+ @%append testlib.lk1 
+!endif
+ *wlink name testlib d all sys nt_dll op m op maxe=25 op q op symf @testlib.&
+lk1
+ wlib -q -n -b testlib.lib +testlib.dll
+

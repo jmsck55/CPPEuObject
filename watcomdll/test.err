@@ -1,0 +1,5 @@
+..\test.cpp(43): Warning! W367: col(13) conditional expression in if statement is always true
+..\test.cpp(60): Warning! W367: col(13) conditional expression in if statement is always true
+..\test.cpp(87): Warning! W367: col(13) conditional expression in if statement is always true
+..\test.cpp(116): Warning! W367: col(13) conditional expression in if statement is always true
+..\test.cpp(130): Warning! W367: col(21) conditional expression in if statement is always true

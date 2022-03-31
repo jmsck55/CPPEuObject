@@ -1,0 +1,25 @@
+!define BLANK ""
+C:\Users\jc410\Documents\testlib\main.obj : C:\Users\jc410\Documents\testlib&
+\main.cpp .AUTODEPEND
+ @C:
+ cd C:\Users\jc410\Documents\testlib
+ *wpp386 main.cpp -i="C:\Users\jc410\OneDrive\euphoria\watcom/h;C:\Users\jc4&
+10\OneDrive\euphoria\watcom/h/nt" -w4 -e25 -zq -od -d2 -6r -bt=nt -fo=.obj -&
+mf -xs -xr
+
+C:\Users\jc410\Documents\testlib\testlibmain.exe : C:\Users\jc410\Documents\&
+testlib\main.obj .AUTODEPEND
+ @C:
+ cd C:\Users\jc410\Documents\testlib
+ @%write testlibmain.lk1 FIL main.obj
+ @%append testlibmain.lk1 
+!ifneq BLANK ""
+ *wlib -q -n -b testlibmain.imp 
+ @%append testlibmain.lk1 LIBR testlibmain.imp
+!endif
+!ifneq BLANK ""
+ @%append testlibmain.lk1 
+!endif
+ *wlink name testlibmain d all sys nt op m libr testlib.lib op maxe=25 op q &
+op symf @testlibmain.lk1
+

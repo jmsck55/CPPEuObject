@@ -1,0 +1,512 @@
+Open Watcom Linker Version 1.9
+Portions Copyright (c) 1985-2002 Sybase, Inc. All Rights Reserved.
+Created on:       22/03/31 07:22:18
+Executable Image: testlibmain.exe
+creating a Windows NT character-mode executable
+
+
+                        +------------+
+                        |   Groups   |
+                        +------------+
+
+Group                           Address              Size
+=====                           =======              ====
+
+.idata                          00407000             000004d1
+DGROUP                          00408000             000117a0
+
+
+
+                        +--------------+
+                        |   Segments   |
+                        +--------------+
+
+Segment                Class          Group          Address         Size
+=======                =====          =====          =======         ====
+
+BEGTEXT                CODE           AUTO           00401000        00000007
+_TEXT                  CODE           AUTO           00401010        00005d5f
+TRANSFER CODE          CODE           AUTO           00406d70        000000fc
+.idata                 .idata         .idata         00407000        000004d1
+_NULL                  BEGDATA        DGROUP         00408000        00000004
+_AFTERNULL             BEGDATA        DGROUP         00408004        00000000
+CONST                  DATA           DGROUP         00408004        00000040
+CONST2                 DATA           DGROUP         00408044        00000000
+_DATA                  DATA           DGROUP         00408044        00000588
+XIB                    DATA           DGROUP         004085cc        00000000
+XI                     DATA           DGROUP         004085cc        00000024
+XIE                    DATA           DGROUP         004085f0        00000000
+YIB                    DATA           DGROUP         004085f0        00000000
+YI                     DATA           DGROUP         004085f0        00000018
+YIE                    DATA           DGROUP         00408608        00000000
+TIB                    DATA           DGROUP         00408608        00000000
+TI                     DATA           DGROUP         00408608        00000000
+TIE                    DATA           DGROUP         00408608        00000000
+DATA                   DATA           DGROUP         00408608        00000000
+_BSS                   BSS            DGROUP         00409000        00000794
+STACK                  STACK          DGROUP         004097a0        00010000
+
+
+                        +----------------+
+                        |   Memory Map   |
+                        +----------------+
+
+* = unreferenced symbol
++ = symbol only referenced locally
+
+Address        Symbol
+=======        ======
+
+Module: main.obj(C:\Users\jc410\Documents\testlib\main.cpp)
+00401010       main_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(stk)
+00401059       __CHK
+00401069*      __STK
+00401088*      __STKOVERFLOW_
+00401098*      __GRO
+004010b8*      __alloca_probe
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(printf.c)
+004010d0       printf_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(getchar.c)
+00401100       getchar_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(cstrtwnt)
+0040110a       _cstart_
+0040110a*      mainCRTStartup
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(fsroot.cpp)
+004085d2       ___wcpp_4_data_init_fs_root_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(cppdata.cpp)
+00409000       __wint_thread_data
+00409024       __compiled_under_NT
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(xmsgwnt.c)
+00401180+      __exit_with_msg_
+004011e0       __fatal_runtime_error_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mainwnt.c)
+00408054*      ___TlsIndex
+00408058+      ___FirstThreadData
+0040805c       ___GetThreadPtr
+00408060       __AccessFileH
+00408064       __ReleaseFileH
+00408068       __AccessIOB
+0040806c       __ReleaseIOB
+00408070       __AccessNHeap
+00408074*      __AccessFHeap
+00408078       __ReleaseNHeap
+00401210*      __threadid_
+00401230+      __sig_null_rtn_
+00401240+      __NTInit_
+00401420+      __NTFini_
+00401480       __NTMainInit_
+004014e0       __exit_
+0040807c*      __ReleaseFHeap
+00408080*      __AccessTDList
+00408084*      __ReleaseTDList
+00408088       __AccessFList
+0040808c       __ReleaseFList
+00408090+      __ThreadExitRtn
+00408094       ___sig_init_rtn
+00408098       ___sig_fini_rtn
+0040809c       ___process_fini
+00409030       ___Is_DLL
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(iob.c)
+004080a0       ___iob
+004082a8*      __fmode
+0040964c       ___OpenStreams
+00409650       ___ClosedStreams
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(fprtf.c)
+00401550       __fprtf_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(fgetc.c)
+00401610+      __fill_buffer_
+00401710       fgetc_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(main2wnt.c)
+004017d0       __NTMain
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(segdefns)
+00401003       ___begtext
+00408000*      __nullarea
+004085cc       __Start_XI
+004085f0       __End_XI
+004085f0       __Start_YI
+00408608       __End_YI
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(enterdb.c)
+00401830       __EnterWVIDEO_
+004082ac+      ___WD_Present
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(hdlman.c)
+004082b0+      ___NHandles
+004082b4+      ___OSHandles
+004082b8+      ___FakeHandles
+00401860+      __growPOSIXHandles_
+00401900+      __allocPOSIXHandle_
+004019c0       __freePOSIXHandle_
+004019e0       __getOSHandle_
+004019f0       __setOSHandle_
+00401a40+      __NTGetFakeHandle_
+00401ab0       __initPOSIXHandles_
+00401b90*      __set_handles_
+00401ba0*      _grow_handles_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(crwdata)
+00408308       __osmajor
+00408309       __osminor
+0040830a       __osbuild
+0040830c       __osver
+00408310       __winmajor
+00408314       __winminor
+00408318       __winver
+004082d4       __LpDllName
+004082d8       __LpwCmdLine
+004082dc       __LpwPgmName
+004082e0       __LpwDllName
+004082cc       __LpCmdLine
+004082d0       __LpPgmName
+004082c4*      __dynend
+004082c8       __curbrk
+004082e4*      __STACKLOW
+004082e8       __STACKTOP
+004082ec       __ASTACKSIZ
+004082f0       __ASTACKPTR
+004082f4       __cbyte
+004082f8*      __cbyte2
+004082fc*      __child
+00408302       __Envptr
+00408306*      __Envseg
+00408300*      __no87
+0040831c       ___FPE_handler
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(environ.c)
+00409654       ___env_mask
+00409658       _environ
+0040965c       __wenviron
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(getmodfn.c)
+00401be0       __lib_GetModuleFileNameW_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(strdup.c)
+00401c80       __clib_strdup_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(istable.c)
+00401cc0       __IsTable
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(ustrdup.c)
+00401dc1       __clib_wcsdup_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(nfree.c)
+00401df0       _nfree_
+00401df0       free_
+00409660       ___MiniHeapFreeRover
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(excptwnt.c)
+00402560+      ___ReportException@4
+004029b0       __DefaultExceptionHandler_
+004029f0+      ___ExceptionFilter
+00402c00       __NewExceptionFilter_
+00402c30       __DoneExceptionFilter_
+00408320       ___oscode_check_func
+00408324       ___raise_func
+00409664*      _sw
+00409668+      ___ExceptionHandled
+00409669+      ___ReportInvoked
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(stklmwnt.c)
+00402c70       __init_stack_limits_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(initrtns.c)
+00402cf0       __InitRtns
+00402d40       __FiniRtns
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(initfile.c)
+00402dd0       __InitFiles_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(ioexit.c)
+00402ed0*      fcloseall_
+00402ee0       __full_io_exit_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(fputc.c)
+00402ef0       fputc_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(ioalloc.c)
+00402fd0       __ioalloc_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(prtf.c)
+00403070       __prtf_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(flush.c)
+00403d40       __flush_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(flushall.c)
+00403e40       __flushall_
+00403e80*      flushall_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(gtchewnt.c)
+00403e90       getche_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(qread.c)
+00403ec0       __qread_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(seterrno.c)
+00403f27       __set_errno_
+00403f35*      __set_EDOM_
+00403f43*      __set_ERANGE_
+00403f51*      __set_EINVAL_
+00403f64       __set_doserrno_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mthrdini.c)
+00403f80       __InitThreadData_
+0040833c       ___ThreadDataSize
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(memset.c)
+00403fb0       memset_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(cmain386.c)
+00403fd0       __CMain
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(dosseg)
+00001234       __DOSseg__
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(nmalloc.c)
+00404010       _nmalloc_
+00404010       malloc_
+00408340       ___nheapbeg
+00408344       ___MiniHeapRover
+00408348       ___LargestSizeB4MiniHeapRover
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(nrealloc.c)
+00404110*      _nrealloc_
+00404110       realloc_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(iomode.c)
+00404190       __GetIOMode_
+004041b0       __SetIOMode_nogrow_
+0040834c       ___NFiles
+00408350       ___init_mode
+004083a0       ___io_mode
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(stiomode.c)
+004041d0       __grow_iomode_
+004042a0+      __shrink_iomode_
+004042e0       __SetIOMode_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(setenvp.c)
+00404350       __setenvp_
+00404410       __freeenvp_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(ustrlen.c)
+0040445d       wcslen_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(memcpy.c)
+00404470       memcpy_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mem.c)
+00404490       __MemAllocator
+00404540       __MemFree
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(conutwnt.c)
+00404690       __NTRealKey_
+00404740       __NTConsoleInput_
+00404750       __NTConsoleOutput_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(fclex387.c)
+00404760       _ClearFPE_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(signlwnt.c)
+004083ac+      __SignalTable
+00404770+      __SetSignalFunc_
+004047c0+      __GetSignalFunc_
+004047f0+      __GetSignalOSCode_
+00404820+      __CheckSignalExCode_
+00404960+      __sigabort_
+00404970       __sigfpe_handler_
+004049c0*      signal_
+00404a50+      raise_
+00404ac0+      __SigInit_
+00404b10+      __SigFini_
+00404b50+      __sig_init_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(fclose.c)
+00404b70+      __doclose_
+00404c10       __shutdown_stream_
+00404c30*      fclose_
+00409674+      ___RmTmpFileFn
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(freefp.c)
+00404c80       __freefp_
+00404cd0       __purgefp_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(chktty.c)
+00404d00       __chktty_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(wctomb.c)
+00404d40       wctomb_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(itoa.c)
+00404d80+      utoa_
+00404dd0       itoa_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(strupr.c)
+00404e00       strupr_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(noefgfmt.c)
+00408418       ___EFG_printf
+0040841c*      ___EFG_scanf
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(lltoa.c)
+00404e70       ulltoa_
+00404ee0*      lltoa_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(ltoa.c)
+00404f10       ultoa_
+00404f60*      ltoa_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbisdbcs.c)
+00409678       ___IsDBCS
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbislead.c)
+00404f90*      _ismbblead_
+0040967c       ___MBCSIsTable
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(__lseek.c)
+00404fb0       __lseek_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(fsync.c)
+00404ff0       fsync_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(qwrit.c)
+00405040       __qwrite_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(getchwnt.c)
+00405220       getch_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(putchwnt.c)
+00405290       putch_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(dosret.c)
+004052e0*      _dosretax_
+004052f0*      _dosret0_
+00405300       __set_errno_dos_
+00405330*      __set_errno_dos_reterr_
+00405340       __set_errno_nt_
+00405350*      __set_errno_nt_reterr_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(__stos)
+00405370       __STOSB
+004053a7*      __STOSD
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(cinit.c)
+00405420       __CommonInit_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(___argc.c)
+0040978c       ____Argc
+00409790       ____Argv
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(exit.c)
+00405430+      __null_int23_exit_
+00405431       exit_
+00405481*      _exit_
+00408528+      ___int23_exit
+0040852c+      ___FPE_handler_exit
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(nmemneed.c)
+004054a0       __nmemneed_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(grownear.c)
+00405610       __ExpandDGROUP_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(nmsize.c)
+00405630       _nmsize_
+00405630*      _msize_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(nexpand.c)
+00405640       _nexpand_
+00405640*      _expand_
+00405680+      __HeapManager_expand_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(iomodtty.c)
+00405840       __ChkTTYIOMode_
+00405880*      __IOMode_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(dofilstr.c)
+004058c0       __ParsePosixHandleStr_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(clearenv.c)
+004059e0       clearenv_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(abort.c)
+00405a85*      abort_
+00405a97       __terminate_
+00408530       ___abort
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(_clsewnt.c)
+00405ab0       __close_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(isattwnt.c)
+00405b10       isatty_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbinit.c)
+00405b66       __mbinit_
+00408534       ___MBCodePage
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(alphabet.c)
+0040801c       ___Alphabet
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(amblksiz.c)
+00408538       __amblksiz
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(heapen.c)
+00405c60*      _heapenable_
+0040853c       ___heap_enabled
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(nheapmin.c)
+00405c90       _nheapshrink_
+00405c90*      _nheapmin_
+00405c90*      _heapmin_
+00405c90*      _heapshrink_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(getenv.c)
+00405d80       getenv_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(strncpy.c)
+00405e10       strncpy_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(strtol.c)
+00406070*      strtoul_
+00406080       strtol_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(putenv.c)
+00406090       putenv_
+00406320       __putenv_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbterm.c)
+00406490       _mbterm_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbsnextc.c)
+004064d0       _mbsnextc_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbcupper.c)
+00406510       _mbctoupper_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbsinc.c)
+00406540       _mbsinc_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(tolower.c)
+00406570       tolower_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbschr.c)
+00406580       _mbschr_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbslen.c)
+004065e0       _mbslen_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbstowcs.c)
+00406610       mbstowcs_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(uputenv.c)
+00406690*      _wputenv_
+004068b0       __wputenv_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(toupper.c)
+004069b0       toupper_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(memmove.c)
+004069c0       memmove_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbconv.c)
+00406a20       _mbvtop_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbclen.c)
+00406a40       _mbclen_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbccmp.c)
+00406a70       _mbccmp_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbtowc.c)
+00406ab0       mbtowc_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(ustrchr.c)
+00406b40       wcschr_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(setenvar.c)
+00406b60       __lib_SetEnvironmentVariableW_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(crtwenv.c)
+00406c50       __create_wide_environment_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(wcstombs.c)
+00406cc0       wcstombs_
+Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(utoupper.c)
+00406d5f       towupper_
+
+
+                        +----------------------+
+                        |   Imported Symbols   |
+                        +----------------------+
+
+Symbol                              Module
+======                              ======
+
+hello_                              testlib.dll
+_GetStdHandle@4                     KERNEL32.DLL
+_WriteFile@20                       KERNEL32.DLL
+_GetEnvironmentStringsA@0           KERNEL32.DLL
+_GetVersion@0                       KERNEL32.DLL
+_GetModuleFileNameA@12              KERNEL32.DLL
+_GetCommandLineA@0                  KERNEL32.DLL
+_GetCommandLineW@0                  KERNEL32.DLL
+_FreeEnvironmentStringsA@4          KERNEL32.DLL
+_GetModuleHandleA@4                 KERNEL32.DLL
+_ExitProcess@4                      KERNEL32.DLL
+_SetStdHandle@8                     KERNEL32.DLL
+_CreateEventA@16                    KERNEL32.DLL
+_CloseHandle@4                      KERNEL32.DLL
+_GetModuleFileNameW@12              KERNEL32.DLL
+_MultiByteToWideChar@24             KERNEL32.DLL
+_LoadLibraryA@4                     KERNEL32.DLL
+_GetProcAddress@8                   KERNEL32.DLL
+_SetUnhandledExceptionFilter@4      KERNEL32.DLL
+_UnhandledExceptionFilter@4         KERNEL32.DLL
+_VirtualQuery@12                    KERNEL32.DLL
+_ReadFile@20                        KERNEL32.DLL
+_GetLastError@0                     KERNEL32.DLL
+_GetCurrentThreadId@0               KERNEL32.DLL
+_CreateFileA@28                     KERNEL32.DLL
+_SetConsoleCtrlHandler@8            KERNEL32.DLL
+_WideCharToMultiByte@32             KERNEL32.DLL
+_SetFilePointer@16                  KERNEL32.DLL
+_FlushFileBuffers@4                 KERNEL32.DLL
+_ReadConsoleInputA@16               KERNEL32.DLL
+_GetConsoleMode@8                   KERNEL32.DLL
+_SetConsoleMode@8                   KERNEL32.DLL
+_WriteConsoleA@20                   KERNEL32.DLL
+_VirtualAlloc@16                    KERNEL32.DLL
+_GetFileType@4                      KERNEL32.DLL
+_GetACP@0                           KERNEL32.DLL
+_GetOEMCP@0                         KERNEL32.DLL
+_GetCPInfo@8                        KERNEL32.DLL
+_VirtualFree@12                     KERNEL32.DLL
+_SetEnvironmentVariableA@8          KERNEL32.DLL
+_CharUpperA@4                       USER32.DLL
+_SetEnvironmentVariableW@8          KERNEL32.DLL
+
+
+                        +--------------------+
+                        |   Libraries Used   |
+                        +--------------------+
+
+C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\kernel32.lib
+C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\user32.lib
+testlib.lib
+C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib
+C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib
+
+
+                        +-----------------------+
+                        |   Linker Statistics   |
+                        +-----------------------+
+
+Stack size:  00010000 (65536.)
+Memory size:  00017add (96989.)
+Entry point address: 0040110a
+Link time: 00:00.78
