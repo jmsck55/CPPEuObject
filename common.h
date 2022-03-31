@@ -8,10 +8,30 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
+// The following code makes it work in both C and C++
+
+// I would recommend to first test the code without the DLL,
+// Then use one of the following macros, for building and then using the DLL.
+//
+// BUILDING_DLL
+// USING_DLL
+//
+// Windows has to also define:
+//
+// EWINDOWS
+//
+// Use "specify_platform.h" to define it.
+//
+// EWINDOWS /* define when not using DLL */
+// BUILDING_WIN_DLL /* define when building DLL */
+// USING_WIN_DLL /* define when using DLL */
+//
+// That is what is recommended.
+
 #ifdef __cplusplus
 #define MY_EXTERN_C extern "C"
 #else
-#define MY_EXTERN_C
+#define MY_EXTERN_C extern
 #endif
 
 #ifdef BUILDING_DLL
@@ -19,7 +39,7 @@
                 #define DONE_DEBUGGING
         #endif
         #ifdef __GNUC__
-                #define MY_DLL_API extern
+                #define MY_DLL_API MY_EXTERN_C
         #else
                 #define MY_DLL_API MY_EXTERN_C __declspec(dllexport)
         #endif
@@ -29,7 +49,7 @@
 			#define DONE_DEBUGGING
 		#endif
 		#ifdef __GNUC__
-			#define MY_DLL_API extern
+			#define MY_DLL_API MY_EXTERN_C
 		#else
 			#define MY_DLL_API MY_EXTERN_C __declspec(dllimport)
 		#endif
