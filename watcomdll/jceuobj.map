@@ -1,6 +1,6 @@
 Open Watcom Linker Version 1.9
 Portions Copyright (c) 1985-2002 Sybase, Inc. All Rights Reserved.
-Created on:       22/03/31 07:29:45
+Created on:       22/04/02 18:25:01
 Executable Image: jceuobj.dll
 creating a Windows NT dynamic link library
 
@@ -840,4 +840,4 @@ C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\emu387.lib
 Stack size:  0000 (0.)
 Memory size:  00011820 (71712.)
 Entry point address: 00405604
-Link time: 00:00.09
+Link time: 00:00.10
