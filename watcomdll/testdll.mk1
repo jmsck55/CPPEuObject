@@ -1,0 +1,25 @@
+!define BLANK ""
+C:\Users\jc410\Documents\CPPEuObject\watcomdll\test.obj : C:\Users\jc410\Doc&
+uments\CPPEuObject\test.cpp .AUTODEPEND
+ @C:
+ cd C:\Users\jc410\Documents\CPPEuObject\watcomdll
+ *wpp386 ..\test.cpp -i="C:\Users\jc410\OneDrive\euphoria\watcom/h;C:\Users\&
+jc410\OneDrive\euphoria\watcom/h/nt" -w4 -e25 -dUSING_WIN_DLL -zq -od -d2 -6&
+r -bt=nt -fo=.obj -mf -xs -xr
+
+C:\Users\jc410\Documents\CPPEuObject\watcomdll\testdll.exe : C:\Users\jc410\&
+Documents\CPPEuObject\watcomdll\test.obj .AUTODEPEND
+ @C:
+ cd C:\Users\jc410\Documents\CPPEuObject\watcomdll
+ @%write testdll.lk1 FIL test.obj
+ @%append testdll.lk1 
+!ifneq BLANK ""
+ *wlib -q -n -b testdll.imp 
+ @%append testdll.lk1 LIBR testdll.imp
+!endif
+!ifneq BLANK ""
+ @%append testdll.lk1 
+!endif
+ *wlink name testdll d all sys nt op m libr jceuobj.lib op maxe=25 op q op s&
+ymf @testdll.lk1
+
