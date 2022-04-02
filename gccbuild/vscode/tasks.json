@@ -1,0 +1,34 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "C/C++: g++.exe build active file",
+			"command": "C:/Users/jc410/cygwin64/bin/g++.exe",
+			"args": [
+				"-fdiagnostics-color=always",
+				"pch.o",
+				"be_eu.o",
+				"be_funcs.o",
+				"be_math.o",
+				"-g",
+				"../test.cpp",
+				// "${file}",
+				"-o",
+				"C:/Users/jc410/Documents/CPPEuObject/gccbuild/test.exe"
+				//"C:/Users/jc410/Documents/CPPEuObject/gccbuild/${fileBasenameNoExtension}.exe"
+			],
+			"options": {
+				"cwd": "C:/Users/jc410/Documents/CPPEuObject/gccbuild"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"detail": "compiler: C:/Users/jc410/cygwin64/bin/g++.exe"
+		}
+	]
+}
