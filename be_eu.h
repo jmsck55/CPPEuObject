@@ -14,7 +14,7 @@
 //#     define MAX_SEQ_LEN ((((unsigned long)0xFFFFFFFF - sizeof(struct s1)) / sizeof(object)) - 1)
 #define MAX_SEQ_LEN 1073741800
 #else
-//#     define MAX_SEQ_LEN ((((ulong)0xFFFFFFFFFFFFFFFFLL - sizeof(struct s1)) / sizeof(object)) - 1)
+//#     define MAX_SEQ_LEN ((((eulong)0xFFFFFFFFFFFFFFFFLL - sizeof(struct s1)) / sizeof(object)) - 1)
 #define MAX_SEQ_LEN 0x0FFFFFFFFFFFFFF8LL
 #endif
 #endif                          /* maximum sequence length set such that it doesn't overflow */
@@ -28,8 +28,8 @@ MY_DLL_API void SimpleRTFatal(char *msg);
 MY_DLL_API void RTFatal(const char *msg);
 #endif
 MY_DLL_API void SpaceMessage();
-MY_DLL_API char *EMalloc(ulong nbytes);
-MY_DLL_API char *ERealloc(char *orig, ulong newsize);
+MY_DLL_API char *EMalloc(eulong nbytes);
+MY_DLL_API char *ERealloc(char *orig, eulong newsize);
 MY_DLL_API s1_ptr NewS1(elong size);
 MY_DLL_API object NewString(const char *s);
 MY_DLL_API s1_ptr SequenceCopy(REGISTER s1_ptr a);
@@ -111,7 +111,7 @@ MY_DLL_API object Dnot(d_ptr a);
 //MY_DLL_API object De_floor(d_ptr a);
 //MY_DLL_API void setran()
 //MY_DLL_API ldiv_t my_ldiv (elong numer, elong denom)
-//MY_DLL_API ulong good_rand()
+//MY_DLL_API eulong good_rand()
 //MY_DLL_API /* Public Domain random number generator from USENET posting */
 //MY_DLL_API object Random(elong a)
 //MY_DLL_API object DRandom(d_ptr a)

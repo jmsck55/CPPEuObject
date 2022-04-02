@@ -18,8 +18,22 @@
 #define EWINDOWS
 #endif
 
+#ifdef __GNUC__
+// CLEANUP_MOD is reserved for the future, it has not been properly coded yet.
+//#define CLEANUP_MOD
+#endif
+
 // Begin Platform
 // These macros are set in specify_platform.h
+
+#ifdef __cplusplus
+#define USE_STDARG_H
+#endif
+
+// Modules:
+
+#define USE_STANDARD_LIBRARY
+#define USE_MATH_H
 
 // If under Windows, else comment out.
 //#define EWINDOWS
@@ -32,11 +46,6 @@
 
 // End Platform
 
-
-// Standard defines:
-#define USE_STDARG_H
-#define USE_MATH_H
-#define USE_STANDARD_LIBRARY
 
 // Define if using GCC
 //#define ELINUX

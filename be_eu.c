@@ -91,7 +91,7 @@ void SpaceMessage()
     RTFatal("Your program has run out of memory.\nOne moment please...");
 }
 
-char *EMalloc(ulong nbytes)
+char *EMalloc(eulong nbytes)
 /* storage allocator */
 /* Always returns a pointer that has 8-byte alignment (essential for our
    internal representation of an object). */
@@ -104,7 +104,7 @@ char *EMalloc(ulong nbytes)
     return ret;
 }
 
-char *ERealloc(char *orig, ulong newsize)
+char *ERealloc(char *orig, eulong newsize)
 /* Enlarge or shrink a malloc'd block.
    orig must not be NULL - not supported.
    Return a pointer to a storage area of the desired size
@@ -193,8 +193,12 @@ object NewDouble(eudouble d)
     REGISTER d_ptr n;
 
     n = (d_ptr)EMalloc((elong)D_SIZE);
-
     n->ref = 1;
+#ifdef CLEANUP_MOD
+    // n->ptr = NULL;
+    n->cleanup = 0; // jjc
+    n->type = 0;
+#endif
     n->dbl = d;
     return MAKE_DBL(n);
 }
@@ -644,6 +648,13 @@ void de_reference(s1_ptr a)
             RTInternal("f.p. reference count less than 0");
 #endif
         a = (s1_ptr)DBL_PTR(a);
+#ifdef CLEANUP_MOD
+        if (IS_DBL_OR_SEQUENCE(((d_ptr)a)->cleanup))
+        {
+            void * cleanupfunc = (void *)DBL_PTR(((d_ptr)a)->cleanup); // TODO: Needs "cleanupfunc" to be casted as a function.
+            (*cleanupfunc)(((d_ptr)a)->ptr);
+        }
+#endif
         FreeD((unsigned char *)a);
     }
 
@@ -676,7 +687,17 @@ void de_reference(s1_ptr a)
                 }
                 else if (--(DBL_PTR(t)->ref) == 0) {
                     if (IS_ATOM_DBL(t)) {
+	#ifdef CLEANUP_MOD
+			d_ptr a1 = DBL_PTR(t);
+			if (IS_DBL_OR_SEQUENCE(a1->cleanup))
+			{
+			    void * cleanupfunc = (void *)DBL_PTR(a1->cleanup); // TODO: Needs "cleanupfunc" to be casted as a function.
+			    (*cleanupfunc)(a1->ptr);
+			}
+                        FreeD((unsigned char *)a1);
+	#else
                         FreeD((unsigned char *)DBL_PTR(t));
+	#endif
                     }
                     else {
                         // switch to subsequence
@@ -898,7 +919,7 @@ object and_bits(elong a, elong b)
 object Dand_bits(d_ptr a, d_ptr b)
 /* double a AND b */
 {
-    ulong longa, longb;
+    eulong longa, longb;
     elong c;
 
     check_bits(a, b);
@@ -920,7 +941,7 @@ object or_bits(elong a, elong b)
 object Dor_bits(d_ptr a, d_ptr b)
 /* double a OR b */
 {
-    ulong longa, longb;
+    eulong longa, longb;
     elong c;
 
     check_bits(a, b);
@@ -942,7 +963,7 @@ object xor_bits(elong a, elong b)
 object Dxor_bits(d_ptr a, d_ptr b)
 /* double a XOR b */
 {
-    ulong longa, longb;
+    eulong longa, longb;
     elong c;
 
     check_bits(a, b);
@@ -964,7 +985,7 @@ object not_bits(elong a)
 object Dnot_bits(d_ptr a)
 /* double bitwise NOT of a */
 {
-    ulong longa;
+    eulong longa;
     elong c;
 
     if (a->dbl < MIN_BITWISE_DBL ||
@@ -2230,7 +2251,4 @@ void screen_output(FILE *f, char *out_string)
 {
     fputs(out_string, f);
 }
-
-//here
-
 

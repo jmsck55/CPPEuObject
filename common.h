@@ -1,6 +1,8 @@
 // Copyright (c) 2022 James Cook
 // common.h
 //
+// alldef.h
+//
 // 32/64-bit using macro BITS64 for 64-bit
 //
 // Included by pch.h
@@ -63,13 +65,13 @@
 //#pragma align(8)
 typedef long double eudouble;
 typedef long long elong;
-typedef unsigned long long ulong;
+typedef unsigned long long eulong;
 #define REGISTER
 #else
 //#pragma align(4)
 typedef double eudouble;
 typedef long elong;
-typedef unsigned long ulong;
+typedef unsigned long eulong;
 #define REGISTER register
 #endif
 #ifdef BITS64
@@ -248,11 +250,6 @@ struct s1 {                        /* a sequence header block */
     long long ref;                      /* reference count */
     long long postfill;                 /* number of post-fill objects */
 }; /* total 8*4=32 bytes */
-
-struct d {                         /* a double precision number */
-    long double dbl;                    /* double precision value */
-    long long ref;                      /* reference count */
-}; /* total 8*3=24 bytes */
 #else
 typedef int integer;
 typedef long object;
@@ -264,12 +261,49 @@ struct s1 {                        /* a sequence header block */
     long ref;                      /* reference count */
     long postfill;                 /* number of post-fill objects */
 }; /* total 16 bytes */
-
+#endif // BITS64
+#ifdef BITS64
+struct d {                         /* a long double precision number */
+#ifdef CLEANUP_MOD
+    union {
+	long double dbl;                    /* long double precision value, float80 or float128 */
+	__float128 quad;
+	struct {
+	    void * ptr; // could be a pointer to an array of structures, customize in "cleanup's flags"
+	    long long type; // could be length, perhaps high bits could be flags.
+	};
+    };
+    long long ref;                      /* reference count */
+    object cleanup; // should be set to zero (0), type of data, and pointer for the cleanup routine.
+	// IS_ATOM_INT means it is a dbl==0 or quad==1 (ptr on 32-bit) or string==2 (other data types can be implimented in the future.)
+	// IS_ATOM_DBL means it is a pointer ("ptr") of "type" with pointer to "cleanup" routine.
+	// IS_SEQUENCE means it is an array ("ptr") of length "type" (without postfill variable) with pointer to "cleanup" routine.
+#else
+    long double dbl;                    /* long double precision value, float80 or float128 */
+    long long ref;                      /* reference count */
+#endif // CLEANUP_MOD
+}; /* total 8*3=24 bytes, or 8*4=32 bytes on newer GCC 64-bit */
+#else
 struct d {                         /* a double precision number */
+#ifdef CLEANUP_MOD
+    union {
+	double dbl;                    /* double precision value */
+	struct {
+	    void * ptr;
+	    long type;
+	};
+    };
+    long ref;                      /* reference count */
+    object cleanup; // should be set to zero (0), type of data, and pointer for the cleanup routine.
+	// IS_ATOM_INT means it is a dbl==0 or quad==1 (ptr on 32-bit) or string==2 (other data types can be implimented in the future.)
+	// IS_ATOM_DBL means it is a pointer ("ptr") of "type" with pointer to "cleanup" routine.
+	// IS_SEQUENCE means it is an array ("ptr") of length "type" (without postfill variable) with pointer to "cleanup" routine.
+#else
     double dbl;                    /* double precision value */
     long ref;                      /* reference count */
-}; /* total 12 bytes */
-#endif
+#endif // CLEANUP_MOD
+}; /* total 16 bytes */
+#endif // BITS64
 #define D_SIZE (sizeof(struct d))
 #if 0
 struct free_block {                /* a free storage block */

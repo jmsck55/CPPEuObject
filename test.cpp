@@ -1,18 +1,26 @@
 // Copyright (c) 2022 James Cook
 // test.cpp
 
+//#ifdef __GNUC__
+//#define __STDC_WANT_IEC_60559_TYPES_EXT__
+//#endif
+
+// First, the standard header files, like <iostream>, then the C header files (*.h),
+// Last, the C++ header files (*.hpp)
+
 #include <iostream>
+#include <cfloat> // or <float.h>
 
 extern "C" {
     #include "pch.h"
+    #include <stdint.h>
 }
+
 #include "eu.hpp"
 #include "test.hpp"
 
 // using namespace eu;
 using namespace std;
-
-#define COUNT(n) n
 
 #define EOBJECT Object
 #define ESEQUENCE Sequence
@@ -30,13 +38,72 @@ void myShowDebug(eu::base_class* x)
 #define SHOW_DEBUG(S, X) printf(S ":"); myShowDebug((eu::base_class*)&X)
 #endif
 
+#ifdef BITS64
+#define COUNT(n) INT64_C(n)
+#define DBL80_C(c) c ## L
+#else
+#define COUNT(n) n
+#define INT64_C(x) x
+#define DBL80_C(c) c
+#endif
+
 int main()
 {
         char ch;
         eu::eudouble dbl;
         char *str;
+#ifdef BITS64
+        cout << "64-bit version, BITS64 enabled." << endl;
+#else
+        cout << "32-bit version" << endl;
+#endif
         //eu::EOBJECT a; //, b, c, d;
+        cout << "Size of pointer == " << sizeof(void*) << endl;
+        cout << "Size of elong == " << sizeof(eu::elong) << endl;
+        cout << "Size of eudouble == " << sizeof(eu::eudouble) << endl;
+        cout << "Size of double == " << sizeof(double) << endl;
+        cout << "Size of long double == " << sizeof(long double) << endl;
+        cout << "Size of sizeof(struct d) == " << sizeof(struct eu::d) << endl;
+        cout << "Size of sizeof(struct s1) == " << sizeof(struct eu::s1) << endl;
+#ifdef __GNUC__
+        cout << "Size of __float128 == " << sizeof(__float128) << endl;
+        cout << "DBL_MANT_DIG == " << __DBL_MANT_DIG__ << endl;
+        cout << "DBL_DIG == " << __DBL_DIG__ << endl;
+        cout << "DBL_DECIMAL_DIG == " << __DBL_DECIMAL_DIG__ << endl;
+        cout << "LDBL_MANT_DIG == " << __LDBL_MANT_DIG__ << endl;
+        cout << "LDBL_DIG == " << __LDBL_DIG__ << endl;
+        cout << "LDBL_DECIMAL_DIG == " << __LDBL_DECIMAL_DIG__ << endl;
+        cout << "FLT128_MANT_DIG == " << __FLT128_MANT_DIG__ << endl;
+        cout << "FLT128_DIG == " << __FLT128_DIG__ << endl;
+        cout << "FLT128_MIN_EXP == " << __FLT128_MIN_EXP__ << endl;
+        cout << "FLT128_MIN_10_EXP == " << __FLT128_MIN_10_EXP__ << endl;
+        cout << "FLT128_MAX_EXP == " << __FLT128_MAX_EXP__ << endl;
+        cout << "FLT128_MAX_10_EXP == " << __FLT128_MAX_10_EXP__ << endl;
+        //cout << "FLT128_MAX == " << __FLT128_MAX__ << endl;
+        //cout << "FLT128_EPSILON == " << __FLT128_EPSILON__ << endl;
+        //cout << "FLT128_MIN == " << __FLT128_MIN__ << endl;
+        cout << "FLT128_DECIMAL_DIG == " << __FLT128_DECIMAL_DIG__ << endl;
+        //cout << "FLT128_TRUE_MIN == " << __FLT128_DENORM_MIN__ << endl;
+        cout << endl;
+#endif // __GNUC__
 
+        if (true) {
+                eu::ESEQUENCE s0, s1("Hi\n"), s2, s3, s4;
+                s1.ScreenOutput(stdout);
+                SHOW_DEBUG("s1", s1);
+                s2 = "hi\n"; // assignment
+                s2.ScreenOutput(stdout);
+                SHOW_DEBUG("s2", s2);
+                s3 = eu::NewString("HI\n"); // function
+                s3.ScreenOutput(stdout);
+                SHOW_DEBUG("s3", s3);
+                s4.newString("hI\n"); // member function
+                s4.ScreenOutput(stdout);
+                SHOW_DEBUG("s4", s4);
+                s0 = s1.GetValue(); // class assignment
+                s0.ScreenOutput(stdout);
+                SHOW_DEBUG("s0", s0);
+        }
 
 // 2. Language Definition
 
@@ -50,23 +117,23 @@ int main()
                 i2 = 1000;
                 i2.println();
                 SHOW_DEBUG("i2", i2);
-                a1 = (eu::eudouble)98.6;
+                a1 = DBL80_C(98.6);
                 a1.println();
                 SHOW_DEBUG("a1", a1);
-                a2 = (eu::eudouble)-1e6;
-                a2.println(0,0,"%e");
+                a2 = INT64_C(-1e6);
+                a2.println();
                 SHOW_DEBUG("a2", a2);
         }
         if (true) {
                 eu::ESEQUENCE s0, s1, s2, s3;
                 puts("\n-- examples of sequences:");
-                s1 = eu::seq(COUNT(8), 2, 3, 5, 7, 11, 13, 17, 19);
+                s1 = eu::seq(COUNT(8), (eu::object)2, (eu::object)3, (eu::object)5, (eu::object)7, (eu::object)11, (eu::object)13, (eu::object)17, (eu::object)19);
                 s1.println();
                 SHOW_DEBUG("s1", s1);
-                s1 = eu::seq(NOVALUE, 2, 3, 5, 7, 11, 13, 17, 19, NOVALUE); // use NOVALUE, "NOVALUE == ((long)0xbfffffffL)", to begin and end a variable agrument array.
+                s1 = eu::seq(NOVALUE, INT64_C(2), INT64_C(3), INT64_C(5), INT64_C(7), INT64_C(11), INT64_C(13), INT64_C(17), INT64_C(19), NOVALUE); // use NOVALUE, "NOVALUE == ((long)0xbfffffffL)", to begin and end a variable agrument array.
                 s1.println();
                 SHOW_DEBUG("s1", s1);
-                s2 = eu::seq(COUNT(5), 1, 2, eu::seq(COUNT(3), 3, 3, 3), 4, eu::seq(COUNT(2), 5, eu::seq(COUNT(1), 6)));
+                s2 = eu::seq(COUNT(5), INT64_C(1), INT64_C(2), eu::Repeat((eu::object)3, 3), INT64_C(4), eu::seq(COUNT(2), INT64_C(5), eu::seq(COUNT(1), INT64_C(6))));
                 s2.println();
                 SHOW_DEBUG("s2", s2);
                 
@@ -74,7 +141,7 @@ int main()
                 s1.println();
                 SHOW_DEBUG("s1", s1);
                 
-                s3 = eu::seq(COUNT(3), eu::seq(COUNT(2), eu::NewString("jon"), eu::NewString("smith")), 52389, eu::NewDouble(97.25));
+                s3 = eu::seq(COUNT(3), eu::seq(COUNT(2), eu::NewString("jon"), eu::NewString("smith")), (eu::object)52389, eu::NewDouble(97.25));
                 s3.println(2, 1);
                 SHOW_DEBUG("s3", s3);
                 //s0 = eu::seq(COUNT(0));
@@ -96,7 +163,7 @@ int main()
                 dbl = (eu::eudouble)68718428168;
                 printf("%f %i\n", (double)dbl, IS_DOUBLE_TO_INT(dbl));
                 a3 = dbl;
-                a3.println(0,0,"%f");
+                a3.println();
                 SHOW_DEBUG("a3", a3);
                 a4 = (eu::eudouble)-0x10; // -16
                 a4.println();
@@ -109,17 +176,17 @@ int main()
                 dbl = ((eu::eudouble)1/(eu::eudouble)7);
                 a1.NewAtom(dbl);
                 SHOW_DEBUG("a1", a1);
-                a2 = a1;
+                a2 = a1; // Copying items of same type.
                 SHOW_DEBUG("a2", a2);
         }
 
         if (true) {
                 eu::ESEQUENCE s1, s2, s3;
                 
-                //s1.NewStr("Hi");
+                //s1.newString("Hi");
                 s1 = "Hi";
                 SHOW_DEBUG("s1", s1);
-                s2 = s1.GetValue(); // copies sequence, always use "GetValue()" (to increase ref count by one), or else "memory violation" (i.e. Program Crash.)
+                s2 = s1.GetValue(); // copies sequence, always use "GetValue()" (to increase ref count by one), or else there will be a "memory violation" (i.e. Program Crash.)
                 SHOW_DEBUG("s2", s2);
                 s3 = eu::seq(COUNT(1), s1.GetValue());
                 SHOW_DEBUG("s1", s1);
@@ -145,7 +212,7 @@ int main()
                 printf("\n");
         }
         
-        cout << "Enter a character to exit." << endl;
+        cout << endl << "Enter a character to exit." << endl;
         cin >> ch;
         
         return 0;
