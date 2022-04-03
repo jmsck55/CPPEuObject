@@ -856,7 +856,7 @@ object multiply(elong a, elong b)
     else if (b == (char)b && a <= INT23 && a >= -INT23)
         return MAKE_INT(a * b);
 #endif
-    return (object)NewDouble(a * (eudouble)b);
+    return (object)NewDouble(a * (eudouble)b); // default if none of the other if statements return.
 }
 
 object divide(elong a, elong b)

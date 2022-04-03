@@ -15,6 +15,10 @@
 
 // be_runtime.c
 
+MY_EXTERN_C long MY_DLL_SYMBOL seed1;
+MY_EXTERN_C long MY_DLL_SYMBOL seed2;  /* current value of first and second random generators */
+MY_EXTERN_C int MY_DLL_SYMBOL rand_was_set;   /* TRUE if user has called set_rand() */
+
 MY_DLL_API object Date(); // This function uses: #include <time.h>
 
 // Random functions (on Windows, it requires the "EWINDOWS" to be defined, such as "#define EWINDOWS")

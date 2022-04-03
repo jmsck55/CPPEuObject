@@ -40,23 +40,26 @@
         #ifndef DONE_DEBUGGING
                 #define DONE_DEBUGGING
         #endif
-        #ifdef __GNUC__
-                #define MY_DLL_API MY_EXTERN_C
-        #else
-                #define MY_DLL_API MY_EXTERN_C __declspec(dllexport)
-        #endif
+	#ifdef __GNUC__
+		#define MY_DLL_SYMBOL
+	#else
+		#define MY_DLL_SYMBOL __declspec(dllexport)
+	#endif
+        #define MY_DLL_API MY_EXTERN_C MY_DLL_SYMBOL
 #else
 	#ifdef USING_DLL
 		#ifndef DONE_DEBUGGING
 			#define DONE_DEBUGGING
 		#endif
 		#ifdef __GNUC__
-			#define MY_DLL_API MY_EXTERN_C
+			#define MY_DLL_SYMBOL
 		#else
-			#define MY_DLL_API MY_EXTERN_C __declspec(dllimport)
+			#define MY_DLL_SYMBOL __declspec(dllimport)
 		#endif
+		#define MY_DLL_API MY_EXTERN_C MY_DLL_SYMBOL
 	#else
 		#define MY_DLL_API
+		#define MY_DLL_SYMBOL
 	#endif // USING_DLL
 #endif // BUILDING_DLL
 
@@ -82,7 +85,7 @@ typedef unsigned long eulong;
 
 #ifdef DONE_DEBUGGING
 #undef EXTRA_CHECK
-//#define ERUNTIME
+#define ERUNTIME
 #define DONT_USE_RTFATAL
 #define RTFatal(remove_error_messages) SimpleRTFatal("")
 #else
