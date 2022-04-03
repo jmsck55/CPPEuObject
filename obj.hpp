@@ -36,13 +36,6 @@ namespace eu
                 #include "be_funcs.h"
         #endif
         }
-        extern "C" object *rhs_slice_target;
-        extern "C" s1_ptr *assign_slice_seq;
-#ifdef USE_STANDARD_LIBRARY
-        extern "C" elong seed1; // keep "long" seed for now.
-        extern "C" elong seed2; // keep "long" seed for now.
-        extern "C" elong rand_was_set; // keep "int" rand_was_set for now.
-#endif // USE_STANDARD_LIBRARY
 
 // typedef int integer;
 // typedef struct d atom;
@@ -78,7 +71,7 @@ namespace eu
         }
 
         // TODO: Go through Euphoria's documentation and impliment every routine (function and procedure)
-        int Version(void) { return 0; } // Version still in Alpha.
+        int Version(void) { return 0; } // Version is still in Alpha.
         void Abort(elong error_level) { UserCleanup(error_level); }
 #ifdef BITS64
         void print(object obj, long long int stringflag = 0, long long int debugflag = 0, const char atomformat[] = "%.18Lg", long long int forceint = 0) // could be 18 or 21
@@ -100,11 +93,11 @@ namespace eu
                         {
                                 if (debugflag >= 2 && a <= MAX_BITWISE_DBL && a >= MIN_BITWISE_DBL)
                                 {
-			#ifdef BITS64
+                        #ifdef BITS64
                                         printf("(0x%llx)", (eulong)a);
-			#else
+                        #else
                                         printf("(0x%x)", (eulong)a);
-			#endif
+                        #endif
                                 }
                                 if (stringflag >= 1)
                                 {
@@ -138,11 +131,11 @@ namespace eu
                                         for (elong i = 2; i <= len; i++) {
                                                 printf(", ");
                                                 if (debugflag >= 1) {
-			#ifdef BITS64
+                        #ifdef BITS64
                                                         printf("[%lli]", i);
-			#else
+                        #else
                                                         printf("[%i]", i);
-			#endif
+                        #endif
                                                 }
                                                 print(*(++ob), stringflag, debugflag, atomformat, forceint);
                                         }
@@ -185,20 +178,20 @@ namespace eu
                 #ifndef DONE_DEBUGGING
                                 d_ptr a = DBL_PTR(obj);
                                 s1_ptr s = SEQ_PTR(obj);
-			#ifdef BITS64
+                        #ifdef BITS64
                                 printf("Before RefObj(0x%llx:0x%llx):\n", (unsigned long long)this, (unsigned long long)a);
-			#else
+                        #else
                                 printf("Before RefObj(0x%x:0x%x):\n", (unsigned long)this, (unsigned long)a);
-			#endif
+                        #endif
                                 ShowDebug();
                 #endif
                                 RefDS(obj);
                 #ifndef DONE_DEBUGGING
-			#ifdef BITS64
+                        #ifdef BITS64
                                 printf("After RefObj(0x%llx:0x%llx): ref=%lld\n", (unsigned long)this, (unsigned long)a, a->ref);
-			#else
+                        #else
                                 printf("After RefObj(0x%x:0x%x): ref=%d\n", (unsigned long)this, (unsigned long)a, a->ref);
-			#endif
+                        #endif
                 #endif
                         }
                 }
@@ -209,20 +202,20 @@ namespace eu
                 #ifndef DONE_DEBUGGING
                                 d_ptr a = DBL_PTR(obj);
                                 s1_ptr s = SEQ_PTR(obj);
-			#ifdef BITS64
+                        #ifdef BITS64
                                 printf("Before DeRefObj(0x%llx:0x%llx):\n", (unsigned long long)this, (unsigned long long)a);
-			#else
+                        #else
                                 printf("Before DeRefObj(0x%x:0x%x):\n", (unsigned long)this, (unsigned long)a);
                         #endif
                                 ShowDebug();
                 #endif
                                 DeRefDS(obj)
                 #ifndef DONE_DEBUGGING
-			#ifdef BITS64
+                        #ifdef BITS64
                                 printf("After DeRefObj(0x%llx:0x%llx): ref=%lld\n", (unsigned long)this, (unsigned long)a, a->ref);
-			#else
+                        #else
                                 printf("After DeRefObj(0x%x:0x%x): ref=%d\n", (unsigned long)this, (unsigned long)a, a->ref);
-			#endif
+                        #endif
                 #endif
                         }
                 }
@@ -243,11 +236,11 @@ namespace eu
                                         len = ptr->length;
                                 }
                         }
-	#ifdef BITS64
+        #ifdef BITS64
                         printf("DEBUG: 0x%llx:0x%llx etype=%lld, ref=%lld, length=%lld, value=", (unsigned long long)this, (unsigned long long)ptr, etype, ref, len);
-	#else
+        #else
                         printf("DEBUG: 0x%x:0x%x etype=%d, ref=%d, length=%d, value=", (unsigned long)this, (unsigned long)ptr, etype, ref, len);
-	#endif // BITS64
+        #endif // BITS64
                         println(1, 2);
                 }
 #else
@@ -257,10 +250,10 @@ namespace eu
                 ~base_class() { DeRefObj(); obj = NOVALUE; } // default destructor
                 base_class(const base_class& x) { obj = x.obj; RefObj(); } // copy constructor
                 base_class& operator= (const base_class& x) { DeRefObj(); obj = x.obj; RefObj(); return *this; } // copy assignment
-	#ifdef __GNUC__
+        #ifdef __GNUC__
                 base_class (base_class&& x) { obj = x.obj; x.obj = NOVALUE; } // move constructor
                 base_class& operator= (base_class&& x) { DeRefObj(); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
-	#endif
+        #endif
                 //base_class(const object& x) { obj = x; RefObj(); }
                 //base_class(object& x) { obj = x; RefObj(); }
                 //base_class(const object x) { obj = x; RefObj(); }
@@ -295,7 +288,7 @@ namespace eu
                 }
 
 
-                friend object seq(elong n, ... );
+                // friend object seq(elong n, ... );
         };
 #ifdef USE_STDARG_H
         object seq(elong n, ... ) {
@@ -472,17 +465,28 @@ namespace eu
                 }
                 void ScreenOutput(FILE *f) { char * out_string = GetCharStr(); screen_output(f, out_string); }
                 elong length() { if (IS_DBL_OR_SEQUENCE(obj) && IS_SEQUENCE(obj)) { return SEQ_PTR(obj)->length; } else { RTFatal("Expected a Sequence, but found an Atom, in 'length()'"); return -1; } }
-
-                object E_construct_slice(Sequence src, object start, object end) { // assign src[start..end] to this "obj", i.e. "obj = src[start..end]"
+// Need to test these two methods:
+                void E_slice(Sequence src, object start, object end) { // make "obj = src[start..end]", assign src[start..end] to this "obj"
                         if (IS_DBL_OR_SEQUENCE(obj) && IS_SEQUENCE(obj) &&
                         IS_DBL_OR_SEQUENCE(src.obj) && IS_SEQUENCE(src.obj)) {
                                 rhs_slice_target = &obj; // DeRef()'s "obj" in next statement below.
                                 RHS_Slice((s1_ptr)src.obj, start, end); // takes all object's.
                                 rhs_slice_target = NULL;
-                                return obj;
                         }
                         else {
-                                RTFatal("Expected target and argument Sequences in 'E_construct_slice()'");
+                                RTFatal("Expected target and argument Sequences in 'E_slice()'");
+                        }
+                }
+                object E_slice_func(object start, object end) { // make "ret = obj[start..end]"
+                        if (IS_DBL_OR_SEQUENCE(obj) && IS_SEQUENCE(obj)) {
+                                object ret = NOVALUE; // needs to be NOVALUE
+                                rhs_slice_target = &ret;
+                                RHS_Slice((s1_ptr)obj, start, end);
+                                rhs_slice_target = NULL;
+                                return ret;
+                        }
+                        else {
+                                RTFatal("Expected this class to be a Sequence in 'E_slice_func()'");
                                 return NOVALUE;
                         }
                 }
@@ -497,30 +501,48 @@ namespace eu
                                 RTFatal("Expected target and argument Sequences in 'E_assign_to_slice()'");
                         }
                 }
-
+// End "Need to test..."
                 object E_at(elong i); // use (1 to length) or (-1 to -length) // make "obj = seq[index]"
 
-                friend Sequence S_repeat(object item, object repcount);
+                void repeat(object item, object repcount)
+                {
+                        obj = Repeat(item, repcount);
+                }
+                void prepend(object a)
+                {
+                        // Ref(a) // possible memory leak.
+                        Prepend(&obj, obj, a);
+                }
+                void append(object a)
+                {
+                        // Ref(a) // possible memory leak.
+                        Append(&obj, obj, a);
+                }
+                object concatN() // join()
+                {
+                        s1_ptr ptr = SEQ_PTR(obj);
+                        object ret = NOVALUE;
+                        Concat_N(&ret, ptr->base + 1, ptr->length);
+                        return ret;
+                }
 
-                void prepend(object a);
-                void append(object a);
-
-                friend void S_prepend(Sequence target, Sequence src, object a); // target = prepend(src, a);
-                friend void S_append(Sequence target, Sequence src, object a); // target = append(src, a);
-                friend void S_concat(Sequence target, object a, object b); // target = a & b; a and b can be atoms or sequences
-                friend void S_concatN(Sequence target, Sequence source); // concatenate all elements of source, store in target.
+                friend object S_repeat(object item, object repcount);
+                
+                friend void S_prepend(object_ptr target_ptr, Sequence& src, object a);
+                friend void S_append(object_ptr target_ptr, Sequence& src, object a);
+                friend void S_concat(object_ptr target_ptr, object a, object b);
+                friend void S_concatN(object_ptr target_ptr, Sequence& sources);
+                
+                friend object S_prepend_func(Sequence& src, object a); // target = prepend(src, a);
+                friend object S_append_func(Sequence& src, object a); // target = append(src, a);
+                friend object S_concat_func(object a, object b); // target = a & b; a and b can be atoms or sequences
+                friend object S_concatN_func(Sequence& sources); // concatenate all elements of source, store in target.
 
                 friend elong E_find(object a, Sequence b); // pos = find(a, b);
                 friend elong E_find_from(object a, Sequence b, object c); // pos = find_from(a, b, start_from);
                 friend elong E_match(Sequence a, Sequence b); // pos = match(a, b);
                 friend elong E_match_from(Sequence a, Sequence b, object c); // pos = match_from(a, b, start_from);
         };
-
-        void S_concatN(Sequence target, Sequence sources)
-        {
-                s1_ptr p = SEQ_PTR(sources.obj);
-                Concat_N(&(target.obj), p->base, p->length);
-        }
 
         elong E_compare(object a, object b) { return compare(a, b); }
 
@@ -553,50 +575,70 @@ namespace eu
                 }
                 return ret;
         }
-        Sequence S_repeat(object item, object repcount)
+        object S_repeat(object item, object repcount)
         {
-                Sequence ret;
-                ret.obj = Repeat(item, repcount);
+                object ret;
+                ret = Repeat(item, repcount);
                 return ret;
         }
-        void Sequence::prepend(object a)
+        void S_prepend(object_ptr target_ptr, Sequence& src, object a)
         {
-                Ref(a)
-                Prepend(&obj, obj, a);
+                // Ref(a) // possible memory leak.
+                Prepend(target_ptr, src.obj, a);
         }
-        void Sequence::append(object a)
+        object S_prepend_func(Sequence& src, object a) // target = prepend(src, a);
         {
-                Ref(a)
-                Append(&obj, obj, a);
+                object ret = NOVALUE;
+                S_prepend(&ret, src, a);
+                return ret;
         }
-        void S_prepend(Sequence target, Sequence src, object a)
+        void S_append(object_ptr target_ptr, Sequence& src, object a)
         {
-                Ref(a)
-                Prepend(&(target.obj), src.obj, a);
+                // Ref(a) // possible memory leak.
+                Append(target_ptr, src.obj, a);
         }
-        void S_append(Sequence target, Sequence src, object a)
+        object S_append_func(Sequence& src, object a) // target = append(src, a);
         {
-                Ref(a)
-                Append(&(target.obj), src.obj, a);
+                object ret = NOVALUE;
+                S_append(&ret, src, a);
+                return ret;
         }
-        void S_concat(Sequence target, object a, object b)
+        void S_concat(object_ptr target_ptr, object a, object b)
         {
                 bool is_seq_a = IS_DBL_OR_SEQUENCE(a) && IS_SEQUENCE(a);
                 bool is_seq_b = IS_DBL_OR_SEQUENCE(b) && IS_SEQUENCE(b);
                 if (is_seq_a && (!is_seq_b))
                 {
-                        Ref(b)
-                        Append(&(target.obj), a, b);
+                        // Ref(b) // possible memory leak.
+                        Append(target_ptr, a, b);
                 }
                 else if ((!is_seq_a) && is_seq_b)
                 {
-                        Ref(a)
-                        Prepend(&(target.obj), b, a);
+                        // Ref(a) // possible memory leak.
+                        Prepend(target_ptr, b, a);
                 }
                 else
                 {
-                        Concat(&(target.obj), a, (s1_ptr)b);
+                        Concat(target_ptr, a, (s1_ptr)b); // deref's target
+                        //RefDS(target.obj); // possible memory leak.
                 }
+        }
+        object S_concat_func(object a, object b) // target = a & b; a and b can be atoms or sequences
+        {
+                object ret = NOVALUE;
+                S_concat(&ret, a, b);
+                return ret;
+        }
+        void S_concatN(object_ptr target_ptr, Sequence& sources)
+        {
+                s1_ptr source_ptr = SEQ_PTR(sources.obj);
+                Concat_N(target_ptr, source_ptr->base + 1, source_ptr->length);
+        }
+        object S_concatN_func(Sequence& sources) // concatenate all elements of source, store in target.
+        {
+                object ret = NOVALUE;
+                S_concatN(&ret, sources);
+                return ret;
         }
 
         class Object : public base_class

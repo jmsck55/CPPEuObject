@@ -21,6 +21,9 @@
 
 // from: be_runtime.c
 
+MY_EXTERN_C object MY_DLL_SYMBOL *rhs_slice_target;
+MY_EXTERN_C s1_ptr MY_DLL_SYMBOL *assign_slice_seq;
+
 MY_DLL_API void Cleanup(elong status);
 MY_DLL_API void UserCleanup(elong status);
 MY_DLL_API void SimpleRTFatal(char *msg);

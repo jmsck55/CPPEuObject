@@ -1,6 +1,6 @@
 Open Watcom Linker Version 1.9
 Portions Copyright (c) 1985-2002 Sybase, Inc. All Rights Reserved.
-Created on:       22/04/02 18:24:31
+Created on:       22/04/03 18:04:56
 Executable Image: testobject.exe
 creating a Windows NT character-mode executable
 
@@ -12,8 +12,8 @@ creating a Windows NT character-mode executable
 Group                           Address              Size
 =====                           =======              ====
 
-.idata                          0042f000             00000518
-DGROUP                          00430000             00015cc0
+.idata                          00431000             00000518
+DGROUP                          00432000             00015cc0
 
 
 
@@ -25,30 +25,30 @@ Segment                Class          Group          Address         Size
 =======                =====          =====          =======         ====
 
 BEGTEXT                CODE           AUTO           00401000        00000007
-_TEXT                  CODE           AUTO           00401010        0002d535
-CODE32                 CODE           AUTO           0042e548        00000575
-TRANSFER CODE          CODE           AUTO           0042eac0        00000114
-.idata                 .idata         .idata         0042f000        00000518
-_NULL                  BEGDATA        DGROUP         00430000        00000004
-_AFTERNULL             BEGDATA        DGROUP         00430004        00000000
-CONST                  DATA           DGROUP         00430004        00001390
-CONST2                 DATA           DGROUP         004313a0        000019ec
-_DATA                  DATA           DGROUP         00432d90        00001a30
-XIB                    DATA           DGROUP         004347c0        00000000
-XI                     DATA           DGROUP         004347c0        0000004e
-XIE                    DATA           DGROUP         0043480e        00000000
-YIB                    DATA           DGROUP         0043480e        00000000
-YI                     DATA           DGROUP         0043480e        00000024
-YIE                    DATA           DGROUP         00434832        00000000
-DATA32                 DATA           DGROUP         00434834        00000310
-TIB                    DATA           DGROUP         00434b44        00000000
-TI                     DATA           DGROUP         00434b44        00000000
-TIE                    DATA           DGROUP         00434b44        00000000
-DATA                   DATA           DGROUP         00434b44        00000000
-CONST32                CONST          DGROUP         00435000        00000000
-_BSS                   BSS            DGROUP         00435000        00000cb8
-BSS32                  BSS            DGROUP         00435cb8        00000000
-STACK                  STACK          DGROUP         00435cc0        00010000
+_TEXT                  CODE           AUTO           00401010        0002f8e5
+CODE32                 CODE           AUTO           004308f8        00000575
+TRANSFER CODE          CODE           AUTO           00430e70        00000114
+.idata                 .idata         .idata         00431000        00000518
+_NULL                  BEGDATA        DGROUP         00432000        00000004
+_AFTERNULL             BEGDATA        DGROUP         00432004        00000000
+CONST                  DATA           DGROUP         00432004        00001460
+CONST2                 DATA           DGROUP         00433470        00001bdc
+_DATA                  DATA           DGROUP         00435050        00001a30
+XIB                    DATA           DGROUP         00436a80        00000000
+XI                     DATA           DGROUP         00436a80        0000004e
+XIE                    DATA           DGROUP         00436ace        00000000
+YIB                    DATA           DGROUP         00436ace        00000000
+YI                     DATA           DGROUP         00436ace        00000024
+YIE                    DATA           DGROUP         00436af2        00000000
+DATA32                 DATA           DGROUP         00436af4        00000310
+TIB                    DATA           DGROUP         00436e04        00000000
+TI                     DATA           DGROUP         00436e04        00000000
+TIE                    DATA           DGROUP         00436e04        00000000
+DATA                   DATA           DGROUP         00436e04        00000000
+CONST32                CONST          DGROUP         00437000        00000000
+_BSS                   BSS            DGROUP         00437000        00000cb8
+BSS32                  BSS            DGROUP         00437cb8        00000000
+STACK                  STACK          DGROUP         00437cc0        00010000
 
 
                         +----------------+
@@ -90,11 +90,11 @@ Module: be_eu.obj(C:\Users\jc410\Documents\CPPEuObject\be_eu.c)
 0040224b*      de_reference_i_
 004022f6       DoubleToInt_
 0040237d*      x_
-004023b2*      add_
-00402408*      minus_
-0040245e*      multiply_
-00402534*      divide_
-00402599*      Ddivide_
+004023b2       add_
+00402408       minus_
+0040245e       multiply_
+00402534       divide_
+00402599       Ddivide_
 004025f7       eremainder_
 00402639+      check_bits_
 004026ac       and_bits_
@@ -131,16 +131,16 @@ Module: be_eu.obj(C:\Users\jc410\Documents\CPPEuObject\be_eu.c)
 00403244       find_
 004033d5       e_match_
 0040353b+      CheckSlice_
-00403667*      RHS_Slice_
-00403920*      AssignSlice_
+00403667       RHS_Slice_
+00403920       AssignSlice_
 00403b5d       MakeCString_
 00403c05       make_atom32_
 00403c5b       find_from_
 00403e5f       e_match_from_
 00404035       screen_output_
-00435000+      _TempBuff
-00435410+      _assign_slice_seq
-00435414+      _rhs_slice_target
+00437000+      _TempBuff
+00437410       _assign_slice_seq
+00437414       _rhs_slice_target
 Module: be_funcs.obj(C:\Users\jc410\Documents\CPPEuObject\be_funcs.c)
 00404065*      Date_
 00404123+      setran32_
@@ -151,9 +151,9 @@ Module: be_funcs.obj(C:\Users\jc410\Documents\CPPEuObject\be_funcs.c)
 00404a9c+      get_int32_
 00404b27       get_rand32_
 00404b82       set_rand32_
-00432d90+      _rand_was_set
-00435418+      _seed2
-0043541c+      _seed1
+00435050+      _rand_was_set
+00437418+      _seed2
+0043741c+      _seed1
 Module: be_math.obj(C:\Users\jc410\Documents\CPPEuObject\be_math.c)
 00404ce2       Dremainder_
 00404d51       power_
@@ -173,15 +173,16 @@ Module: be_math.obj(C:\Users\jc410\Documents\CPPEuObject\be_math.c)
 0040527a       e_floor_
 004052a7       De_floor_
 Module: test.obj(C:\Users\jc410\Documents\CPPEuObject\test.cpp)
-0041f48f+      void near eu::base_class::ShowDebug()
-0041f5ba+      near eu::base_class::~base_class()
-0041f76d+      void near eu::base_class::println( int, int, char const near *, int )
-0041f7ad+      near eu::Integer::Integer()
-0041f804+      near eu::Integer::~Integer()
-0041fbc5+      near eu::Integer::Integer( eu::Integer const near & )
-0041fdd6+      near eu::Atom::Atom()
-0041fe2d+      near eu::Atom::~Atom()
-004201ee+      near eu::Atom::Atom( eu::Atom const near & )
+004216a0+      void near eu::base_class::DeRefObj()
+0042183e+      void near eu::base_class::ShowDebug()
+00421969+      near eu::base_class::~base_class()
+00421b1c+      void near eu::base_class::println( int, int, char const near *, int )
+00421b5c+      near eu::Integer::Integer()
+00421bb3+      near eu::Integer::~Integer()
+00421f74+      near eu::Integer::Integer( eu::Integer const near & )
+00422185+      near eu::Atom::Atom()
+004221dc+      near eu::Atom::~Atom()
+0042259d+      near eu::Atom::Atom( eu::Atom const near & )
 0040530f+      long near eu::is_seq_string( long, long, long )
 004053b0+      long near eu::RefRet( long )
 004053e6*      int near eu::Version()
@@ -190,840 +191,842 @@ Module: test.obj(C:\Users\jc410\Documents\CPPEuObject\test.cpp)
 004056b2+      void near eu::println( long, int, int, char const near *, int )
 004056fe+      long near eu::seq( long, ... )
 00405810*      eu::Atom near eu::A_not_bits( eu::Atom )
-004203ff+      near eu::Sequence::Sequence()
-00420456+      near eu::Sequence::~Sequence()
-00420817+      near eu::Sequence::Sequence( eu::Sequence const near & )
+004227ae+      near eu::Sequence::Sequence()
+00422805+      near eu::Sequence::~Sequence()
+00422bc6+      near eu::Sequence::Sequence( eu::Sequence const near & )
 004069dc*      eu::Atom near eu::A_and_bits( eu::Atom, eu::Atom )
 00407ac8*      eu::Atom near eu::A_or_bits( eu::Atom, eu::Atom )
 00408bb4*      eu::Atom near eu::A_xor_bits( eu::Atom, eu::Atom )
-00409ca0*      void near eu::S_concatN( eu::Sequence, eu::Sequence )
-00409ce3*      long near eu::E_compare( long, long )
-00409d19*      long near eu::E_find( long, eu::Sequence )
-00409d51*      long near eu::E_match( eu::Sequence, eu::Sequence )
-00409d8b*      long near eu::E_find_from( long, eu::Sequence, long )
-00409dc7*      long near eu::E_match_from( eu::Sequence, eu::Sequence, long )
-00409e05+      long near eu::Sequence::E_at( long )
-00409ed1*      eu::Sequence near eu::S_repeat( long, long )
-0040a6a3*      void near eu::Sequence::prepend( long )
-0040a6ea*      void near eu::Sequence::append( long )
-0040a731*      void near eu::S_prepend( eu::Sequence, eu::Sequence, long )
-0040a779*      void near eu::S_append( eu::Sequence, eu::Sequence, long )
-00420a28+      near eu::Dbl::Dbl()
-00420a7f+      near eu::Dbl::~Dbl()
-00420e40+      near eu::Dbl::Dbl( eu::Dbl const near & )
-0040a7c1*      void near eu::S_concat( eu::Sequence, long, long )
-0040a89d*      eu::Dbl near eu::A_remainder( eu::Dbl, eu::Dbl )
-0040b989*      eu::Dbl near eu::A_power( eu::Dbl, eu::Dbl )
-0040ca75*      eu::Dbl near eu::A_sqrt( eu::Dbl )
-0040dc41*      eu::Dbl near eu::A_sin( eu::Dbl )
-0040ee0d*      eu::Dbl near eu::A_cos( eu::Dbl )
-0040ffd9*      eu::Dbl near eu::A_tan( eu::Dbl )
-004111a5*      eu::Dbl near eu::A_arctan( eu::Dbl )
-00412371*      eu::Dbl near eu::A_log( eu::Dbl )
-0041353d*      eu::Dbl near eu::A_floor( eu::Dbl )
-00414709*      eu::Integer near eu::IntegerRandom32( eu::Integer )
-0041492f*      eu::Atom near eu::AtomRandom32( eu::Atom )
-00414e3d*      eu::Sequence near eu::GetRand32()
-00415048*      void near eu::SetRand32( long )
-00415077+      void near myShowDebug( eu::base_class near * )
-004151ad       main_
+00409ca0*      long near eu::E_compare( long, long )
+00409cd6*      long near eu::E_find( long, eu::Sequence )
+00409d0e*      long near eu::E_match( eu::Sequence, eu::Sequence )
+00409d48*      long near eu::E_find_from( long, eu::Sequence, long )
+00409d84*      long near eu::E_match_from( eu::Sequence, eu::Sequence, long )
+00409dc2+      long near eu::Sequence::E_at( long )
+00409e8e*      long near eu::S_repeat( long, long )
+00409eca+      void near eu::S_prepend( long near *, eu::Sequence near &, long )
+00409f00*      long near eu::S_prepend_func( eu::Sequence near &, long )
+00409f43+      void near eu::S_append( long near *, eu::Sequence near &, long )
+00409f79*      long near eu::S_append_func( eu::Sequence near &, long )
+00409fbc+      void near eu::S_concat( long near *, long, long )
+00422dd7+      near eu::Dbl::Dbl()
+00422e2e+      near eu::Dbl::~Dbl()
+004231ef+      near eu::Dbl::Dbl( eu::Dbl const near & )
+0040a074*      long near eu::S_concat_func( long, long )
+0040a0b7+      void near eu::S_concatN( long near *, eu::Sequence near & )
+0040a0fd*      long near eu::S_concatN_func( eu::Sequence near & )
+0040a13c*      eu::Dbl near eu::A_remainder( eu::Dbl, eu::Dbl )
+0040b228*      eu::Dbl near eu::A_power( eu::Dbl, eu::Dbl )
+0040c314*      eu::Dbl near eu::A_sqrt( eu::Dbl )
+0040d4e0*      eu::Dbl near eu::A_sin( eu::Dbl )
+0040e6ac*      eu::Dbl near eu::A_cos( eu::Dbl )
+0040f878*      eu::Dbl near eu::A_tan( eu::Dbl )
+00410a44*      eu::Dbl near eu::A_arctan( eu::Dbl )
+00411c10*      eu::Dbl near eu::A_log( eu::Dbl )
+00412ddc*      eu::Dbl near eu::A_floor( eu::Dbl )
+00413fa8*      eu::Integer near eu::IntegerRandom32( eu::Integer )
+004141ce*      eu::Atom near eu::AtomRandom32( eu::Atom )
+004146dc*      eu::Sequence near eu::GetRand32()
+004148e7*      void near eu::SetRand32( long )
+00414916+      void near myShowDebug( eu::base_class near * )
+00414a4c       main_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(stk)
-00421055       __CHK
-00421065*      __STK
-00421084*      __STKOVERFLOW_
-00421094       __GRO
-004210b4*      __alloca_probe
+00423401       __CHK
+00423411*      __STK
+00423430*      __STKOVERFLOW_
+00423440       __GRO
+00423460*      __alloca_probe
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(exit.c)
-004210c8+      __null_int23_exit_
-004210c9       exit_
-00421119*      _exit_
-00432df0+      ___int23_exit
-00432df4+      ___FPE_handler_exit
+00423474+      __null_int23_exit_
+00423475       exit_
+004234c5*      _exit_
+004350b0+      ___int23_exit
+004350b4+      ___FPE_handler_exit
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(iob.c)
-00432df8       ___iob
-00433000*      __fmode
-00435420       ___OpenStreams
-00435424       ___ClosedStreams
+004350b8       ___iob
+004352c0*      __fmode
+00437420       ___OpenStreams
+00437424       ___ClosedStreams
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(nmalloc.c)
-00421130       _nmalloc_
-00421130       malloc_
-00433004       ___nheapbeg
-00433008       ___MiniHeapRover
-0043300c       ___LargestSizeB4MiniHeapRover
+004234e0       _nmalloc_
+004234e0       malloc_
+004352c4       ___nheapbeg
+004352c8       ___MiniHeapRover
+004352cc       ___LargestSizeB4MiniHeapRover
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(nrealloc.c)
-00421230*      _nrealloc_
-00421230       realloc_
+004235e0*      _nrealloc_
+004235e0       realloc_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(strlen.c)
-004212b0       strlen_
+00423660       strlen_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(fchop87)
-004212c4       __CHP
+00423674       __CHP
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(nfree.c)
-004212e0       _nfree_
-004212e0       free_
-00435428       ___MiniHeapFreeRover
+00423690       _nfree_
+00423690       free_
+00437428       ___MiniHeapFreeRover
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(sprintf.c)
-004213f0       sprintf_
+004237a0       sprintf_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(fputs.c)
-00421420       fputs_
+004237d0       fputs_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(fltused.c)
-00433010       _fltused_
+004352d0       _fltused_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\emu387.lib(386)
-004214c0       __init_387_emulator
-004214c1*      __fini_387_emulator
+00423870       __init_387_emulator
+00423871*      __fini_387_emulator
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(_8087)
-00433014       __8087
-00433015       __real87
+004352d4       __8087
+004352d5       __real87
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(time.c)
-004214d0       time_
+00423880       time_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(localtim.c)
-00421510+      _localtime_
-00421570       localtime_
+004238c0+      _localtime_
+00423920       localtime_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(fmod87)
-004215a3       fmod_
-00421588*      IF@DFMOD
-00421588*      IF@FMOD
+00423953       fmod_
+00423938*      IF@DFMOD
+00423938*      IF@FMOD
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(pow87)
-0042170d       pow_
-004215b4*      IF@DPOW
-004215b4*      IF@POW
+00423abd       pow_
+00423964*      IF@DPOW
+00423964*      IF@POW
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(floor.c)
-0042171d       floor_
+00423acd       floor_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(sqrt87)
-00421758       sqrt_
-00421788*      IF@SQRT
-00421788*      IF@DSQRT
-0042178a*      __@DSQRT
+00423b08       sqrt_
+00423b38*      IF@SQRT
+00423b38*      IF@DSQRT
+00423b3a*      __@DSQRT
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(trig87)
-00421809       sin_
-004217fd       cos_
-0042182a       tan_
-004217bc*      IF@COS
-004217bc*      IF@DCOS
-004217c6*      IF@SIN
-004217c6*      IF@DSIN
-00421815*      IF@TAN
-00421815*      IF@DTAN
+00423bb9       sin_
+00423bad       cos_
+00423bda       tan_
+00423b6c*      IF@COS
+00423b6c*      IF@DCOS
+00423b76*      IF@SIN
+00423b76*      IF@DSIN
+00423bc5*      IF@TAN
+00423bc5*      IF@DTAN
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(atan87)
-00421862       atan_
-0042186e*      atan2_
-00421838*      IF@ATAN
-00421838*      IF@DATAN
-0042184d*      IF@ATAN2
-0042184d*      IF@DATAN2
+00423c12       atan_
+00423c1e*      atan2_
+00423be8*      IF@ATAN
+00423be8*      IF@DATAN
+00423bfd*      IF@ATAN2
+00423bfd*      IF@DATAN2
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(log87)
-004218d4       log_
-004218ec*      log2_
-004218e0*      log10_
-00421880*      IF@LOG
-00421880*      IF@DLOG
-004218c0*      IF@LOG2
-004218c0*      IF@DLOG2
-004218ca*      IF@LOG10
-004218ca*      IF@DLOG10
+00423c84       log_
+00423c9c*      log2_
+00423c90*      log10_
+00423c30*      IF@LOG
+00423c30*      IF@DLOG
+00423c70*      IF@LOG2
+00423c70*      IF@DLOG2
+00423c7a*      IF@LOG10
+00423c7a*      IF@DLOG10
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(printf.c)
-00421900       printf_
+00423cb0       printf_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(FSHAND)
-00421922       ___wcpp_4_fs_handler_
+00423cd2       ___wcpp_4_fs_handler_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(stabdtor.cpp)
-00421bd0       __wcpp_4_destruct_internal__
-00421bf0       __wcpp_4_destruct_all__
-00421bf4*      __wcpp_4_destruct__
+00423f80       __wcpp_4_destruct_internal__
+00423fa0       __wcpp_4_destruct_all__
+00423fa4       __wcpp_4_destruct__
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(puts.c)
-00421c20       puts_
+00423fd0       puts_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(manendl.cpp)
-00421c50       std::ostream near & near std::endl( std::ostream near & )
+00424000       std::ostream near & near std::endl( std::ostream near & )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(ioicout.cpp)
-00435468       std::ostream near std::cout
-00421cc4+      near cout_initfini::cout_initfini()
-00421ccc+      near cout_initfini::~cout_initfini()
+00437468       std::ostream near std::cout
+00424074+      near cout_initfini::cout_initfini()
+0042407c+      near cout_initfini::~cout_initfini()
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(ostincch.cpp)
-00421d00       std::ostream near & near std::ostream::operator <<( char const near * )
+004240b0       std::ostream near & near std::ostream::operator <<( char const near * )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(ostinomn.cpp)
-00421d80       std::ostream near & near std::ostream::operator <<( std::ostream near & (near *)())
+00424130       std::ostream near & near std::ostream::operator <<( std::ostream near & (near *)())
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(ostinulo.cpp)
-00421d90       std::ostream near & near std::ostream::operator <<( long unsigned )
+00424140       std::ostream near & near std::ostream::operator <<( long unsigned )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(ioicin.cpp)
-004354e8       std::istream near std::cin
-00421f08*      near cin_initfini::cin_initfini()
+004374e8       std::istream near std::cin
+004242b8*      near cin_initfini::cin_initfini()
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(istexcha.cpp)
-00421f30       std::istream near & near std::istream::operator >>( char near & )
+004242e0       std::istream near & near std::istream::operator >>( char near & )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(cstrtwnt)
-00421fbe       _cstart_
-00421fbe*      mainCRTStartup
+0042436e       _cstart_
+0042436e*      mainCRTStartup
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(iofefg.cpp)
-004347ea       __ppfltused_
+00436aaa       __ppfltused_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(fsroot.cpp)
-004347f0       ___wcpp_4_data_init_fs_root_
+00436ab0       ___wcpp_4_data_init_fs_root_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(cppdata.cpp)
-00435528       __wint_thread_data
-0043554c       __compiled_under_NT
+00437528       __wint_thread_data
+0043754c       __compiled_under_NT
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(xmsgwnt.c)
-00422070       __exit_with_msg_
-004220d0       __fatal_runtime_error_
+00424420       __exit_with_msg_
+00424480       __fatal_runtime_error_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mainwnt.c)
-004330c4*      ___TlsIndex
-004330c8+      ___FirstThreadData
-004330cc       ___GetThreadPtr
-004330d0       __AccessFileH
-004330d4       __ReleaseFileH
-004330d8       __AccessIOB
-004330dc       __ReleaseIOB
-004330e0       __AccessNHeap
-004330e4*      __AccessFHeap
-004330e8       __ReleaseNHeap
-00422100*      __threadid_
-00422120+      __sig_null_rtn_
-00422130+      __NTInit_
-00422310+      __NTFini_
-00422370       __NTMainInit_
-004223d0       __exit_
-004330ec*      __ReleaseFHeap
-004330f0*      __AccessTDList
-004330f4*      __ReleaseTDList
-004330f8       __AccessFList
-004330fc       __ReleaseFList
-00433100+      __ThreadExitRtn
-00433104       ___sig_init_rtn
-00433108       ___sig_fini_rtn
-0043310c       ___process_fini
-00435558       ___Is_DLL
+00435384*      ___TlsIndex
+00435388+      ___FirstThreadData
+0043538c       ___GetThreadPtr
+00435390       __AccessFileH
+00435394       __ReleaseFileH
+00435398       __AccessIOB
+0043539c       __ReleaseIOB
+004353a0       __AccessNHeap
+004353a4*      __AccessFHeap
+004353a8       __ReleaseNHeap
+004244b0*      __threadid_
+004244d0+      __sig_null_rtn_
+004244e0+      __NTInit_
+004246c0+      __NTFini_
+00424720       __NTMainInit_
+00424780       __exit_
+004353ac*      __ReleaseFHeap
+004353b0*      __AccessTDList
+004353b4*      __ReleaseTDList
+004353b8       __AccessFList
+004353bc       __ReleaseFList
+004353c0+      __ThreadExitRtn
+004353c4       ___sig_init_rtn
+004353c8       ___sig_fini_rtn
+004353cc       ___process_fini
+00437558       ___Is_DLL
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(initrtns.c)
-00422430       __InitRtns
-00422480       __FiniRtns
+004247e0       __InitRtns
+00424830       __FiniRtns
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(initfile.c)
-00422510       __InitFiles_
+004248c0       __InitFiles_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(ioexit.c)
-00422610*      fcloseall_
-00422620       __full_io_exit_
+004249c0*      fcloseall_
+004249d0       __full_io_exit_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(nmemneed.c)
-00422630       __nmemneed_
+004249e0       __nmemneed_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mem.c)
-00422640       __MemAllocator
-004226f0       __MemFree
+004249f0       __MemAllocator
+00424aa0       __MemFree
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(grownear.c)
-00422990       __ExpandDGROUP_
+00424d40       __ExpandDGROUP_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(nmsize.c)
-004229b0       _nmsize_
-004229b0*      _msize_
+00424d60       _nmsize_
+00424d60*      _msize_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(nexpand.c)
-004229c0       _nexpand_
-004229c0*      _expand_
-00422a00+      __HeapManager_expand_
+00424d70       _nexpand_
+00424d70*      _expand_
+00424db0+      __HeapManager_expand_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(vsprintf.c)
-00422be0       vsprintf_
+00424f90       vsprintf_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(fputc.c)
-00422c00       fputc_
+00424fb0       fputc_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(flush.c)
-00422ce0       __flush_
+00425090       __flush_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(ioalloc.c)
-00422de0       __ioalloc_
+00425190       __ioalloc_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(setefg.c)
-00422e80       __setEFGfmt_
+00425230       __setEFGfmt_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(chk8087.c)
-00422ec0*      _fpreset_
-00422f00       __chk8087_
-00422f10*      __init_8087_
+00425270*      _fpreset_
+004252b0       __chk8087_
+004252c0*      __init_8087_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(crwdata)
-00433154       __osmajor
-00433155       __osminor
-00433156       __osbuild
-00433158       __osver
-0043315c       __winmajor
-00433160       __winminor
-00433164       __winver
-00433120       __LpDllName
-00433124       __LpwCmdLine
-00433128       __LpwPgmName
-0043312c       __LpwDllName
-00433118       __LpCmdLine
-0043311c       __LpPgmName
-00433110*      __dynend
-00433114       __curbrk
-00433130*      __STACKLOW
-00433134       __STACKTOP
-00433138       __ASTACKSIZ
-0043313c       __ASTACKPTR
-00433140       __cbyte
-00433144*      __cbyte2
-00433148*      __child
-0043314e       __Envptr
-00433152*      __Envseg
-0043314c       __no87
-00433168       ___FPE_handler
+00435414       __osmajor
+00435415       __osminor
+00435416       __osbuild
+00435418       __osver
+0043541c       __winmajor
+00435420       __winminor
+00435424       __winver
+004353e0       __LpDllName
+004353e4       __LpwCmdLine
+004353e8       __LpwPgmName
+004353ec       __LpwDllName
+004353d8       __LpCmdLine
+004353dc       __LpPgmName
+004353d0*      __dynend
+004353d4       __curbrk
+004353f0*      __STACKLOW
+004353f4       __STACKTOP
+004353f8       __ASTACKSIZ
+004353fc       __ASTACKPTR
+00435400       __cbyte
+00435404*      __cbyte2
+00435408*      __child
+0043540e       __Envptr
+00435412*      __Envseg
+0043540c       __no87
+00435428       ___FPE_handler
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(gtctmwnt.c)
-00422f30       __getctime_
+004252e0       __getctime_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mktime.c)
-00422fa0       mktime_
+00425350       mktime_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(tzset.c)
-0043316c       ___start_dst
-00433190       ___end_dst
-004332b8*      _tzname
-004332c0       _timezone
-004332c4       _daylight
-004332c8       ___dst_adjust
-00423080*      __DontCacheOSTZ_
-00423090*      __CacheOSTZ_
-00423570+      __parse_tz_
-00423960       tzset_
+0043542c       ___start_dst
+00435450       ___end_dst
+00435578*      _tzname
+00435580       _timezone
+00435584       _daylight
+00435588       ___dst_adjust
+00425430*      __DontCacheOSTZ_
+00425440*      __CacheOSTZ_
+00425920+      __parse_tz_
+00425d10       tzset_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(gmtime.c)
-004239d0       __brktime_
-00423ad0+      _gmtime_
-00423af0*      gmtime_
+00425d80       __brktime_
+00425e80+      _gmtime_
+00425ea0*      gmtime_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(timeutil.c)
-00423c50       __isindst_
+00426000       __isindst_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(chipvar)
-004332d0       ___chipbug
-004332d0       __chipbug
+00435590       ___chipbug
+00435590       __chipbug
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(chipr32.asm)
-0042e74f       __fprem_chk
-0042ea08*      __fprem1_chk
+00430aff       __fprem_chk
+00430db8*      __fprem1_chk
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(pow87e.c)
-00423f80       __pow87_err_
+00426330       __pow87_err_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(exp87)
-0042406f*      exp_
-00424008*      __@DEXP1
-00424010*      IF@EXP
-00424010*      IF@DEXP
-00424012       __@DEXP
+0042641f*      exp_
+004263b8*      __@DEXP1
+004263c0*      IF@EXP
+004263c0*      IF@DEXP
+004263c2       __@DEXP
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(chipd32.asm)
-00424193       __fdiv_fpr
-00424655*      __fdiv_chk
-00424668*      __fdiv_m32
-004246b5*      __fdiv_m64
-00424702*      __fdiv_m32r
-0042474f*      __fdiv_m64r
+00426543       __fdiv_fpr
+00426a05*      __fdiv_chk
+00426a18*      __fdiv_m32
+00426a65*      __fdiv_m64
+00426ab2*      __fdiv_m32r
+00426aff*      __fdiv_m64r
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(modf87)
-0042479c       modf_
+00426b4c       modf_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(math87e.c)
-004247b5       __math87_err_
+00426b65       __math87_err_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(chipt32.asm)
-00424820       __fptan_chk
+00426bd0       __fptan_chk
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(chipw32.asm)
-004248d4       __fpatan_wrap
+00426c84       __fpatan_wrap
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(log87e.c)
-00424909       __log87_err_
+00426cb9       __log87_err_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(fprtf.c)
-00424960       __fprtf_
+00426d10       __fprtf_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(fsregist.cpp)
-00424a20+      char unsigned near * near findHandler( char unsigned near * )
-00424a38+      __wcpp_4_dispatch_dummy__
-00424a5c       __wcpp_4_fs_lookup__
-00424b2c       ___wcpp_4_fs_handler_rtn_
+00426dd0+      char unsigned near * near findHandler( char unsigned near * )
+00426de8+      __wcpp_4_dispatch_dummy__
+00426e0c       __wcpp_4_fs_lookup__
+00426edc       ___wcpp_4_fs_handler_rtn_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(stabtrav.cpp)
-00424c00       __wcpp_4_stab_entry__
-00424c18*      __wcpp_4_stab_trav_comp__
-00424cfc       __wcpp_4_stab_trav_init__
-00424d20       __wcpp_4_stab_trav_next__
-00424d78       __wcpp_4_stab_trav_move__
+00426fb0       __wcpp_4_stab_entry__
+00426fc8*      __wcpp_4_stab_trav_comp__
+004270ac       __wcpp_4_stab_trav_init__
+004270d0       __wcpp_4_stab_trav_next__
+00427128       __wcpp_4_stab_trav_move__
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(callterm.cpp)
-00424d90       __wcpp_4_corrupted_stack__
-00424da4       __wcpp_4_call_terminate__
+00427140       __wcpp_4_corrupted_stack__
+00427154       __wcpp_4_call_terminate__
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(allocexc.cpp)
-00424df4       __wcpp_4_alloc_exc__
-00425048       __wcpp_4_free_exc__
-00425080       __wcpp_4_find_active__
-0042509c       __wcpp_4_dtor_free_exc__
+004271a4       __wcpp_4_alloc_exc__
+004273f8       __wcpp_4_free_exc__
+00427430       __wcpp_4_find_active__
+0042744c       __wcpp_4_dtor_free_exc__
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(stabadt.cpp)
-00425160+      void near * near dtor_the_array( _RTARCTOR near * )
-004251a4+      near _RTARCTOR::~_RTARCTOR()
-004251bc       __wcpp_4_dtor_array__
+00427510+      void near * near dtor_the_array( _RTARCTOR near * )
+00427554+      near _RTARCTOR::~_RTARCTOR()
+0042756c       __wcpp_4_dtor_array__
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(pgmthrd.cpp)
-00425230       __wcpp_4_pgm_thread__
+004275e0       __wcpp_4_pgm_thread__
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(ostput.cpp)
-00425260       std::ostream near & near std::ostream::put( char )
+00427610       std::ostream near & near std::ostream::put( char )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(ostflush.cpp)
-00425300       std::ostream near & near std::ostream::flush()
+004276b0       std::ostream near & near std::ostream::flush()
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(undefed.cpp)
-00425340       __wcpp_4_undefed_cdtor__
+004276f0       __wcpp_4_undefed_cdtor__
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(iobaddr.c)
-00425360       __get_std_stream_
-00425360*      __get_std_file_
+00427710       __get_std_stream_
+00427710*      __get_std_file_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(sdfconfp.cpp)
-00425380       near stdiobuf::stdiobuf( __iobuf near * )
+00427730       near stdiobuf::stdiobuf( __iobuf near * )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(stablcl.cpp)
-00425390       __wcpp_4_lcl_register__
+00427740       __wcpp_4_lcl_register__
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(ostconsf.cpp)
-004253a0       near std::ostream::ostream( std::streambuf near * )
+00427750       near std::ostream::ostream( std::streambuf near * )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(ostdestr.cpp)
-00425460       near std::ostream::~ostream()
+00427810       near std::ostream::~ostream()
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(sdfdestr.cpp)
-00425530       near stdiobuf::~stdiobuf()
+004278e0       near stdiobuf::~stdiobuf()
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(moddtorr.cpp)
-0043481a       ___wcpp_4_data_module_dtor_ref_
+00436ada       ___wcpp_4_data_module_dtor_ref_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(ostopfx.cpp)
-00425610       int near std::ostream::do_opfx()
+004279c0       int near std::ostream::do_opfx()
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(iouwrtit.cpp)
-00425680       int near __WATCOM_ios::writeitem( std::ostream near &, char const near *, int, int )
+00427a30       int near __WATCOM_ios::writeitem( std::ostream near &, char const near *, int, int )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(iossetst.cpp)
-00425a00+      near std::ios::failure::failure( std::ios::failure const near & )
-00425a10+      near std::ios::failure::~failure()
-00425a20+      near __WATCOM_exception::__WATCOM_exception( __WATCOM_exception const near & )
-00425a30+      near __WATCOM_exception::~__WATCOM_exception()
-004259d0       void near std::ios::setstate( int )
+00427db0+      near std::ios::failure::failure( std::ios::failure const near & )
+00427dc0+      near std::ios::failure::~failure()
+00427dd0+      near __WATCOM_exception::__WATCOM_exception( __WATCOM_exception const near & )
+00427de0+      near __WATCOM_exception::~__WATCOM_exception()
+00427d80       void near std::ios::setstate( int )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(ioufgtba.cpp)
-00425a40       int near __FlagsToBase( long )
+00427df0       int near __FlagsToBase( long )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(ostadpre.cpp)
-00425a70       void near __AddPrefix( char, char near *, int near &, int, long )
+00427e20       void near __AddPrefix( char, char near *, int near &, int, long )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(ltoa.c)
-00425ad0       ultoa_
-00425b20*      ltoa_
+00427e80       ultoa_
+00427ed0*      ltoa_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(strupr.c)
-00425b50       strupr_
+00427f00       strupr_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(istconsf.cpp)
-00425b70       near std::istream::istream( std::streambuf near * )
+00427f20       near std::istream::istream( std::streambuf near * )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(istdestr.cpp)
-00425c30       near std::istream::~istream()
+00427fe0       near std::istream::~istream()
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(pure_err.cpp)
-00425d00       __wcpp_4_pure_error__
+004280b0       __wcpp_4_pure_error__
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(istdipfx.cpp)
-00425d30       int near std::istream::do_ipfx( int )
+004280e0       int near std::istream::do_ipfx( int )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(istdrshf.cpp)
-00425dc0       std::istream near & near std::istream::do_rshift( char near & )
+00428170       std::istream near & near std::istream::do_rshift( char near & )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(main2wnt.c)
-00425e30       __NTMain
+004281e0       __NTMain
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(segdefns)
 00401003       ___begtext
-00430000*      __nullarea
-004347c0       __Start_XI
-0043480e       __End_XI
-0043480e       __Start_YI
-00434832       __End_YI
+00432000*      __nullarea
+00436a80       __Start_XI
+00436ace       __End_XI
+00436ace       __Start_YI
+00436af2       __End_YI
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(iofnoefg.cpp)
-00433368       void (near * near __EFG_cnvs2d)( char near *, double near * )
-0043336c       int (near * near __EFG_cnvd2f)( double near *, float near * )
-00433370       void (near * near __EFG_LDcvt)( __6ks9tmlong_double near *, cvt_info near *, char near * )
-00433374       char near * (near * near __EFG_fcvt)( double, int, int near *, int near * )
-00433378       void (near * near __EFG__FDLD)( double near *, __6ks9tmlong_double near * )
+00435628       void (near * near __EFG_cnvs2d)( char near *, double near * )
+0043562c       int (near * near __EFG_cnvd2f)( double near *, float near * )
+00435630       void (near * near __EFG_LDcvt)( __6ks9tmlong_double near *, cvt_info near *, char near * )
+00435634       char near * (near * near __EFG_fcvt)( double, int, int near *, int near * )
+00435638       void (near * near __EFG__FDLD)( double near *, __6ks9tmlong_double near * )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(cnvs2d.c)
-00425ea2       __cnvs2d_
+00428252       __cnvs2d_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(cnvd2f.c)
-00425eb0       __cnvd2f_
+00428260       __cnvd2f_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(ldcvt.c)
-00426002       _LDScale10x_
-004265a9       __LDcvt_
+004283b2       _LDScale10x_
+00428959       __LDcvt_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(_i_fcvt_.asm)
-004269f8       _fcvt_
+00428da8       _fcvt_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(cnvd2ld.c)
-004269fd       __cnvd2ld_
+00428dad       __cnvd2ld_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(enterdb.c)
-00426a10       __EnterWVIDEO_
-00433424+      ___WD_Present
+00428dc0       __EnterWVIDEO_
+004356e4+      ___WD_Present
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(hdlman.c)
-00433428+      ___NHandles
-0043342c+      ___OSHandles
-00433430+      ___FakeHandles
-00426a40+      __growPOSIXHandles_
-00426ae0+      __allocPOSIXHandle_
-00426ba0       __freePOSIXHandle_
-00426bc0       __getOSHandle_
-00426bd0       __setOSHandle_
-00426c20+      __NTGetFakeHandle_
-00426c90       __initPOSIXHandles_
-00426d70*      __set_handles_
-00426d80*      _grow_handles_
+004356e8+      ___NHandles
+004356ec+      ___OSHandles
+004356f0+      ___FakeHandles
+00428df0+      __growPOSIXHandles_
+00428e90+      __allocPOSIXHandle_
+00428f50       __freePOSIXHandle_
+00428f70       __getOSHandle_
+00428f80       __setOSHandle_
+00428fd0+      __NTGetFakeHandle_
+00429040       __initPOSIXHandles_
+00429120*      __set_handles_
+00429130*      _grow_handles_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(environ.c)
-00435b74       ___env_mask
-00435b78       _environ
-00435b7c       __wenviron
+00437b74       ___env_mask
+00437b78       _environ
+00437b7c       __wenviron
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(getmodfn.c)
-00426dc0       __lib_GetModuleFileNameW_
+00429170       __lib_GetModuleFileNameW_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(strdup.c)
-00426e60       __clib_strdup_
+00429210       __clib_strdup_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(istable.c)
-00426ea0       __IsTable
+00429250       __IsTable
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(ustrdup.c)
-00426fa1       __clib_wcsdup_
+00429351       __clib_wcsdup_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(excptwnt.c)
-00427630+      ___ReportException@4
-00427a80       __DefaultExceptionHandler_
-00427ac0+      ___ExceptionFilter
-00427cd0       __NewExceptionFilter_
-00427d00       __DoneExceptionFilter_
-0043343c       ___oscode_check_func
-00433440       ___raise_func
-00435b80*      _sw
-00435b84+      ___ExceptionHandled
-00435b85+      ___ReportInvoked
+004299e0+      ___ReportException@4
+00429e30       __DefaultExceptionHandler_
+00429e70+      ___ExceptionFilter
+0042a080       __NewExceptionFilter_
+0042a0b0       __DoneExceptionFilter_
+004356fc       ___oscode_check_func
+00435700       ___raise_func
+00437b80*      _sw
+00437b84+      ___ExceptionHandled
+00437b85+      ___ReportInvoked
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(stklmwnt.c)
-00427d40       __init_stack_limits_
+0042a0f0       __init_stack_limits_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(fclose.c)
-00427db0+      __doclose_
-00427e50       __shutdown_stream_
-00427e70*      fclose_
-00435b88+      ___RmTmpFileFn
+0042a160+      __doclose_
+0042a200       __shutdown_stream_
+0042a220*      fclose_
+00437b88+      ___RmTmpFileFn
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(freefp.c)
-00427ec0       __freefp_
-00427f10       __purgefp_
+0042a270       __freefp_
+0042a2c0       __purgefp_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(amblksiz.c)
-00433458       __amblksiz
+00435718       __amblksiz
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(heapen.c)
-00427f40*      _heapenable_
-0043345c       ___heap_enabled
+0042a2f0*      _heapenable_
+0043571c       ___heap_enabled
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(nheapmin.c)
-00427f70       _nheapshrink_
-00427f70*      _nheapmin_
-00427f70*      _heapmin_
-00427f70*      _heapshrink_
+0042a320       _nheapshrink_
+0042a320*      _nheapmin_
+0042a320*      _heapmin_
+0042a320*      _heapshrink_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(prtf.c)
-00428060       __prtf_
+0042a410       __prtf_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(seterrno.c)
-00428d24       __set_errno_
-00428d32       __set_EDOM_
-00428d40       __set_ERANGE_
-00428d4e*      __set_EINVAL_
-00428d61       __set_doserrno_
+0042b0d4       __set_errno_
+0042b0e2       __set_EDOM_
+0042b0f0       __set_ERANGE_
+0042b0fe*      __set_EINVAL_
+0042b111       __set_doserrno_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(__lseek.c)
-00428d70       __lseek_
+0042b120       __lseek_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(fsync.c)
-00428db0       fsync_
+0042b160       fsync_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(qwrit.c)
-00428e00       __qwrite_
+0042b1b0       __qwrite_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(chktty.c)
-00428ee0       __chktty_
+0042b290       __chktty_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(noefgfmt.c)
-00433460       ___EFG_printf
-00433464       ___EFG_scanf
+00435720       ___EFG_printf
+00435724       ___EFG_scanf
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(efgfmt.c)
-00428f62       _EFG_Format_
+0042b312       _EFG_Format_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(8087cw.c)
-00433468       __8087cw
+00435728       __8087cw
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(save8087.c)
-0043346c       ___Save8087
-00433470       ___Rest8087
+0043572c       ___Save8087
+00435730       ___Rest8087
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(init8087)
-004290d4       __x87id
+0042b484       __x87id
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(locmktim.c)
-00429110       __local_mktime_
+0042b4c0       __local_mktime_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(leapyear.c)
-00429250       __leapyear_
-004310f0       ___diyr
-0043110a       ___dilyr
+0042b600       __leapyear_
+004331c0       ___diyr
+004331da       ___dilyr
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(wcstombs.c)
-00429290       wcstombs_
+0042b640       wcstombs_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(getenv.c)
-00429330       getenv_
+0042b6e0       getenv_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(chipbug.c)
-004293c0       __verify_pentium_fdiv_bug_
+0042b770       __verify_pentium_fdiv_bug_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(math2err.c)
-00429482       __math1err_
-0042948c       __math2err_
+0042b832       __math1err_
+0042b83c       __math2err_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(chipa32.asm)
-00429590       __fpatan_chk
+0042b940       __fpatan_chk
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(stabdisp.cpp)
-0042999c       __wcpp_4_dispatchable__
+0042bd4c       __wcpp_4_dispatchable__
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(bittest.cpp)
-004299f0       __wcpp_4_bit_test__
-00429a10       __wcpp_4_bit_off__
+0042bda0       __wcpp_4_bit_test__
+0042bdc0       __wcpp_4_bit_off__
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(termnate.cpp)
-00429a30       void near std::terminate()
+0042bde0       void near std::terminate()
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(fatalerr.cpp)
-00429a70       __wcpp_4_fatal_runtime_error__
+0042be20       __wcpp_4_fatal_runtime_error__
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(exc_pr.cpp)
-00429aa0       near _EXC_PR::_EXC_PR( _RTCTL near *, RW_DTREG near *, EXCSTATE )
-00429acc       near _EXC_PR::~_EXC_PR()
-00429adc       near _EXC_PR_FREE::_EXC_PR_FREE( _RTCTL near *, RW_DTREG near *, EXCSTATE, ACTIVE_EXC near * )
-00429af0       near _EXC_PR_FREE::~_EXC_PR_FREE()
-00429b28       near _EXC_PR_DTOR::_EXC_PR_DTOR( _RTCTL near *, RW_DTREG near *, EXCSTATE, ACTIVE_EXC near * )
-00429b38       near _EXC_PR_FNEXC::_EXC_PR_FNEXC( _RTCTL near *, RW_DTREG near *, RW_DTREG near *, ACTIVE_EXC near * )
-00429b58       near _EXC_PR_FNEXC::~_EXC_PR_FNEXC()
-00429b60       near _EXC_PR_DTOR::~_EXC_PR_DTOR()
+0042be50       near _EXC_PR::_EXC_PR( _RTCTL near *, RW_DTREG near *, EXCSTATE )
+0042be7c       near _EXC_PR::~_EXC_PR()
+0042be8c       near _EXC_PR_FREE::_EXC_PR_FREE( _RTCTL near *, RW_DTREG near *, EXCSTATE, ACTIVE_EXC near * )
+0042bea0       near _EXC_PR_FREE::~_EXC_PR_FREE()
+0042bed8       near _EXC_PR_DTOR::_EXC_PR_DTOR( _RTCTL near *, RW_DTREG near *, EXCSTATE, ACTIVE_EXC near * )
+0042bee8       near _EXC_PR_FNEXC::_EXC_PR_FNEXC( _RTCTL near *, RW_DTREG near *, RW_DTREG near *, ACTIVE_EXC near * )
+0042bf08       near _EXC_PR_FNEXC::~_EXC_PR_FNEXC()
+0042bf10       near _EXC_PR_DTOR::~_EXC_PR_DTOR()
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(areaexc.cpp)
-004334e0       ___EXC_AREA
+004357a0       ___EXC_AREA
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(tsequiv.cpp)
-00429b90       __wcpp_4_ts_refed__
-00429ba8+      __wcpp_4_ts_pnted__
-00429bdc       __wcpp_4_ts_equiv__
+0042bf40       __wcpp_4_ts_refed__
+0042bf58+      __wcpp_4_ts_pnted__
+0042bf8c       __wcpp_4_ts_equiv__
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(tssize.cpp)
-00429ce4       __wcpp_4_ts_size__
+0042c094       __wcpp_4_ts_size__
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(vfun_err.cpp)
-00429d20       __wcpp_4_undef_vfun__
+0042c0d0       __wcpp_4_undef_vfun__
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(stfdsgtn.cpp)
-00429d50       int near std::streambuf::do_sgetn( char near *, int )
+0042c100       int near std::streambuf::do_sgetn( char near *, int )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(stfdspun.cpp)
-00429dd0       int near std::streambuf::do_sputn( char const near *, int )
+0042c180       int near std::streambuf::do_sputn( char const near *, int )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(stfpbfai.cpp)
-00429e70       int near std::streambuf::pbackfail( int )
+0042c220       int near std::streambuf::pbackfail( int )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(sdfoverf.cpp)
-00429e80       int near stdiobuf::overflow( int )
+0042c230       int near stdiobuf::overflow( int )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(sdfundrf.cpp)
-00429fe0       int near stdiobuf::underflow()
+0042c390       int near stdiobuf::underflow()
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(stfsbuf.cpp)
-0042a100       std::streambuf near * near std::streambuf::setbuf( char near *, int )
+0042c4b0       std::streambuf near * near std::streambuf::setbuf( char near *, int )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(stfseeko.cpp)
-0042a150       long near std::streambuf::seekoff( long, int, int )
+0042c500       long near std::streambuf::seekoff( long, int, int )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(stfseekp.cpp)
-0042a160       long near std::streambuf::seekpos( long, int )
+0042c510       long near std::streambuf::seekpos( long, int )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(sdfsync.cpp)
-0042a170       int near stdiobuf::sync()
+0042c520       int near stdiobuf::sync()
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(stfdoall.cpp)
-0042a1a0       int near std::streambuf::doallocate()
+0042c550       int near std::streambuf::doallocate()
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(stfconde.cpp)
-0042a1e0       near std::streambuf::streambuf()
+0042c590       near std::streambuf::streambuf()
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(stabmod.cpp)
-0042a230       __wcpp_4_module_dtor__
-0042a25c       __wcpp_4_mod_register__
+0042c5e0       __wcpp_4_module_dtor__
+0042c60c       __wcpp_4_mod_register__
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(iosinit.cpp)
-0042a270       void near std::ios::init( std::streambuf near * )
+0042c620       void near std::ios::init( std::streambuf near * )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(iosconde.cpp)
-0042a2c0       near std::ios::ios()
+0042c670       near std::ios::ios()
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(iosdestr.cpp)
-0042a2d0       near std::ios::~ios()
+0042c680       near std::ios::~ios()
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(opdel.cpp)
-0042a360       void near operator delete( void near * )
+0042c710       void near operator delete( void near * )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(dtorarst.cpp)
-0042a370       __wcpp_4_dtor_array_store__
+0042c720       __wcpp_4_dtor_array_store__
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(opdelarr.cpp)
-0042a3a0       void near operator delete []( void near * )
+0042c750       void near operator delete []( void near * )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(stfdestr.cpp)
-0042a3b0       near std::streambuf::~streambuf()
+0042c760       near std::streambuf::~streambuf()
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(opnewarr.cpp)
-0042a3d0       void near * near operator new []( int unsigned )
+0042c780       void near * near operator new []( int unsigned )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(memset.c)
-0042a3e0       memset_
+0042c790       memset_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(iosfail.cpp)
-0042a400       near std::ios::failure::failure( int )
+0042c7b0       near std::ios::failure::failure( int )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(stabthrw.cpp)
-0042abf0+      near std::exception::exception()
-0042ac40+      near std::exception::exception( std::exception const near & )
-0042ac90+      near std::exception::exception( char const near * )
-0042ace0+      near std::exception::~exception()
-0042ad70+      char const near * near std::exception::what() const
-0042adb0+      near std::bad_exception::bad_exception()
-0042ae10+      near std::bad_exception::bad_exception( std::bad_exception const near & )
-0042ae60+      near std::bad_exception::~bad_exception()
-0042aab0*      __wcpp_4_rethrow__
-0042aaf4*      __wcpp_4_catch_done__
-0042ab5c       __wcpp_4_throw__
-0042aba4*      __wcpp_4_throw_zero__
+0042cfa0+      near std::exception::exception()
+0042cff0+      near std::exception::exception( std::exception const near & )
+0042d040+      near std::exception::exception( char const near * )
+0042d090+      near std::exception::~exception()
+0042d120+      char const near * near std::exception::what() const
+0042d160+      near std::bad_exception::bad_exception()
+0042d1c0+      near std::bad_exception::bad_exception( std::bad_exception const near & )
+0042d210+      near std::bad_exception::~bad_exception()
+0042ce60*      __wcpp_4_rethrow__
+0042cea4*      __wcpp_4_catch_done__
+0042cf0c       __wcpp_4_throw__
+0042cf54*      __wcpp_4_throw_zero__
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(alphabet.c)
-00431348       ___Alphabet
+00433418       ___Alphabet
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(prwdata.cpp)
-00435b8c       __wint_pure_error_flag
-00435b8e       __wint_undef_vfun_flag
-00435b90       __wint_module_init
+00437b8c       __wint_pure_error_flag
+00437b8e       __wint_undef_vfun_flag
+00437b90       __wint_module_init
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(manws.cpp)
-0042af40       std::istream near & near std::ws( std::istream near & )
+0042d2f0       std::istream near & near std::ws( std::istream near & )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mthrdini.c)
-0042af70       __InitThreadData_
-00434548       ___ThreadDataSize
+0042d320       __InitThreadData_
+00436808       ___ThreadDataSize
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(cmain386.c)
-0042afa0       __CMain
+0042d350       __CMain
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(dosseg)
 00001234       __DOSseg__
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(strtod.c)
-0042b4f4+      __Strtold_
-0042b65b       strtod_
+0042d8a4+      __Strtold_
+0042da0b       strtod_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(ldclass.c)
-0042b79f       __LDClass_
-0042b7ef*      _FLClass_
+0042db4f       __LDClass_
+0042db9f*      _FLClass_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(efcvt.c)
-0042b82f*      ecvt_
-0042b866       fcvt_
+0042dbdf*      ecvt_
+0042dc16       fcvt_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(iomode.c)
-0042b8a0       __GetIOMode_
-0042b8c0       __SetIOMode_nogrow_
-0043454c       ___NFiles
-00434550       ___init_mode
-004345a0       ___io_mode
+0042dc50       __GetIOMode_
+0042dc70       __SetIOMode_nogrow_
+0043680c       ___NFiles
+00436810       ___init_mode
+00436860       ___io_mode
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(stiomode.c)
-0042b8e0       __grow_iomode_
-0042b9b0+      __shrink_iomode_
-0042b9f0       __SetIOMode_
+0042dc90       __grow_iomode_
+0042dd60+      __shrink_iomode_
+0042dda0       __SetIOMode_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(setenvp.c)
-0042ba60       __setenvp_
-0042bb20       __freeenvp_
+0042de10       __setenvp_
+0042ded0       __freeenvp_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(ustrlen.c)
-0042bb6d       wcslen_
+0042df1d       wcslen_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(memcpy.c)
-0042bb80       memcpy_
+0042df30       memcpy_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(conutwnt.c)
-0042bbb0       __NTRealKey_
-0042bc60       __NTConsoleInput_
-0042bc70       __NTConsoleOutput_
+0042df60       __NTRealKey_
+0042e010       __NTConsoleInput_
+0042e020       __NTConsoleOutput_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(fclex387.c)
-0042bc80       _ClearFPE_
+0042e030       _ClearFPE_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(signlwnt.c)
-004345ac+      __SignalTable
-0042bc90+      __SetSignalFunc_
-0042bce0+      __GetSignalFunc_
-0042bd10+      __GetSignalOSCode_
-0042bd40+      __CheckSignalExCode_
-0042be80+      __sigabort_
-0042be90       __sigfpe_handler_
-0042bee0*      signal_
-0042bf70+      raise_
-0042bfe0+      __SigInit_
-0042c030+      __SigFini_
-0042c070+      __sig_init_
+0043686c+      __SignalTable
+0042e040+      __SetSignalFunc_
+0042e090+      __GetSignalFunc_
+0042e0c0+      __GetSignalOSCode_
+0042e0f0+      __CheckSignalExCode_
+0042e230+      __sigabort_
+0042e240       __sigfpe_handler_
+0042e290*      signal_
+0042e320+      raise_
+0042e390+      __SigInit_
+0042e3e0+      __SigFini_
+0042e420+      __sig_init_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(_clsewnt.c)
-0042c090       __close_
+0042e440       __close_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(wctomb.c)
-0042c0f0       wctomb_
+0042e4a0       wctomb_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(itoa.c)
-0042c130+      utoa_
-0042c180       itoa_
+0042e4e0+      utoa_
+0042e530       itoa_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(lltoa.c)
-0042c1b0       ulltoa_
-0042c220*      lltoa_
+0042e560       ulltoa_
+0042e5d0*      lltoa_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbisdbcs.c)
-00435b9c       ___IsDBCS
+00437b9c       ___IsDBCS
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbislead.c)
-0042c250*      _ismbblead_
-00435ba0       ___MBCSIsTable
+0042e600*      _ismbblead_
+00437ba0       ___MBCSIsTable
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(dosret.c)
-0042c270*      _dosretax_
-0042c280*      _dosret0_
-0042c290       __set_errno_dos_
-0042c2c0*      __set_errno_dos_reterr_
-0042c2d0       __set_errno_nt_
-0042c2e0*      __set_errno_nt_reterr_
+0042e620*      _dosretax_
+0042e630*      _dosret0_
+0042e640       __set_errno_dos_
+0042e670*      __set_errno_dos_reterr_
+0042e680       __set_errno_nt_
+0042e690*      __set_errno_nt_reterr_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(isattwnt.c)
-0042c300       isatty_
+0042e6b0       isatty_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(rtcntrl.c)
-0042c320*      _SetLD64bit_
-0042c330*      _SetLD80bit_
-0042c340       _LDisDouble_
+0042e6d0*      _SetLD64bit_
+0042e6e0*      _SetLD80bit_
+0042e6f0       _LDisDouble_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbterm.c)
-0042c350       _mbterm_
+0042e700       _mbterm_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbsnextc.c)
-0042c390       _mbsnextc_
+0042e740       _mbsnextc_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbcupper.c)
-0042c3d0       _mbctoupper_
+0042e780       _mbctoupper_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbsinc.c)
-0042c400       _mbsinc_
+0042e7b0       _mbsinc_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(hugeval.c)
-0042c430       __HugeValue
+0042e7e0       __HugeValue
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(_matherr.c)
-0042c4de*      _set_matherr_
-0042c4e4+      __rterrmsg_
-0042c52c       _matherr_
-00434720+      ___matherr_handler
+0042e88e*      _set_matherr_
+0042e894+      __rterrmsg_
+0042e8dc       _matherr_
+004369e0+      ___matherr_handler
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(_strcmp)
-0042c560       strcmp_
+0042e910       strcmp_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(fwrite.c)
-0042c6a0       fwrite_
+0042ea50       fwrite_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(memmove.c)
-0042c8b0       memmove_
+0042ec60       memmove_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(fgetc.c)
-0042c910+      __fill_buffer_
-0042ca10       fgetc_
+0042ecc0+      __fill_buffer_
+0042edc0       fgetc_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(stfsetb.cpp)
-0042cad0       void near std::streambuf::setb( char near *, char near *, int )
+0042ee80       void near std::streambuf::setb( char near *, char near *, int )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(liballoc.c)
-0042cb30       _plib_malloc_
-0042cb40       _plib_free_
+0042eee0       _plib_malloc_
+0042eef0       _plib_free_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(ioufrxal.cpp)
-0042cb50       void near __WATCOM_ios::free_xalloc_storage( std::ios near * )
+0042ef00       void near __WATCOM_ios::free_xalloc_storage( std::ios near * )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(opnew.cpp)
-0042cb70       void near * near operator new( int unsigned )
+0042ef20       void near * near operator new( int unsigned )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(__stos)
-0042cbc0       __STOSB
-0042cbf7*      __STOSD
+0042ef70       __STOSB
+0042efa7*      __STOSD
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(unexpect.cpp)
-0042cc70       void near std::unexpected()
+0042f020       void near std::unexpected()
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(setjmp)
-0042cd08*      _setjmp_
-0042cd41       longjmp_
+0042f0b8*      _setjmp_
+0042f0f1       longjmp_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(stabinit.cpp)
-0042cdd0       __wcpp_4_exc_setup__
+0042f180       __wcpp_4_exc_setup__
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(stackwnt.c)
-0042ce70       stackavail_
+0042f220       stackavail_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(istpeek.cpp)
-0042ce80       int near std::istream::peek()
+0042f230       int near std::istream::peek()
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(isspace.c)
-0042cee0       isspace_
+0042f290       isspace_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(istget.cpp)
-0042cef0       int near std::istream::get()
+0042f2a0       int near std::istream::get()
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(cinit.c)
-0042cf70       __CommonInit_
+0042f320       __CommonInit_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(___argc.c)
-00435ca4       ____Argc
-00435ca8       ____Argv
+00437ca4       ____Argc
+00437ca8       ____Argv
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(tolower.c)
-0042cf80       tolower_
+0042f330       tolower_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(bufld386)
-0042cf90       __ZBuf2LD
+0042f340       __ZBuf2LD
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(inf_nan.c)
-0042d033*      ___f_infinity
-0042d037*      ___f_posqnan
-0042d03b       ___d_infinity
-0042d043       ___d_posqnan
-0042d04b*      ___ld_infinity
-0042d053*      ___ld_posqnan
+0042f3e3*      ___f_infinity
+0042f3e7*      ___f_posqnan
+0042f3eb       ___d_infinity
+0042f3f3       ___d_posqnan
+0042f3fb*      ___ld_infinity
+0042f403*      ___ld_posqnan
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(cvtbuf.c)
-0042d060       __CVTBuffer_
+0042f410       __CVTBuffer_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(cvt.c)
-0042d06c       __cvt_
+0042f41c       __cvt_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(iomodtty.c)
-0042d0f0       __ChkTTYIOMode_
-0042d130*      __IOMode_
+0042f4a0       __ChkTTYIOMode_
+0042f4e0*      __IOMode_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(dofilstr.c)
-0042d170       __ParsePosixHandleStr_
+0042f520       __ParsePosixHandleStr_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(clearenv.c)
-0042d290       clearenv_
+0042f640       clearenv_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(abort.c)
-0042d335*      abort_
-0042d347       __terminate_
-00434724       ___abort
+0042f6e5*      abort_
+0042f6f7       __terminate_
+004369e4       ___abort
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbinit.c)
-0042d393       __mbinit_
-00434728       ___MBCodePage
+0042f743       __mbinit_
+004369e8       ___MBCodePage
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbconv.c)
-0042d490       _mbvtop_
+0042f840       _mbvtop_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(__mtherr)
-0042d4ac       __matherr
+0042f85c       __matherr
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(flushall.c)
-0042d4c0       __flushall_
-0042d500*      flushall_
+0042f870       __flushall_
+0042f8b0*      flushall_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(gtchewnt.c)
-0042d510       getche_
+0042f8c0       getche_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(qread.c)
-0042d540       __qread_
+0042f8f0       __qread_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(ljmphdl.c)
-0043472c       ___longjmp_handler
+004369ec       ___longjmp_handler
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(istipfx.cpp)
-0042d5c0       int near std::istream::ipfx( int )
+0042f970       int near std::istream::ipfx( int )
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(strncpy.c)
-0042d600       strncpy_
+0042f9b0       strncpy_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(strtol.c)
-0042d860*      strtoul_
-0042d870       strtol_
+0042fc10*      strtoul_
+0042fc20       strtol_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(putenv.c)
-0042d880       putenv_
-0042db10       __putenv_
+0042fc30       putenv_
+0042fec0       __putenv_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386\math387r.lib(matherr.c)
-0042dc79       matherr_
+00430029       matherr_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(getchwnt.c)
-0042dd80       getch_
+00430130       getch_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(putchwnt.c)
-0042ddf0       putch_
+004301a0       putch_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbschr.c)
-0042de40       _mbschr_
+004301f0       _mbschr_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbslen.c)
-0042dea0       _mbslen_
+00430250       _mbslen_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbstowcs.c)
-0042ded0       mbstowcs_
+00430280       mbstowcs_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(uputenv.c)
-0042df50*      _wputenv_
-0042e170       __wputenv_
+00430300*      _wputenv_
+00430520       __wputenv_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(toupper.c)
-0042e270       toupper_
+00430620       toupper_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbclen.c)
-0042e280       _mbclen_
+00430630       _mbclen_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbccmp.c)
-0042e2b0       _mbccmp_
+00430660       _mbccmp_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(mbtowc.c)
-0042e2f0       mbtowc_
+004306a0       mbtowc_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(ustrchr.c)
-0042e380       wcschr_
+00430730       wcschr_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(setenvar.c)
-0042e3a0       __lib_SetEnvironmentVariableW_
+00430750       __lib_SetEnvironmentVariableW_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(crtwenv.c)
-0042e490       __create_wide_environment_
+00430840       __create_wide_environment_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\clib3r.lib(utoupper.c)
-0042e4f8       towupper_
+004308a8       towupper_
 Module: C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib(stfsync.cpp)
-0042e510       int near std::streambuf::sync()
+004308c0       int near std::streambuf::sync()
 
 
                         +----------------------+
@@ -1098,6 +1101,6 @@ C:\Users\jc410\OneDrive\euphoria\watcom/lib386/nt\plbx3r.lib
                         +-----------------------+
 
 Stack size:  00010000 (65536.)
-Memory size:  00043dac (277932.)
-Entry point address: 00421fbe
-Link time: 00:00.03
+Memory size:  0004615c (287068.)
+Entry point address: 0042436e
+Link time: 00:00.04
