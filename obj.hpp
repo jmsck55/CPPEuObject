@@ -465,7 +465,6 @@ namespace eu
                 }
                 void ScreenOutput(FILE *f) { char * out_string = GetCharStr(); screen_output(f, out_string); }
                 elong length() { if (IS_DBL_OR_SEQUENCE(obj) && IS_SEQUENCE(obj)) { return SEQ_PTR(obj)->length; } else { RTFatal("Expected a Sequence, but found an Atom, in 'length()'"); return -1; } }
-// Need to test these two methods:
                 void E_slice(Sequence src, object start, object end) { // make "obj = src[start..end]", assign src[start..end] to this "obj"
                         if (IS_DBL_OR_SEQUENCE(obj) && IS_SEQUENCE(obj) &&
                         IS_DBL_OR_SEQUENCE(src.obj) && IS_SEQUENCE(src.obj)) {
@@ -490,19 +489,19 @@ namespace eu
                                 return NOVALUE;
                         }
                 }
-                void E_assign_to_slice(object start, object end, Sequence val) { // make "slice[start..end] = val", val should be the same length as "end - start + 1"
-                        if (IS_DBL_OR_SEQUENCE(obj) && IS_SEQUENCE(obj) &&
-                        IS_DBL_OR_SEQUENCE(val.obj) && IS_SEQUENCE(val.obj)) {
+                void E_assign_to_slice(object start, object end, object val) { // make "slice[start..end] = val", val should be the same length as "end - start + 1"
+                        if (IS_DBL_OR_SEQUENCE(obj) && IS_SEQUENCE(obj)) {
                                 assign_slice_seq = (s1_ptr *)&obj;
-                                AssignSlice(start, end, (s1_ptr)val.obj);
+                                AssignSlice(start, end, (s1_ptr)val);
                                 assign_slice_seq = NULL;
                         }
                         else {
                                 RTFatal("Expected target and argument Sequences in 'E_assign_to_slice()'");
                         }
                 }
-// End "Need to test..."
+                
                 object E_at(elong i); // use (1 to length) or (-1 to -length) // make "obj = seq[index]"
+                void E_assign_to_at(elong i, object val); // make "seq[index] = obj"
 
                 void repeat(object item, object repcount)
                 {
@@ -520,9 +519,9 @@ namespace eu
                 }
                 object concatN() // join()
                 {
-                        s1_ptr ptr = SEQ_PTR(obj);
+                        s1_ptr sp = SEQ_PTR(obj);
                         object ret = NOVALUE;
-                        Concat_N(&ret, ptr->base + 1, ptr->length);
+                        Concat_N(&ret, sp->base + 1, sp->length);
                         return ret;
                 }
 
@@ -555,25 +554,45 @@ namespace eu
         object Sequence::E_at(elong i) { // use (1 to length) or (-1 to -length)
                 object ret;
                 if (IS_DBL_OR_SEQUENCE(obj) && IS_SEQUENCE(obj) && TYPE_CHECK_INTEGER(i)) {
-                        s1_ptr ptr = SEQ_PTR(obj);
-                        elong len = ptr->length;
+                        s1_ptr sp = SEQ_PTR(obj);
                         if (i < 0) {
-                                ++i += len;
+                                ++i += sp->length;
                         }
-                        if ((i >= 1) && (i <= len)) {
-                                ret = ptr->base[i];
+                        if ((i >= 1) && (i <= sp->length)) {
+                                ret = sp->base[i];
                                 Ref(ret); // Not a possible memory leak.
                         }
-                        else
-                        {
+                        else {
                                 RTFatal("Expected a valid index number in 'E_at()'");
                         }
                 }
-                else
-                {
+                else {
                         RTFatal("Expected a Sequence and a valid index number in 'E_at()'");
                 }
                 return ret;
+        }
+        void Sequence::E_assign_to_at(elong i, object val) { // make "seq[index] = obj"
+                if (IS_DBL_OR_SEQUENCE(obj) && IS_SEQUENCE(obj) && TYPE_CHECK_INTEGER(i)) {
+                        s1_ptr sp = SEQ_PTR(obj);
+                        if (i < 0) {
+                                ++i += sp->length;
+                        }
+                        if ((i >= 1) && (i <= sp->length)) {
+                                if (!UNIQUE(sp)) {
+                                        sp = (s1_ptr)SequenceCopy(sp);
+                                        obj = MAKE_SEQ(sp); // store new value to obj
+                                }
+                                // Ref(val); // possible memory leak, use "s.GetValue()" on classes to avoid memory leak.
+                                DeRef(sp->base[i])
+                                sp->base[i] = val;
+                        }
+                        else {
+                                RTFatal("Expected a valid index number in 'E_assign_to_at()'");
+                        }
+                }
+                else {
+                        RTFatal("Expected a Sequence and a valid index number in 'E_assign_to_at()'");
+                }
         }
         object S_repeat(object item, object repcount)
         {

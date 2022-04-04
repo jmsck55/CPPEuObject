@@ -128,14 +128,14 @@ int main()
                 SHOW_DEBUG("s0", s0);
                 
                 // here.
-                s2.repeat((eu::object)' ', 1);
-                s1.E_assign_to_slice(3, 3, s2); // s2 calls the "copy constructor"
+                //s1.E_assign_to_slice(3, 3, (eu::object)' ');
+		s1.E_assign_to_at(3, (eu::object)' ');
                 SHOW_DEBUG("s1", s1);
                 s3.newString("world\n");
                 eu::S_concat((eu::object_ptr)&s0, CASTING_OBJECT(eu::object, s1), CASTING_OBJECT(eu::object, s3)); // here, may be a memory leak.
                 SHOW_DEBUG("s0", s0);
                 SHOW_DEBUG("s1", s1);
-                SHOW_DEBUG("s3", s3); // I'll work on this tomorrow.
+                SHOW_DEBUG("s3", s3);
                 s0.println(2);
                 // and here.
                 s4.E_slice(s0, 4, 9); // "world\n"
