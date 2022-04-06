@@ -18,11 +18,6 @@
 #define EWINDOWS
 #endif
 
-#ifdef __GNUC__
-// CLEANUP_MOD is reserved for the future, it has not been properly coded yet.
-//#define CLEANUP_MOD
-#endif
-
 // Begin Platform
 // These macros are set in specify_platform.h
 
@@ -53,14 +48,8 @@
 // Use when debugging source code:
 #define EXTRA_CHECK
 
-// If under Windows, define EWINDOWS, else comment it out.
-//#define EWINDOWS
-
 // You can use the __WATCOMC__ macro on the OpenWatcom.org compiler.
 //#ifdef __WATCOMC__
 //#endif // __WATCOMC__
-
-// Define this macro (DONE_DEBUGGING) before distributing software:
-//#define DONE_DEBUGGING
 
 #endif // _PLATFORM_H

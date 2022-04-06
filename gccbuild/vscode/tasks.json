@@ -6,11 +6,14 @@
 			"label": "C/C++: g++.exe build active file",
 			"command": "C:/Users/jc410/cygwin64/bin/g++.exe",
 			"args": [
+				// g++ pch.o be_eu.o be_funcs.o be_math.o be_quad.o -g ../test.cpp -lquadmath
 				"-fdiagnostics-color=always",
+				"-DUSE_QUADMATH_H",
 				"pch.o",
 				"be_eu.o",
 				"be_funcs.o",
 				"be_math.o",
+				"be_quad.o",
 				"-g",
 				"../test.cpp",
 				// "${file}",

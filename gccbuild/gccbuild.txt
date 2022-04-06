@@ -2,21 +2,23 @@ Compiled using Cygwin and Visual Studio Code.
 
 Using only the command line, you can do the following:
 
-gcc -c -g ../pch.c
-gcc -c -g ../be_eu.c
-gcc -c -g ../be_funcs.c
-gcc -c -g ../be_math.c
-g++ -c -g ../test.cpp
-g++ pch.o be_eu.o be_funcs.o be_math.o test.o
+gcc -c -g ../pch.c -DUSE_QUADMATH_H -lquadmath
+gcc -c -g ../be_eu.c -DUSE_QUADMATH_H -lquadmath
+gcc -c -g ../be_funcs.c -DUSE_QUADMATH_H -lquadmath
+gcc -c -g ../be_math.c -DUSE_QUADMATH_H -lquadmath
+gcc -c -g ../be_quad.c -DUSE_QUADMATH_H -lquadmath
+g++ -c -g ../test.cpp -DUSE_QUADMATH_H -lquadmath
+g++ pch.o be_eu.o be_funcs.o be_math.o be_quad.o test.o -DUSE_QUADMATH_H -lquadmath
 
 
 Under Visual Studio Code, you can do the following:
 
-gcc -c -g ../pch.c
-gcc -c -g ../be_eu.c
-gcc -c -g ../be_funcs.c
-gcc -c -g ../be_math.c
-g++ pch.o be_eu.o be_funcs.o be_math.o -g ../test.cpp
+gcc -c -g ../pch.c -DUSE_QUADMATH_H -lquadmath
+gcc -c -g ../be_eu.c -DUSE_QUADMATH_H -lquadmath
+gcc -c -g ../be_funcs.c -DUSE_QUADMATH_H -lquadmath
+gcc -c -g ../be_math.c -DUSE_QUADMATH_H -lquadmath
+gcc -c -g ../be_quad.c -DUSE_QUADMATH_H -lquadmath
+g++ pch.o be_eu.o be_funcs.o be_math.o be_quad.o -g ../test.cpp -DUSE_QUADMATH_H -lquadmath
 
 First compile *.c files in the command line, like above.
 Then, Terminal->Run Build Task
