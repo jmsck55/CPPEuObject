@@ -1,6 +1,6 @@
 copy jceuobj.dll jceuobju.dll
-upx jceuobj.dll
+upx jceuobju.dll
 pause
 copy testdll.exe testdllu.exe
-upx testdll.exe
+upx testdllu.exe
 pause

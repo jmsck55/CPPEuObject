@@ -5,6 +5,8 @@
 //
 // 32/64-bit using macro BITS64 for 64-bit
 //
+// TODO: Make 32-bit mode work with 64-bit pointers.
+//
 // Included by pch.h
 
 #ifndef _COMMON_H
@@ -64,17 +66,18 @@
 #endif // BUILDING_DLL
 
 // For faster code, alignment should be (2 on 16-bit machines), (4 on 32-bit machines), (8 on 64-bit machines)
+typedef double eudouble32;
+typedef long elong32;
+typedef unsigned long eulong32;
 #ifdef BITS64
-//#pragma align(8)
 typedef long double eudouble;
 typedef long long elong;
 typedef unsigned long long eulong;
 #define REGISTER
 #else
-//#pragma align(4)
-typedef double eudouble;
-typedef long elong;
-typedef unsigned long eulong;
+#define eudouble eudouble32
+#define elong elong32
+#define eulong eulong32
 #define REGISTER register
 #endif
 #ifdef BITS64
@@ -158,6 +161,14 @@ typedef unsigned long eulong;
    so we can simplify some tests. For speed we first check for ATOM-INT
    since that's what most objects are. */
 
+#define MAKE_UINT32(x) ((object)(( ((unsigned long)x) <= ((unsigned long)0x3FFFFFFFL)) \
+                          ? (unsigned long)x : \
+                            (unsigned long)NewDouble32((double)(unsigned long)x)))
+
+/* these are obsolete */
+#define INT_VAL32(x)        ((int)(x))
+#define MAKE_INT32(x)       ((object)(x))
+
 #ifdef BITS64
 #define NOVALUE      ((long long)0xbfffffffffffffffLL)
 #define TOO_BIG_INT  ((long long)0x4000000000000000LL)
@@ -168,24 +179,20 @@ typedef unsigned long eulong;
 #define MAKE_UINT(x) ((object)(( ((unsigned long long)x) <= ((unsigned long long)0x3FFFFFFFFFFFFFFFLL)) \
                           ? (unsigned long long)x : \
                             (unsigned long long)NewDouble((long double)(unsigned long long)x)))
+
+/* these are obsolete */
+#define INT_VAL(x)        ((long long int)(x))
+#define MAKE_INT(x)       ((object)(x))
 #else
 #define NOVALUE      ((long)0xbfffffffL)
 #define TOO_BIG_INT  ((long)0x40000000L)
 #define HIGH_BITS    ((long)0xC0000000L)
 #define IS_ATOM_INT(ob)       (((long)(ob)) > NOVALUE)
 #define IS_ATOM_INT_NV(ob)    ((long)(ob) >= NOVALUE)
-
-#define MAKE_UINT(x) ((object)(( ((unsigned long)x) <= ((unsigned long)0x3FFFFFFFL)) \
-                          ? (unsigned long)x : \
-                            (unsigned long)NewDouble((double)(unsigned long)x)))
-#endif
-/* these are obsolete */
-#ifdef BITS64
-#define INT_VAL(x)        ((long long int)(x))
-#else
-#define INT_VAL(x)        ((int)(x))
-#endif
-#define MAKE_INT(x)       ((object)(x))
+#define MAKE_UINT(x) MAKE_UINT32(x)
+#define INT_VAL(x) INT_VAL32(x)
+#define MAKE_INT(x) MAKE_INT32(x)
+#endif // BITS64
 
 /* N.B. the following distinguishes DBL's from SEQUENCES -
    must eliminate the INT case first */
@@ -199,15 +206,28 @@ typedef unsigned long eulong;
 
 #define IS_DBL_OR_SEQUENCE(ob)  (((long long)(ob)) < NOVALUE)
 #else
-#define IS_ATOM_DBL(ob)         (((object)(ob)) >= (long)0xA0000000)
+#define IS_ATOM_DBL(ob)         (((object)(ob)) >= (long)0xA0000000L)
 
-#define IS_ATOM(ob)             (((long)(ob)) >= (long)0xA0000000)
-#define IS_SEQUENCE(ob)         (((long)(ob))  < (long)0xA0000000)
+#define IS_ATOM(ob)             (((long)(ob)) >= (long)0xA0000000L)
+#define IS_SEQUENCE(ob)         (((long)(ob))  < (long)0xA0000000L)
 
-#define ASEQ(s) (((unsigned long)s & (unsigned long)0xE0000000) == (unsigned long)0x80000000)
+#define ASEQ(s) (((unsigned long)s & (unsigned long)0xE0000000L) == (unsigned long)0x80000000L)
 
 #define IS_DBL_OR_SEQUENCE(ob)  (((long)(ob)) < NOVALUE)
-#endif
+#endif // BITS64
+#define MININT32     (long)0xC0000000L
+#define MAXINT32     (long)0x3FFFFFFFL
+#define MININT_VAL32 MININT
+#define MININT_DBL32 ((double)MININT_VAL)
+#define MAXINT_VAL32 MAXINT
+#define MAXINT_DBL32 ((double)MAXINT_VAL)
+#define INT23      (long)0x003FFFFFL
+#define INT16      (long)0x00007FFFL
+#define INT15      (long)0x00003FFFL
+#define ATOM_M1    -1
+#define ATOM_0     0
+#define ATOM_1     1
+#define ATOM_2     2
 #ifdef BITS64
 #undef MININT
 #define MININT     (long long)0xC000000000000000LL
@@ -219,28 +239,14 @@ typedef unsigned long eulong;
 #define INT55      (long long)0x003FFFFFFFFFFFFFLL
 #define INT47      (long long)0x00003FFFFFFFFFFFLL
 #define INT31      (long long)0x000000003FFFFFFFLL
-#define INT23      (long)0x003FFFFFL
-#define INT16      (long)0x00007FFFL
-#define INT15      (long)0x00003FFFL
-#define ATOM_M1    -1
-#define ATOM_0     0
-#define ATOM_1     1
-#define ATOM_2     2
 #else
 #undef MININT
-#define MININT     (long)0xC0000000
-#define MAXINT     (long)0x3FFFFFFF
-#define MININT_VAL MININT
-#define MININT_DBL ((double)MININT_VAL)
-#define MAXINT_VAL MAXINT
-#define MAXINT_DBL ((double)MAXINT_VAL)
-#define INT23      (long)0x003FFFFFL
-#define INT16      (long)0x00007FFFL
-#define INT15      (long)0x00003FFFL
-#define ATOM_M1    -1
-#define ATOM_0     0
-#define ATOM_1     1
-#define ATOM_2     2
+#define MININT MININT32
+#define MAXINT MAXINT32
+#define MININT_VAL MININT_VAL32
+#define MININT_DBL MININT_DBL32
+#define MAXINT_VAL MAXINT_VAL32
+#define MAXINT_DBL MAXINT_DBL32
 #endif
 #ifdef BITS64
 typedef long long int integer;
@@ -265,49 +271,85 @@ struct s1 {                        /* a sequence header block */
     long postfill;                 /* number of post-fill objects */
 }; /* total 16 bytes */
 #endif // BITS64
-#ifdef BITS64
-struct d {                         /* a long double precision number */
 #ifdef CLEANUP_MOD
+typedef void (*TypeCleanupFunc)(void *ptr, elong type, object cleanup);
+#endif // CLEANUP_MOD
+#ifdef USE_QUADMATH_H
+#ifdef __GNUC__
+#define equadmath __float128
+#else
+#define equadmath _Quad
+#endif // __GNUC__
+#endif // USE_QUADMATH_H
+#define CLEANUP_DEFAULT 0
+#define CLEANUP_SIGNED_TYPE 1
+#define CLEANUP_UNSIGNED_TYPE 2
+#define CLEANUP_DOUBLE 3
+// Data is handled the same as String (non-null terminated string of length 'type')
+// CStrings should still terminate their string with a null character value.
+// When there are no null characters in a string, it should be null-terminated.
+#define CLEANUP_DATA -1
+#define CLEANUP_STRING -1
+// Non MSVC compilers:
+#define CLEANUP_FLOAT128 -2
+#define CLEANUP_LONGDOUBLE -3
+#define USER_CLEANUP_START 32
+// Any negative number in 'cleanup' types means that it gets freed by the program.
+#ifdef BITS64
+// BEGIN 64-bit:
+struct d {                         /* a long double precision number */
     union {
+#ifdef USE_QUADMATH_H
+	// USE_QUADMATH_H requires CLEANUP_MOD on 64-bit
+	equadmath quad;
+#endif
 	long double dbl;                    /* long double precision value, float80 or float128 */
-	__float128 quad;
 	struct {
-	    void * ptr; // could be a pointer to an array of structures, customize in "cleanup's flags"
-	    long long type; // could be length, perhaps high bits could be flags.
+	    union {
+		double a_dbl; // an actual double on 64-bit platforms, i.e. MSVC compiler.
+		void * ptr; // could be a pointer to an array of structures, customize in "cleanup's flags"
+	    };
+	    unsigned long long type; // could be length, perhaps high bits could be flags.
 	};
     };
     long long ref;                      /* reference count */
+// CLEANUP_MOD is required on 64-bit, because of 16 byte (128-bit) boundaries.
+//#ifdef CLEANUP_MOD
+// Both "struct s1" and "struct d" take up 32-bytes on 64-bit platforms.
     object cleanup; // should be set to zero (0), type of data, and pointer for the cleanup routine.
-	// IS_ATOM_INT means it is a dbl==0 or quad==1 (ptr on 32-bit) or string==2 (other data types can be implimented in the future.)
+	// IS_ATOM_INT means it is a dbl==0 or "signed type"=1 "unsigned type"==2 or "double a_dbl"==3 or "data of length type"==4 or "float128"==5 (ptr on 32-bit) (other data types can be implimented in the future.)
 	// IS_ATOM_DBL means it is a pointer ("ptr") of "type" with pointer to "cleanup" routine.
 	// IS_SEQUENCE means it is an array ("ptr") of length "type" (without postfill variable) with pointer to "cleanup" routine.
-#else
-    long double dbl;                    /* long double precision value, float80 or float128 */
-    long long ref;                      /* reference count */
-#endif // CLEANUP_MOD
+//#endif // CLEANUP_MOD
 }; /* total 8*3=24 bytes, or 8*4=32 bytes on newer GCC 64-bit */
+#define D_SIZE (sizeof(struct d))
 #else
+// BEGIN 32-bit:
 struct d {                         /* a double precision number */
-#ifdef CLEANUP_MOD
     union {
 	double dbl;                    /* double precision value */
+	double a_dbl; // duplicate.
 	struct {
-	    void * ptr;
-	    long type;
+	    union {
+#ifdef USE_QUADMATH_H
+		equadmath *pquad; // pointer to a equadmath in 32-bit
+#endif // USE_QUADMATH_H
+		long double *pldbl;
+		void * ptr;
+	    };
+	    unsigned long type;
 	};
     };
     long ref;                      /* reference count */
+#ifdef CLEANUP_MOD
     object cleanup; // should be set to zero (0), type of data, and pointer for the cleanup routine.
-	// IS_ATOM_INT means it is a dbl==0 or quad==1 (ptr on 32-bit) or string==2 (other data types can be implimented in the future.)
+	// IS_ATOM_INT means it is a dbl==0 or "signed type"=1 "unsigned type"==2 or "double a_dbl"==3 or "data of length type"==4 or "float128"==5 (ptr on 32-bit) (other data types can be implimented in the future.)
 	// IS_ATOM_DBL means it is a pointer ("ptr") of "type" with pointer to "cleanup" routine.
 	// IS_SEQUENCE means it is an array ("ptr") of length "type" (without postfill variable) with pointer to "cleanup" routine.
-#else
-    double dbl;                    /* double precision value */
-    long ref;                      /* reference count */
 #endif // CLEANUP_MOD
 }; /* total 16 bytes */
-#endif // BITS64
 #define D_SIZE (sizeof(struct d))
+#endif // BITS64
 #if 0
 struct free_block {                /* a free storage block */
     struct free_block *next;       /* pointer to next free block */
@@ -333,7 +375,7 @@ struct ns_list {
     int file_num;
 };
 #endif // if 0
-typedef struct d  *d_ptr;
+typedef struct d *d_ptr;
 typedef struct s1 *s1_ptr;
 #if 0
 typedef struct free_block *free_block_ptr;
@@ -378,12 +420,6 @@ typedef int *opcode_type;
 #define DBL_PTR(ob) ( (d_ptr)  (((long long)(ob)) << 3) )
 #define MAKE_SEQ(x) ( (object) (((unsigned long long)(x) >> 3) + (long long)0x8000000000000000LL) )
 #define SEQ_PTR(ob) ( (s1_ptr) (((long long)(ob)) << 3) )
-#else
-#define MAKE_DBL(x) ( (object) (((unsigned long)(x) >> 3) + (long)0xA0000000) )
-#define DBL_PTR(ob) ( (d_ptr)  (((long)(ob)) << 3) )
-#define MAKE_SEQ(x) ( (object) (((unsigned long)(x) >> 3) + (long)0x80000000) )
-#define SEQ_PTR(ob) ( (s1_ptr) (((long)(ob)) << 3) )
-#endif
 /* ref a double or a sequence (both need same 3 bit shift) */
 #define RefDS(a) ++(DBL_PTR(a)->ref)
 
@@ -403,8 +439,33 @@ typedef int *opcode_type;
 /* de-ref a general object in x.c and set tpc (for time-profile) */
 #define DeRefx(a) if (IS_DBL_OR_SEQUENCE(a)) { DeRefDSx(a); }
 
+#define UNIQUE(seq) (((s1_ptr)(seq))->ref == 1)
+#else
+#define MAKE_DBL(x) ( (object) (((unsigned long)(x) >> 3) + (long)0xA0000000L) )
+#define DBL_PTR(ob) ( (d_ptr)  (((long)(ob)) << 3) )
+#define MAKE_SEQ(x) ( (object) (((unsigned long)(x) >> 3) + (long)0x80000000L) )
+#define SEQ_PTR(ob) ( (s1_ptr) (((long)(ob)) << 3) )
+/* ref a double or a sequence (both need same 3 bit shift) */
+#define RefDS(a) ++(DBL_PTR(a)->ref)
+
+/* ref a general object */
+#define Ref(a) if (IS_DBL_OR_SEQUENCE(a)) { RefDS(a); }
+
+/* de-ref a double or a sequence */
+#define DeRefDS(a) if (--(DBL_PTR(a)->ref) == 0 ) { de_reference((s1_ptr)(a)); }
+/* de-ref a double or a sequence in x.c and set tpc (for time-profile) */
+#define DeRefDSx(a) if (--(DBL_PTR(a)->ref) == 0 ) {tpc=pc; de_reference((s1_ptr)(a)); }
+
+/* de_ref a sequence already in pointer form */
+#define DeRefSP(a) if (--((s1_ptr)(a))->ref == 0 ) { de_reference((s1_ptr)MAKE_SEQ(a)); }
+
+/* de-ref a general object */
+#define DeRef(a) if (IS_DBL_OR_SEQUENCE(a)) { DeRefDS(a); }
+/* de-ref a general object in x.c and set tpc (for time-profile) */
+#define DeRefx(a) if (IS_DBL_OR_SEQUENCE(a)) { DeRefDSx(a); }
 
 #define UNIQUE(seq) (((s1_ptr)(seq))->ref == 1)
+#endif // BITS64
 
 /* file modes */
 #define EF_CLOSED 0
@@ -488,13 +549,16 @@ struct char_cell {
 #define EXTRA_EXPAND(x) (4 + (x) + ((x) >> 2))
 
 #define DEFAULT_SAMPLE_SIZE 25000
+
+#define MAX_BITWISE_DBL32 ((double)(unsigned long)0xFFFFFFFFL)
+#define MIN_BITWISE_DBL32 ((double)(signed long)  0x80000000L)
 #ifdef BITS64
 #define MAX_BITWISE_DBL ((long double)(unsigned long long)0xFFFFFFFFFFFFFFFFLL)
 #define MIN_BITWISE_DBL ((long double)(signed long long)  0x8000000000000000LL)
 #else
-#define MAX_BITWISE_DBL ((double)(unsigned long)0xFFFFFFFF)
-#define MIN_BITWISE_DBL ((double)(signed long)  0x80000000)
-#endif
+#define MAX_BITWISE_DBL MAX_BITWISE_DBL32
+#define MIN_BITWISE_DBL MIN_BITWISE_DBL32
+#endif // BITS64
 
 /* .dll argument & return value types */
 #define C_TYPE     0x0F000000
@@ -515,8 +579,9 @@ struct char_cell {
 #define C_POINTER  0x03000001
 #define C_LONGLONG 0x03000002
 
-//#define E_DBL      0x05000004
-//#define E_FLOAT128 0x0A000004
+#define C_FLOAT80  0x0300000A
+#define C_FLOAT128 0x03000010
+#define E_FLOAT128 0x0A000010
 
 #define C_STDCALL 0
 #define C_CDECL 1

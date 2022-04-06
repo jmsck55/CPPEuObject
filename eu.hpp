@@ -10,3 +10,5 @@
 #define USE_MATH_H
 
 #include "obj.hpp"
+#include "eumath.hpp"
+#include "eufuncs.hpp"

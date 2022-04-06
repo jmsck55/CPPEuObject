@@ -195,9 +195,12 @@ object NewDouble(eudouble d)
     n = (d_ptr)EMalloc((elong)D_SIZE);
     n->ref = 1;
 #ifdef CLEANUP_MOD
-    // n->ptr = NULL;
-    n->cleanup = 0; // jjc
-    n->type = 0;
+    n->type = 0; // jjc, allow extended types, only use high bits.
+#ifdef BITS64
+    n->cleanup = (sizeof(double) == sizeof(eudouble)) ? CLEANUP_DOUBLE : CLEANUP_DEFAULT; // jjc
+#else
+    n->cleanup = CLEANUP_DEFAULT; // jjc
+#endif
 #endif
     n->dbl = d;
     return MAKE_DBL(n);
@@ -651,9 +654,25 @@ void de_reference(s1_ptr a)
 #ifdef CLEANUP_MOD
         if (IS_DBL_OR_SEQUENCE(((d_ptr)a)->cleanup))
         {
-            void * cleanupfunc = (void *)DBL_PTR(((d_ptr)a)->cleanup); // TODO: Needs "cleanupfunc" to be casted as a function.
-            (*cleanupfunc)(((d_ptr)a)->ptr);
+            TypeCleanupFunc cleanupfunc = (TypeCleanupFunc)DBL_PTR(((d_ptr)a)->cleanup);
+            (*cleanupfunc)(((d_ptr)a)->ptr, ((d_ptr)a)->type, ((d_ptr)a)->cleanup);
         }
+	else if (IS_ATOM_INT(((d_ptr)a)->cleanup))
+	{
+	    if (((d_ptr)a)->cleanup < 0)
+	    {
+		// We allocated the data, now we clean it up:
+		EFree(((d_ptr)a)->ptr);
+	    }
+	}
+#endif
+#ifdef USE_QUADMATH_H
+#ifndef BITS64
+// BEGIN 32-bit: (On 32-bit, might be able to use 'float128' without 'cleanup' variable)
+// Only if it's 32-bit:
+	if (((d_ptr)a)->type == E_FLOAT128)
+	    EFree(((d_ptr)a)->pquad);
+#endif
 #endif
         FreeD((unsigned char *)a);
     }
@@ -688,16 +707,29 @@ void de_reference(s1_ptr a)
                 else if (--(DBL_PTR(t)->ref) == 0) {
                     if (IS_ATOM_DBL(t)) {
 	#ifdef CLEANUP_MOD
-			d_ptr a1 = DBL_PTR(t);
-			if (IS_DBL_OR_SEQUENCE(a1->cleanup))
+			d_ptr c = DBL_PTR(t);
+			if (IS_DBL_OR_SEQUENCE(c->cleanup))
 			{
-			    void * cleanupfunc = (void *)DBL_PTR(a1->cleanup); // TODO: Needs "cleanupfunc" to be casted as a function.
-			    (*cleanupfunc)(a1->ptr);
+			    TypeCleanupFunc cleanupfunc = (TypeCleanupFunc)DBL_PTR(c->cleanup);
+			    (*cleanupfunc)(c->ptr, c->type, c->cleanup);
 			}
-                        FreeD((unsigned char *)a1);
-	#else
-                        FreeD((unsigned char *)DBL_PTR(t));
+			else if (IS_ATOM_INT(c->cleanup))
+			{
+			    if (c->cleanup < 0)
+			    {
+				// We allocated the data, now clean it up:
+				EFree(c->ptr);
+			    }
+			}
 	#endif
+	#ifdef USE_QUADMATH_H
+		#ifndef BITS64
+			// Only if it's 32-bit:
+			if (DBL_PTR(t)->type == E_FLOAT128)
+			    EFree(DBL_PTR(t)->pquad);
+		#endif
+	#endif
+                        FreeD((unsigned char *)DBL_PTR(t));
                     }
                     else {
                         // switch to subsequence
@@ -797,6 +829,113 @@ object x()
     return NOVALUE;
 }
 
+object e_op1(object obj, unary_op_t OP, unary_op_t OP1, unary_op_d_t OP2)
+{
+	object ret;
+	if (IS_ATOM_INT(obj)) {
+		ret = OP1(obj); // OP1 here
+		//return ret;
+	} else if (IS_ATOM_DBL(obj)) {
+		ret = OP2(DBL_PTR(obj)); // OP2 here
+		//return ret;
+	} else if (IS_SEQUENCE(obj)) {
+		s1_ptr a, c;
+		elong length;
+		object_ptr ap, cp;
+		a = SEQ_PTR(obj);
+		length = a->length;
+		c = NewS1(length);
+		cp = c->base;
+		ap = a->base;
+		while (--length >= 0) {
+			*(++cp) = OP(*(++ap)); // OP here
+		}
+		ret = MAKE_SEQ(c);
+		//return ret;
+	} else {
+		RTFatal("Expected one (1) valid object, in 'e_op1' operator function");
+		//return ret;
+	}
+	return ret;
+}
+
+object e_op2(object obj, object param, binary_op_t OP, binary_op_t OP1, binary_op_d_t OP2)
+{
+	object ret;
+    if (IS_ATOM_INT(obj)) {
+        if (IS_ATOM_INT(param)) {
+            return OP1(obj, param); // OP1 here
+        }
+        else if (IS_ATOM_DBL(param)) {
+            // obj is int, param is dbl
+            obj = NewDouble((eudouble)obj);
+            ret = OP2(DBL_PTR(obj), DBL_PTR(param));
+            DeRefDS(obj);
+            return ret;
+        }
+    }
+    else if (IS_ATOM_INT(param)) {
+        if (IS_ATOM_DBL(obj)) {
+            // obj is dbl, param is int
+            param = NewDouble((eudouble)param);
+            ret = OP2(DBL_PTR(obj), DBL_PTR(param));
+            DeRefDS(param);
+            return ret;
+        }
+    }
+    else if (IS_ATOM_DBL(obj) && IS_ATOM_DBL(param)) {
+        ret = OP2(DBL_PTR(obj), DBL_PTR(param)); // OP2 here
+        return ret;
+    }
+	else if (IS_SEQUENCE(obj) && IS_SEQUENCE(param)) {
+		s1_ptr a, b, c;
+		elong length;
+		object_ptr ap, bp, cp;
+		a = SEQ_PTR(obj);
+		b = SEQ_PTR(param);
+		length = a->length;
+		if (length != b->length) {
+			RTFatal("Expected lengths of sequences to be equal, in 'e_op2' operator function");
+		}
+		c = NewS1(length);
+		cp = c->base;
+		ap = a->base;
+		bp = b->base;
+		while (--length >= 0) {
+			*(++cp) = OP(*(++ap), *(++bp)); // OP here
+		}
+		ret = MAKE_SEQ(c);
+		//return ret;
+	} else {
+		object a = obj, b = param; // temporary values, they get freed before they go out of scope.
+		Ref(a) // copy obj by increasing its ref count
+		Ref(b) // copy param by increasing its ref count
+		if (IS_SEQUENCE(obj)) {
+			DeRef(b) // derefence before assigning a new value, which has ref count of one (1).
+			b = Repeat(param, SEQ_PTR(obj)->length);
+		} else if (IS_SEQUENCE(param)) {
+			DeRef(a) // derefence before assigning a new value, which has ref count of one (1).
+			a = Repeat(obj, SEQ_PTR(param)->length);
+		// } else if (IS_ATOM_INT(obj)) {
+		// 	DeRef(a) // derefence before assigning a new value, which has ref count of one (1).
+		// 	a = NewDouble((eudouble)obj);
+		// } else if (IS_ATOM_INT(param)) {
+		// 	DeRef(b) // derefence before assigning a new value, which has ref count of one (1).
+		// 	b = NewDouble((eudouble)param);
+		} else {
+			RTFatal("Expected two (2) valid objects, in 'e_op2' operator function");
+		}
+		ret = OP(a, b); // OP here
+		// Going out of scope, reached the right brackets '}', scope starts at left brackets '{'
+		// make sure we dereference temporary variables:
+		// Scope is lost every time code execution leaves the brackets it was defined in '{', '}'
+		// Local variables such as 'int' follow that rule, so should our local variables such as 'object'.
+		DeRef(a) // delete the obj we copied by decreasing its ref count, and free it when its ref count goes to zero (0).
+		DeRef(b) // delete the param we copied by decreasing its ref count, and free it when its ref count goes to zero (0).
+		//return ret;
+	}
+	return ret;
+}
 
 object add(elong a, elong b)
 /* integer add */
@@ -807,7 +946,12 @@ object add(elong a, elong b)
     if (c + HIGH_BITS < 0)
         return MAKE_INT(c);
     else
-        return (object)NewDouble((eudouble)c);
+        return (object)NewDouble((eudouble)c); // the 'c variable' will loose accuracy when converting to a double
+}
+
+object Jadd(object a, object b)
+{
+	return e_op2(a, b, &Jadd, &add, &Dadd);
 }
 
 object minus(elong a, elong b)
@@ -819,7 +963,12 @@ object minus(elong a, elong b)
     if (c + HIGH_BITS < 0)
         return MAKE_INT(c);
     else
-        return (object)NewDouble((eudouble)c);
+        return (object)NewDouble((eudouble)c); // the 'c variable' will loose accuracy when converting to a double
+}
+
+object Jminus(object a, object b)
+{
+	return e_op2(a, b, &Jminus, &minus, &Dminus);
 }
 
 object multiply(elong a, elong b)
@@ -859,6 +1008,11 @@ object multiply(elong a, elong b)
     return (object)NewDouble(a * (eudouble)b); // default if none of the other if statements return.
 }
 
+object Jmultiply(object a, object b)
+{
+	return e_op2(a, b, &Jmultiply, &multiply, &Dmultiply);
+}
+
 object divide(elong a, elong b)
 /* compute a / b */
 {
@@ -878,6 +1032,11 @@ object Ddivide(d_ptr a, d_ptr b)
     return (object)NewDouble(a->dbl / b->dbl);
 }
 
+object Jdivide(object a, object b)
+{
+	return e_op2(a, b, &Jdivide, &divide, &Ddivide);
+}
+
 object eremainder(elong a, elong b)  // avoid conflict with "remainder" math fn
 /* integer remainder of a divided by b */
 {
@@ -893,6 +1052,12 @@ object eremainder(elong a, elong b)  // avoid conflict with "remainder" math fn
 //         RTFatal("can't get remainder of a number divided by 0");
 //     return (object)NewDouble(fmod(a->dbl, b->dbl)); /* for now */
 // }
+
+// object Jremainder(object a, object b)
+// {
+// 	return e_op2(a, b, &Jremainder, &eremainder, &Dremainder);
+// }
+
 
 /* bitwise ops: as long as both are Euphoria integers then
    the result will always be a Euphoria integer. True for
@@ -932,6 +1097,11 @@ object Dand_bits(d_ptr a, d_ptr b)
         return (object)NewDouble((eudouble)c);
 }
 
+object Jand_bits(object a, object b)
+{
+	return e_op2(a, b, &Jand_bits, &and_bits, &Dand_bits);
+}
+
 object or_bits(elong a, elong b)
 /* integer a OR b */
 {
@@ -952,6 +1122,11 @@ object Dor_bits(d_ptr a, d_ptr b)
         return c; // an integer
     else
         return (object)NewDouble((eudouble)c);
+}
+
+object Jor_bits(object a, object b)
+{
+	return e_op2(a, b, &Jor_bits, &or_bits, &Dor_bits);
 }
 
 object xor_bits(elong a, elong b)
@@ -976,6 +1151,11 @@ object Dxor_bits(d_ptr a, d_ptr b)
         return (object)NewDouble((eudouble)c);
 }
 
+object Jxor_bits(object a, object b)
+{
+	return e_op2(a, b, &Jxor_bits, &xor_bits, &Dxor_bits);
+}
+
 object not_bits(elong a)
 /* integer bitwise NOT of a */
 {
@@ -997,6 +1177,11 @@ object Dnot_bits(d_ptr a)
         return c; // an integer
     else
         return (object)NewDouble((eudouble)c);
+}
+
+object Jnot_bits(object a)
+{
+	return e_op1(a, &Jnot_bits, &not_bits, &Dnot_bits);
 }
 
 // object power(elong a, elong b)
@@ -1039,6 +1224,11 @@ object Dnot_bits(d_ptr a)
 //     return (object)NewDouble(pow(a->dbl, b->dbl));
 // }
 
+// object Jpower(object a, object b)
+// {
+// 	return e_op2(a, b, &Jpower, &power, &Dpower);
+// }
+
 object equals(elong a, elong b)
 /* integer a = b */
 {
@@ -1055,6 +1245,11 @@ object Dequals(d_ptr a, d_ptr b)
         return ATOM_1;
     else
         return ATOM_0;
+}
+
+object Jequals(object a, object b)
+{
+	return e_op2(a, b, &Jequals, &equals, &Dequals);
 }
 
 
@@ -1074,6 +1269,11 @@ object Dless(d_ptr a, d_ptr b)
         return ATOM_1;
     else
         return ATOM_0;
+}
+
+object Jless(object a, object b)
+{
+	return e_op2(a, b, &Jless, &less, &Dless);
 }
 
 
@@ -1097,6 +1297,11 @@ object Dgreater(d_ptr a, d_ptr b)
     }
 }
 
+object Jgreater(object a, object b)
+{
+	return e_op2(a, b, &Jgreater, &greater, &Dgreater);
+}
+
 
 object noteq(elong a, elong b)
 /* integer a != b */
@@ -1114,6 +1319,11 @@ object Dnoteq(d_ptr a, d_ptr b)
         return ATOM_1;
     else
         return ATOM_0;
+}
+
+object Jnoteq(object a, object b)
+{
+	return e_op2(a, b, &Jnoteq, &noteq, &Dnoteq);
 }
 
 
@@ -1135,6 +1345,11 @@ object Dlesseq(d_ptr a, d_ptr b)
         return ATOM_0;
 }
 
+object Jlesseq(object a, object b)
+{
+	return e_op2(a, b, &Jlesseq, &lesseq, &Dlesseq);
+}
+
 
 object greatereq(elong a, elong b)
 /* integer a >= b */
@@ -1154,8 +1369,16 @@ object Dgreatereq(d_ptr a, d_ptr b)
         return ATOM_0;
 }
 
+object Jgreatereq(object a, object b)
+{
+	return e_op2(a, b, &Jgreatereq, &greatereq, &Dgreatereq);
+}
 
-object Band(elong a, elong b)
+// JJC: Renamed: 'and', 'or', 'xor' to -> 'Eand', 'Eor', 'Exor' because C++ uses those keywords.
+// 'E' is for Euphoria, 'J' is for JJC's CPPEuObject.
+// 'J' functions work on atoms and sequences, recursively.
+
+object Eand(elong a, elong b)
 /* integer a and b */
 {
     if (a != 0 && b != 0)
@@ -1173,8 +1396,13 @@ object Dand(d_ptr a, d_ptr b)
         return ATOM_0;
 }
 
+object Jand(object a, object b)
+{
+	return e_op2(a, b, &Jand, &Eand, &Dand);
+}
 
-object Bor(elong a, elong b)
+
+object Eor(elong a, elong b)
 /* integer a or b */
 {
     if (a != 0 || b != 0)
@@ -1192,7 +1420,12 @@ object Dor(d_ptr a, d_ptr b)
          return ATOM_0;
 }
 
-object Bxor(elong a, elong b)
+object Jor(object a, object b)
+{
+	return e_op2(a, b, &Jor, &Eor, &Dor);
+}
+
+object Exor(elong a, elong b)
 /* integer a xor b */
 {
     if ((a != 0) != (b != 0))
@@ -1210,6 +1443,11 @@ object Dxor(d_ptr a, d_ptr b)
          return ATOM_0;
 }
 
+object Jxor(object a, object b)
+{
+	return e_op2(a, b, &Jxor, &Exor, &Dxor);
+}
+
 /* --- Unary Ops --- */
 
 object uminus(elong a)
@@ -1225,6 +1463,11 @@ object Duminus(d_ptr a)
 /* double -a */
 {
     return (object)NewDouble(-a->dbl);
+}
+
+object Juminus(object a)
+{
+	return e_op1(a, &Juminus, &uminus, &Duminus);
 }
 
 
@@ -1246,6 +1489,11 @@ object Dnot(d_ptr a)
         return ATOM_0;
 }
 
+object Junot(object a)
+{
+	return e_op1(a, &Junot, &unot, &Dnot);
+}
+
 
 // object e_sqrt(elong a)
 // /* integer square_root(a) */
@@ -1263,6 +1511,11 @@ object Dnot(d_ptr a)
 //     return (object)NewDouble( sqrt(a->dbl) );
 // }
 //
+// object Je_sqrt(object a)
+// {
+// 	return e_op1(a, &Je_sqrt, &e_sqrt, &De_sqrt);
+// }
+
 //
 // object e_sin(elong a)
 // /* sin of an angle a (radians) */
@@ -1276,6 +1529,11 @@ object Dnot(d_ptr a)
 //     return (object)NewDouble( sin(a->dbl) );
 // }
 //
+// object Je_sin(object a)
+// {
+// 	return e_op1(a, &Je_sin, &e_sin, &De_sin);
+// }
+
 // object e_cos(elong a)
 // /* cos of an angle a (radians) */
 // {
@@ -1288,6 +1546,11 @@ object Dnot(d_ptr a)
 //     return (object)NewDouble( cos(a->dbl) );
 // }
 //
+// object Je_cos(object a)
+// {
+// 	return e_op1(a, &Je_cos, &e_cos, &De_cos);
+// }
+
 // object e_tan(elong a)
 // /* tan of an angle a (radians) */
 // {
@@ -1300,6 +1563,11 @@ object Dnot(d_ptr a)
 //     return (object)NewDouble( tan(a->dbl) );
 // }
 //
+// object Je_tan(object a)
+// {
+// 	return e_op1(a, &Je_tan, &e_tan, &De_tan);
+// }
+
 // object e_arctan(elong a)
 // /* arctan of an angle a (radians) */
 // {
@@ -1312,6 +1580,11 @@ object Dnot(d_ptr a)
 //     return (object)NewDouble( atan(a->dbl) );
 // }
 //
+// object Je_arctan(object a)
+// {
+// 	return e_op1(a, &Je_arctan, &e_arctan, &De_arctan);
+// }
+
 // object e_log(elong a)
 // /* natural log of a (integer) */
 // {
@@ -1328,6 +1601,11 @@ object Dnot(d_ptr a)
 //     return (object)NewDouble( log(a->dbl) );
 // }
 //
+// object Je_log(object a)
+// {
+// 	return e_op1(a, &Je_log, &e_log, &De_log);
+// }
+
 // object e_floor(elong a)  // not used anymore
 // /* floor of a number - no op since a is already known to be an int */
 // {
@@ -1346,6 +1624,11 @@ object Dnot(d_ptr a)
 //     else
 // #endif
 //         return (object)NewDouble(temp);
+// }
+//
+// object Je_floor(object a)
+// {
+// 	return e_op1(a, &Je_floor, &e_floor, &De_floor);
 // }
 
 // #define V(a,b) ((((a) << 1) & 0xFFFF0000) | (((b) >> 14) & 0x0000FFFF))
@@ -2076,14 +2359,14 @@ void MakeCString(char *s, object obj)
     *s = '\0';
 }
 
-object make_atom32(unsigned long c32)
-/* make a Euphoria atom from an unsigned C value */
-{
-    if (c32 <= (unsigned long)0x3FFFFFFF)
-        return c32;
-    else
-        return NewDouble((eudouble)c32);
-}
+// object make_atom32(unsigned long c32)
+// /* make a Euphoria atom from an unsigned C value */
+// {
+//     if (c32 <= (unsigned long)0x3FFFFFFFL)
+//         return c32;
+//     else
+//         return NewDouble((eudouble)c32);
+// }
 
 //here
 

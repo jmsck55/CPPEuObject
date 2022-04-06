@@ -14,9 +14,14 @@
 #define MIN_SAFE_CHAR 32
 #define MAX_SAFE_CHAR 127
 
+#ifndef CLEANUP_MOD
+// no CLEANUP_MOD
+#define GetDoubleFromPtr(p) p->dbl
+#endif
+
 #define TYPE_CHECK_INTEGER(val) (((val) > NOVALUE) && ((val) < TOO_BIG_INT))
 #define IS_DOUBLE_TO_INT(temp_dbl) (((eu::eudouble)((eu::elong)temp_dbl)) == temp_dbl && temp_dbl <= MAXINT_DBL && temp_dbl >= MININT_DBL)
-#define GET_DOUBLE(ob) (eu::eudouble)(IS_ATOM_INT(ob) ? (eu::eudouble)ob : DBL_PTR(ob)->dbl)
+#define GET_DOUBLE(ob) (eu::eudouble)(IS_ATOM_INT(ob) ? (eu::eudouble)ob : GetDoubleFromPtr(DBL_PTR(ob)))
 #define NEW_DOUBLE(ob) (eu::object)(IS_ATOM_INT(ob) ? eu::NewDouble((eu::eudouble)ob) : eu::RefRet(ob))
 #define GET_READONLY_ATOM_VAL(ob) (eu::object)(IS_ATOM_INT(ob) ? ob : eu::DoubleToInt(ob))
 
@@ -25,17 +30,37 @@
 #define CASTING_PTR(T, ptr_ob) (*((T*)ptr_ob))
 #define CASTING_OBJECT(T, ob) (*((T*)&ob))
 
+//#define OBJECT_PTR(T) ((Object*)&T)
+//#define OBJECT(T) (*(Object*)&T)
+
 namespace eu
 {
         extern "C" {
                 #include "be_eu.h" // See: "obj.hpp"
-        #ifdef USE_MATH_H
-                #include "be_math.h" // See: "eumath.hpp"
-        #endif
-        #ifdef USE_STANDARD_LIBRARY
-                #include "be_funcs.h"
-        #endif
+        // #ifdef USE_MATH_H
+        //         #include "be_math.h" // See: "eumath.hpp"
+        // #endif
+        // #ifdef USE_STANDARD_LIBRARY // See: "eufuncs.hpp"
+        //         #include "be_funcs.h"
+        // #endif
         }
+
+#ifdef CLEANUP_MOD
+	eudouble GetDoubleFromPtr(d_ptr p)
+	{
+		if (p->cleanup == CLEANUP_DEFAULT)
+			return p->dbl;
+		if (p->cleanup == CLEANUP_DOUBLE)
+			return p->a_dbl;
+	#ifndef BITS64
+		if (p->cleanup == CLEANUP_LONGDOUBLE)
+			// 32-bit:
+			return *p->pldbl;
+	#endif
+		RTFatal("Expected a double value from GetDoubleFromPtr()");
+		return (eudouble)0;
+	}
+#endif
 
 // typedef int integer;
 // typedef struct d atom;
@@ -71,7 +96,7 @@ namespace eu
         }
 
         // TODO: Go through Euphoria's documentation and impliment every routine (function and procedure)
-        int Version(void) { return 0; } // Version is still in Alpha.
+        int Version() { return 0; } // Version is still in Alpha.
         void Abort(elong error_level) { UserCleanup(error_level); }
 #ifdef BITS64
         void print(object obj, long long int stringflag = 0, long long int debugflag = 0, const char atomformat[] = "%.18Lg", long long int forceint = 0) // could be 18 or 21
@@ -79,7 +104,7 @@ namespace eu
         void print(object obj, int stringflag = 0, int debugflag = 0, const char atomformat[] = "%.15g", int forceint = 0) // could be 15 or 17
 #endif
         {
-                if (IS_ATOM_INT(obj) or IS_ATOM_DBL(obj))
+                if (IS_ATOM(obj))
                 {
                         //object d = DoubleToInt(obj);
                         eudouble a = GET_DOUBLE(obj);
@@ -257,12 +282,12 @@ namespace eu
                 //base_class(const object& x) { obj = x; RefObj(); }
                 //base_class(object& x) { obj = x; RefObj(); }
                 //base_class(const object x) { obj = x; RefObj(); }
-                base_class(object x) { obj = x; RefObj(); } // RefObj() here might be a memory leak.
+                base_class(object x) { obj = x; } // RefObj(); } // RefObj() here might be a memory leak.
                 //object Copy() { RefObj(); return obj; }
                 //void Delete() { DeRefObj(); }
                 elong get_etype() { if (obj == NOVALUE) return 0; if (IS_ATOM_INT(obj)) return E_INTEGER; if (IS_ATOM_DBL(obj)) return E_ATOM; if (IS_SEQUENCE(obj)) return E_SEQUENCE; return E_OBJECT; }
                 bool is_initialized() { return obj != NOVALUE; }
-                object GetValue() { RefObj(); return obj; }
+                object GetValue() { RefObj(); return obj; } // Get a copy of the value.
                 base_class& operator= (const object& x)
                 {
                         DeRefObj();
@@ -270,6 +295,15 @@ namespace eu
                         RefObj(); // Possibly not a memory leak.
                         return *this;
                 }
+		
+                object operator + (const base_class& param) { return Jadd (obj, param.obj); }
+                object operator - (const base_class& param) { return Jminus (obj, param.obj); }
+                object operator * (const base_class& param) { return Jmultiply (obj, param.obj); }
+                object operator / (const base_class& param) { return Jdivide (obj, param.obj); }
+		
+		// TODO: Comparing operators, and other operators.
+
+		
 #ifdef BITS64
                 void print(long long int stringflag = 0, long long int debugflag = 0, const char atomformat[] = "%.18Lg", long long int forceint = 0)
 #else
@@ -342,6 +376,30 @@ namespace eu
                 return NOVALUE;
         }
 #endif
+        class Object : public base_class
+        {
+        friend class Sequence;
+        friend class Integer;
+        friend class Atom;
+        private:
+                elong const type() { return E_OBJECT; }
+        public:
+                Object(object ob) { obj = ob; }
+                Object() { obj = NOVALUE; } // default constructor
+                ~Object() { DeRefObj(); obj = NOVALUE; } // default destructor
+                Object(const Object& x) { obj = x.obj; RefObj(); } // copy constructor
+                //Object& operator= (const Object& x) { DeRefObj(); obj = x.obj; RefObj(); return *this; } // copy assignment
+                //Object(Object&& x) { obj = x.obj; x.obj = NOVALUE; } // move constructor
+                //Object& operator= (Object&& x) { DeRefObj(); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
+		
+		// Each class should be able to convert to an Object.
+		// Object obj() { return *((Object*)this); }
+		// #define OBJECT_PTR(T) (Object*)&T
+		
+                char GetChar() { return doChar(obj); } // aborts if type is sequence.
+		
+        };
+
         class Integer : public base_class
         {
         friend class Atom;
@@ -360,11 +418,7 @@ namespace eu
 
                 Integer(integer val) { obj = TYPE_CHECK_INTEGER(val) ? val : NOVALUE; }
                 void NewInteger(elong val) { DeRefObj(); obj = TYPE_CHECK_INTEGER(val) ? val : NOVALUE; }
-                elong GetInteger(void) { return TYPE_CHECK_INTEGER(obj) ? obj : NOVALUE; }
-
-#ifdef USE_STANDARD_LIBRARY
-                friend Integer IntegerRandom32(Integer a);
-#endif
+                elong GetInteger() { return TYPE_CHECK_INTEGER(obj) ? obj : NOVALUE; }
 
         };
 
@@ -389,17 +443,17 @@ namespace eu
                 void NewAtom(eudouble d) { DeRefObj(); obj = IS_DOUBLE_TO_INT(d) ? (object)d : NewDouble(d); }
                 void NewAtom(integer i) { DeRefObj(); obj = TYPE_CHECK_INTEGER(i) ? i : NewDouble((eudouble)i); }
                 void NewAtom(eulong u) { DeRefObj(); obj = TYPE_CHECK_INTEGER(u) ? u : NewDouble((eudouble)u); }
-                eudouble GetAtomDbl(void) { if(IS_ATOM_INT(obj)) { return (eudouble)obj; } else if(IS_ATOM_DBL(obj)) { return DBL_PTR(obj)->dbl; } else { RTFatal("Expected an Atom, but found a Sequence, in 'GetAtomDbl()'"); return (eudouble)0; } }
-                elong GetAtomInt(void) { if (IS_ATOM_INT(obj)) { return obj; } else if (IS_ATOM_DBL(obj)) { return (elong)(DBL_PTR(obj)->dbl); } RTFatal("Expected an Atom, but found a Sequence, in 'GetAtomInt()'"); return 0; }
-                eulong GetAtomUnsignedInt(void) { if (IS_ATOM_INT(obj)) { return (eulong)obj; } else if (IS_ATOM_DBL(obj)) { return (eulong)(DBL_PTR(obj)->dbl); } RTFatal("Expected an Atom, but found a Sequence, in 'GetAtomUnsignedInt()'"); return 0; }
+                eudouble GetAtomDbl() { if(IS_ATOM_INT(obj)) { return (eudouble)obj; } else if(IS_ATOM_DBL(obj)) { return DBL_PTR(obj)->dbl; } else { RTFatal("Expected an Atom, but found a Sequence, in 'GetAtomDbl()'"); return (eudouble)0; } }
+                elong GetAtomInt() { if (IS_ATOM_INT(obj)) { return obj; } else if (IS_ATOM_DBL(obj)) { return (elong)(DBL_PTR(obj)->dbl); } RTFatal("Expected an Atom, but found a Sequence, in 'GetAtomInt()'"); return 0; }
+                eulong GetAtomUnsignedInt() { if (IS_ATOM_INT(obj)) { return (eulong)obj; } else if (IS_ATOM_DBL(obj)) { return (eulong)(DBL_PTR(obj)->dbl); } RTFatal("Expected an Atom, but found a Sequence, in 'GetAtomUnsignedInt()'"); return 0; }
 
                 // TODO: Try to convert Atoms to Integers first, then call the appropriate functions.
-                elong TryDoubleToInt(void) { if (IS_DBL_OR_SEQUENCE(obj) && IS_ATOM_DBL(obj)) { object ob = DoubleToInt(obj); if (ob != obj) { DeRefDS(obj) obj = ob; return 1; } return 2; } return 0; }
+                elong TryDoubleToInt() { if (IS_DBL_OR_SEQUENCE(obj) && IS_ATOM_DBL(obj)) { object ob = DoubleToInt(obj); if (ob != obj) { DeRefDS(obj) obj = ob; return 1; } return 2; } return 0; }
 
-                Atom operator + (const Atom& param) { Atom ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(param.obj)) { ret.obj = add(obj, param.obj); return ret; } ret.obj = (object)NewDouble(GET_DOUBLE(obj) + GET_DOUBLE(param.obj)); return ret; }
-                Atom operator - (const Atom& param) { Atom ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(param.obj)) { ret.obj = minus(obj, param.obj); return ret; } ret.obj = (object)NewDouble(GET_DOUBLE(obj) - GET_DOUBLE(param.obj)); return ret; }
-                Atom operator * (const Atom& param) { Atom ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(param.obj)) { ret.obj = multiply(obj, param.obj); return ret; } ret.obj = (object)NewDouble(GET_DOUBLE(obj) * GET_DOUBLE(param.obj)); return ret; }
-                Atom operator / (const Atom& param) { Atom ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(param.obj)) { ret.obj = divide(obj, param.obj); return ret; } else { Atom a(NEW_DOUBLE(obj)), b(NEW_DOUBLE(param.obj)); ret.obj = Ddivide(DBL_PTR(a.obj), DBL_PTR(b.obj)); return ret; } }
+                //Atom operator + (const Atom& param) { Atom ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(param.obj)) { ret.obj = add(obj, param.obj); return ret; } ret.obj = (object)NewDouble(GET_DOUBLE(obj) + GET_DOUBLE(param.obj)); return ret; }
+                //Atom operator - (const Atom& param) { Atom ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(param.obj)) { ret.obj = minus(obj, param.obj); return ret; } ret.obj = (object)NewDouble(GET_DOUBLE(obj) - GET_DOUBLE(param.obj)); return ret; }
+                //Atom operator * (const Atom& param) { Atom ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(param.obj)) { ret.obj = multiply(obj, param.obj); return ret; } ret.obj = (object)NewDouble(GET_DOUBLE(obj) * GET_DOUBLE(param.obj)); return ret; }
+                //Atom operator / (const Atom& param) { Atom ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(param.obj)) { ret.obj = divide(obj, param.obj); return ret; } else { Atom a(NEW_DOUBLE(obj)), b(NEW_DOUBLE(param.obj)); ret.obj = Ddivide(DBL_PTR(a.obj), DBL_PTR(b.obj)); return ret; } }
 
                 // Boolean atom functions: (To be made into operator's)
                 object A_equals(Atom b) { if(IS_ATOM_INT(obj) && IS_ATOM_INT(b.obj)) { return equals(obj, b.obj); } else if (not (IS_SEQUENCE(obj) or IS_SEQUENCE(b.obj))) { Atom s(NEW_DOUBLE(obj)), t(NEW_DOUBLE(b.obj)); return Dequals(DBL_PTR(s.obj), DBL_PTR(t.obj)); } RTFatal("Expected Atoms, but found a Sequence, in 'A_equals()'"); return NOVALUE; }
@@ -418,10 +472,6 @@ namespace eu
                 friend Atom A_and_bits(Atom a, Atom b);
                 friend Atom A_or_bits(Atom a, Atom b);
                 friend Atom A_xor_bits(Atom a, Atom b);
-
-#ifdef USE_STANDARD_LIBRARY
-                friend Atom AtomRandom32(Atom a);
-#endif
 
         };
         // 32-bit atom functions:
@@ -505,15 +555,18 @@ namespace eu
 
                 void repeat(object item, object repcount)
                 {
+			DeRefObj(); // Repeat does not deref target.
                         obj = Repeat(item, repcount);
                 }
                 void prepend(object a)
                 {
+			// deref's target already
                         // Ref(a) // possible memory leak.
                         Prepend(&obj, obj, a);
                 }
                 void append(object a)
                 {
+			// deref's target already
                         // Ref(a) // possible memory leak.
                         Append(&obj, obj, a);
                 }
@@ -579,7 +632,7 @@ namespace eu
                         }
                         if ((i >= 1) && (i <= sp->length)) {
                                 if (!UNIQUE(sp)) {
-                                        sp = (s1_ptr)SequenceCopy(sp);
+                                        sp = (s1_ptr)SequenceCopy(sp); // deref's 'sp'
                                         obj = MAKE_SEQ(sp); // store new value to obj
                                 }
                                 // Ref(val); // possible memory leak, use "s.GetValue()" on classes to avoid memory leak.
@@ -596,9 +649,7 @@ namespace eu
         }
         object S_repeat(object item, object repcount)
         {
-                object ret;
-                ret = Repeat(item, repcount);
-                return ret;
+                return Repeat(item, repcount);
         }
         void S_prepend(object_ptr target_ptr, Sequence& src, object a)
         {
@@ -660,123 +711,4 @@ namespace eu
                 return ret;
         }
 
-        class Object : public base_class
-        {
-        friend class Sequence;
-        friend class Integer;
-        friend class Atom;
-        private:
-                elong const type() { return E_OBJECT; }
-        public:
-                Object(object ob) { obj = ob; }
-                Object() { obj = NOVALUE; } // default constructor
-                ~Object() { DeRefObj(); obj = NOVALUE; } // default destructor
-                Object(const Object& x) { obj = x.obj; RefObj(); } // copy constructor
-                //Object& operator= (const Object& x) { DeRefObj(); obj = x.obj; RefObj(); return *this; } // copy assignment
-                //Object(Object&& x) { obj = x.obj; x.obj = NOVALUE; } // move constructor
-                //Object& operator= (Object&& x) { DeRefObj(); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
-
-
-                char GetChar() { return doChar(obj); } // aborts if type is sequence.
-
-        };
-
-#ifdef USE_MATH_H
-        class Dbl : public base_class
-        {
-        friend class Atom;
-        friend class Object;
-        private:
-                elong const type() { return 1; }
-        public:
-                Dbl(object ob) { obj = ob; }
-                Dbl() { obj = NOVALUE; } // default constructor
-                ~Dbl() { DeRefObj(); obj = NOVALUE; } // default destructor
-                Dbl(const Dbl& x) { obj = x.obj; RefObj(); } // copy constructor
-                //Dbl& operator= (const Dbl& x) { DeRefObj(); obj = x.obj; RefObj(); return *this; } // copy assignment
-                //Dbl (Dbl&& x) { obj = x.obj; x.obj = NOVALUE; } // move constructor
-                //Dbl& operator= (Dbl&& x) { DeRefObj(); obj = x.obj; x.obj = NOVALUE; return *this; } // move assignment
-
-                //Dbl(d_ptr ptr) { ++(ptr->ref); obj = MAKE_DBL(ptr); }
-                Dbl(eudouble d) { obj = NewDouble(d); }
-                void NewDbl(eudouble d) { DeRefObj(); obj = NewDouble(d); }
-                eudouble GetDbl(void) { if(IS_ATOM_INT(obj)) { return (eudouble)obj; } else if(IS_ATOM_DBL(obj)) { return DBL_PTR(obj)->dbl; } else { RTFatal("Expected a double or integer, in 'GetDbl()'"); return 0.0; } }
-
-                Dbl operator + (const Dbl& param) { Dbl ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(param.obj)) { ret.obj = add(obj, param.obj); return ret; } else { Dbl a(NEW_DOUBLE(obj)), b(NEW_DOUBLE(param.obj)); ret.obj = Dadd(DBL_PTR(a.obj), DBL_PTR(b.obj)); return ret; } }
-                Dbl operator - (const Dbl& param) { Dbl ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(param.obj)) { ret.obj = minus(obj, param.obj); return ret; } else { Dbl a(NEW_DOUBLE(obj)), b(NEW_DOUBLE(param.obj)); ret.obj = Dminus(DBL_PTR(a.obj), DBL_PTR(b.obj)); return ret; } }
-                Dbl operator * (const Dbl& param) { Dbl ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(param.obj)) { ret.obj = multiply(obj, param.obj); return ret; } else { Dbl a(NEW_DOUBLE(obj)), b(NEW_DOUBLE(param.obj)); ret.obj = Dmultiply(DBL_PTR(a.obj), DBL_PTR(b.obj)); return ret; } }
-                Dbl operator / (const Dbl& param) { Dbl ret; if(IS_ATOM_INT(obj) && IS_ATOM_INT(param.obj)) { ret.obj = divide(obj, param.obj); return ret; } else { Dbl a(NEW_DOUBLE(obj)), b(NEW_DOUBLE(param.obj)); ret.obj = Ddivide(DBL_PTR(a.obj), DBL_PTR(b.obj)); return ret; } }
-
-                friend Dbl A_remainder(Dbl a, Dbl b);
-                friend Dbl A_power(Dbl a, Dbl b);
-                friend Dbl A_sqrt(Dbl a);
-                friend Dbl A_sin(Dbl a);
-                friend Dbl A_cos(Dbl a);
-                friend Dbl A_tan(Dbl a);
-                friend Dbl A_arctan(Dbl a);
-                friend Dbl A_log(Dbl a);
-                friend Dbl A_floor(Dbl a);
-        };
-        // Regular eudouble functions:
-        Dbl A_remainder(Dbl a, Dbl b) { Dbl ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = eremainder(a.obj, b.obj); return ret; } else if (not (IS_SEQUENCE(a.obj) or IS_SEQUENCE(b.obj))) { Dbl s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dremainder(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } RTFatal("Expected Dbls, but found a Sequence, in 'A_remainder()'"); return ret; }
-        Dbl A_power(Dbl a, Dbl b) { Dbl ret; if(IS_ATOM_INT(a.obj) && IS_ATOM_INT(b.obj)) { ret.obj = power(a.obj, b.obj); return ret; } else if (not (IS_SEQUENCE(a.obj) or IS_SEQUENCE(b.obj))) { Dbl s(NEW_DOUBLE(a.obj)), t(NEW_DOUBLE(b.obj)); ret.obj = Dpower(DBL_PTR(s.obj), DBL_PTR(t.obj)); return ret; } RTFatal("Expected Dbls, but found a Sequence, in 'A_power()'"); return ret; }
-        // Unary Ops
-        Dbl A_sqrt(Dbl a) { Dbl ret; if(IS_ATOM_INT(a.obj)) { ret.obj = e_sqrt(a.obj); return ret; } else if (IS_ATOM_DBL(a.obj)) { ret.obj = De_sqrt(DBL_PTR(a.obj)); return ret; } RTFatal("Expected an Dbl, but found a Sequence, in 'A_sqrt()'"); return ret; }
-        Dbl A_sin(Dbl a) { Dbl ret; if(IS_ATOM_INT(a.obj)) { ret.obj = e_sin(a.obj); return ret; } else if (IS_ATOM_DBL(a.obj)) { ret.obj = De_sin(DBL_PTR(a.obj)); return ret; } RTFatal("Expected an Dbl, but found a Sequence, in 'A_sin()'"); return ret; }
-        Dbl A_cos(Dbl a) { Dbl ret; if(IS_ATOM_INT(a.obj)) { ret.obj = e_cos(a.obj); return ret; } else if (IS_ATOM_DBL(a.obj)) { ret.obj = De_cos(DBL_PTR(a.obj)); return ret; } RTFatal("Expected an Dbl, but found a Sequence, in 'A_cos()'"); return ret; }
-        Dbl A_tan(Dbl a) { Dbl ret; if(IS_ATOM_INT(a.obj)) { ret.obj = e_tan(a.obj); return ret; } else if (IS_ATOM_DBL(a.obj)) { ret.obj = De_tan(DBL_PTR(a.obj)); return ret; } RTFatal("Expected an Dbl, but found a Sequence, in 'A_tan()'"); return ret; }
-        Dbl A_arctan(Dbl a) { Dbl ret; if(IS_ATOM_INT(a.obj)) { ret.obj = e_arctan(a.obj); return ret; } else if (IS_ATOM_DBL(a.obj)) { ret.obj = De_arctan(DBL_PTR(a.obj)); return ret; } RTFatal("Expected an Dbl, but found a Sequence, in 'A_arctan()'"); return ret; }
-        Dbl A_log(Dbl a) { Dbl ret; if(IS_ATOM_INT(a.obj)) { ret.obj = e_log(a.obj); return ret; } else if (IS_ATOM_DBL(a.obj)) { ret.obj = De_log(DBL_PTR(a.obj)); return ret; } RTFatal("Expected an Dbl, but found a Sequence, in 'A_log()'"); return ret; }
-        Dbl A_floor(Dbl a) { Dbl ret; if(IS_ATOM_INT(a.obj)) { ret.obj = e_floor(a.obj); return ret; } else if (IS_ATOM_DBL(a.obj)) { ret.obj = De_floor(DBL_PTR(a.obj)); return ret; } RTFatal("Expected an Dbl, but found a Sequence, in 'A_floor()'"); return ret; }
-#endif // USE_MATH_H
-#ifdef USE_STANDARD_LIBRARY
-
-        //object Date(); // Already defined in "be_funcs.h" and "be_funcs.c"
-
-        // Random functions (on Windows, it requires the "EWINDOWS" to be defined, such as "#define EWINDOWS")
-
-        Integer IntegerRandom32(Integer a)
-        {
-                object ob;
-                if (!IS_ATOM_INT(a.obj))
-                {
-                        RTFatal("Expected an Integer in IntegerRandom()");
-                }
-                ob = Random32((long)a.obj);
-                return CASTING_OBJECT(Integer, ob);
-        }
-
-        Atom AtomRandom32(Atom a)
-        {
-                if (IS_ATOM_INT(a.obj))
-                {
-                        object ob;
-                        ob = Random32((long)a.obj);
-                        return CASTING_OBJECT(Atom, ob);
-                }
-                if (IS_DBL_OR_SEQUENCE(a.obj) && IS_ATOM_DBL(a.obj))
-                {
-                        object ob;
-                        ob = DRandom32(DBL_PTR(a.obj));
-                        return CASTING_OBJECT(Atom, ob);
-                }
-                else
-                {
-                        RTFatal("Expected an Atom in AtomRandom()");
-                        return NOVALUE;
-                }
-        }
-
-        Sequence GetRand32()
-        {
-                // always returns a two (2) element sequence
-                object ob = get_rand32();
-                return CASTING_OBJECT(Sequence, ob);
-        }
-
-        void SetRand32(object x)
-        {
-                x = set_rand32(x); // ret value is x, ignore.
-        }
-#endif // USE_STANDARD_LIBRARY
 }

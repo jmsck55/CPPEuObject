@@ -90,25 +90,29 @@ int main()
         cout << endl;
 #endif // __GNUC__
 
-	if (true) {
-		eu::EATOM n1(DBL80_C(1.0)), n2(DBL80_C(2.0)), n3(DBL80_C(3.0)), n4(DBL80_C(4.0));
-		eu::EATOM r1, r2;
-		r1 = n1 + n2;
-		r1.println();
-		SHOW_DEBUG("r1", r1);
-		r2 = r1 - n3; // zero (0).
-		r2.println();
-		SHOW_DEBUG("r2", r2);
-		r2 = n3 * n4;
-		r2.println();
-		SHOW_DEBUG("r2", r2);
-		r1 = r2 / n2;
-		printf("Should be equal, 6 == ");
-		r1.println();
-		SHOW_DEBUG("r1", r1);
-		
-		
-	}
+        if (true) {
+            #ifdef BITS64
+                eu::EATOM n1(1.0L), n2(2.0L), n3(3.0L), n4(4.0L);
+            #else
+                eu::EATOM n1(1.0), n2(2.0), n3(3.0), n4(4.0);
+            #endif
+                eu::EATOM r1, r2;
+                r1 = n1 + n2;
+                r1.println();
+                SHOW_DEBUG("r1", r1);
+                r2 = r1 - n3; // zero (0).
+                r2.println();
+                SHOW_DEBUG("r2", r2);
+                r2 = n3 * n4;
+                r2.println();
+                SHOW_DEBUG("r2", r2);
+                r1 = r2 / n2;
+                printf("Should be equal, 6 == ");
+                r1.println();
+                SHOW_DEBUG("r1", r1);
+                
+                
+        }
 
         if (true) {
                 eu::ESEQUENCE s0, s1("Hi\n"), s2, s3, s4;
@@ -129,21 +133,28 @@ int main()
                 
                 // here.
                 //s1.E_assign_to_slice(3, 3, (eu::object)' ');
-		s1.E_assign_to_at(3, (eu::object)' ');
+                s1.E_assign_to_at(3, (eu::object)' ');
+                SHOW_DEBUG("s0", s0);
                 SHOW_DEBUG("s1", s1);
                 s3.newString("world\n");
+                s4 = s0;
                 eu::S_concat((eu::object_ptr)&s0, CASTING_OBJECT(eu::object, s1), CASTING_OBJECT(eu::object, s3)); // here, may be a memory leak.
+                SHOW_DEBUG("s4", s4);
                 SHOW_DEBUG("s0", s0);
                 SHOW_DEBUG("s1", s1);
                 SHOW_DEBUG("s3", s3);
                 s0.println(2);
                 // and here.
+                s1 = s4;
                 s4.E_slice(s0, 4, 9); // "world\n"
+                SHOW_DEBUG("s1", s1);
                 SHOW_DEBUG("s4", s4);
+                s1 = s3;
                 s3.repeat(CASTING_OBJECT(eu::object, s4), 10); // here, may be a memory leak.
-		SHOW_DEBUG("s3", s3);
+                SHOW_DEBUG("s1", s1);
+                SHOW_DEBUG("s3", s3);
                 eu::S_concatN((eu::object_ptr)&s2, s3);
-		SHOW_DEBUG("s2", s2);
+                SHOW_DEBUG("s2", s2);
                 s2.ScreenOutput(stdout);
 
                 
@@ -244,6 +255,7 @@ int main()
                         SHOW_DEBUG("s1", s1);
                 }
                 SHOW_DEBUG("s1", s1);
+                SHOW_DEBUG("s2", s2);
                 
                 str = s1.GetCharStr();
                 cout << str << endl;
