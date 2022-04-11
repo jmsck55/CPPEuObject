@@ -3,6 +3,10 @@ CPPEuObject is the name of the project designed to use a CPP class instead of us
 
 https://github.com/jmsck55/CPPEuObject
 
+See also the Visual Studio repository:
+
+https://github.com/jmsck55/CPPEuObjectVS
+
 Payment:
 
 Give whatever money you would give me to single women, and to single women with children, and to orphans, especially of English origin, who do not have enough financial support.
